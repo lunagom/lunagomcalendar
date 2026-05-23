@@ -10,9 +10,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
+import type { ExpenseRow } from "../server/queries";
 
 type Props = {
   currentMonth: string; // "YYYY-MM"
+  expenses: ExpenseRow[];
+  usedCategories: string[];
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -26,7 +30,11 @@ function thisMonthIso(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export function ExpensePage({ currentMonth }: Props) {
+export function ExpensePage({
+  currentMonth,
+  expenses,
+  usedCategories,
+}: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
@@ -80,9 +88,11 @@ export function ExpensePage({ currentMonth }: Props) {
           </TabsList>
 
           <TabsContent value="monthly" className="mt-4">
-            <p className="text-sm text-muted-foreground py-8 text-center">
-              월간 지출 캘린더가 들어갈 자리 (단위 C-2 에서 구현)
-            </p>
+            <ExpenseMonthGrid
+              month={currentMonth}
+              expenses={expenses}
+              usedCategories={usedCategories}
+            />
           </TabsContent>
 
           <TabsContent value="subscriptions" className="mt-4">
