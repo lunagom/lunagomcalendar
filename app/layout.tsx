@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
