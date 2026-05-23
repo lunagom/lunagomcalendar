@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -64,7 +65,10 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
       <Dialog open={!confirming} onOpenChange={(v) => !v && onClose()}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>캘린더 설정</DialogTitle>
+              <DialogTitle>캘린더 설정</DialogTitle>
+            <DialogDescription className="sr-only">
+              캘린더의 이름과 색을 수정하거나 삭제합니다.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div>

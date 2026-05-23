@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -108,6 +109,11 @@ export function EventModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{initial ? "일정 수정" : "일정 추가"}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {initial
+              ? "기존 일정의 내용을 수정합니다."
+              : "새 일정의 제목, 날짜, 캘린더, 색을 입력합니다."}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">

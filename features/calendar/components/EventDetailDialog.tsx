@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -60,6 +61,9 @@ export function EventDetailDialog({ event, calendars, onClose }: Props) {
               {event.emoji ? `${event.emoji} ` : ""}
               {event.title}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              일정의 상세 정보입니다. 수정하거나 삭제할 수 있습니다.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-1 text-sm">
             <div>

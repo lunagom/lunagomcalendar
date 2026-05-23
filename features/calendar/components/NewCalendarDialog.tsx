@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -48,6 +49,9 @@ export function NewCalendarDialog({ open, onOpenChange }: Props) {
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>새 캘린더</DialogTitle>
+          <DialogDescription className="sr-only">
+            새 캘린더의 이름과 색을 입력합니다.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div>

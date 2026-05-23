@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -75,6 +76,9 @@ export function DayDetailPopup({
               )}
               <HolidayBadge isoDate={isoDate} />
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              선택한 날짜의 일정과 할 일을 확인하고 관리합니다.
+            </DialogDescription>
           </DialogHeader>
 
           {/* 일정 섹션 */}
