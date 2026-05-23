@@ -5,6 +5,7 @@ import {
   getEventsForMonth,
 } from "@/features/calendar/server/queries";
 import { getTodosForMonth } from "@/features/todos/server/queries";
+import { getExpensesForMonth } from "@/features/expense/server/queries";
 
 export const metadata = { title: "캘린더" };
 
@@ -17,10 +18,11 @@ function defaultMonth(): string {
 
 export default async function CalendarPage({ searchParams }: Props) {
   const month = searchParams.month ?? defaultMonth();
-  const [calendars, events, todos] = await Promise.all([
+  const [calendars, events, todos, expenses] = await Promise.all([
     getCalendars(),
     getEventsForMonth(month),
     getTodosForMonth(month),
+    getExpensesForMonth(month),
   ]);
 
   return (
@@ -29,6 +31,7 @@ export default async function CalendarPage({ searchParams }: Props) {
         calendars={calendars}
         events={events}
         todos={todos}
+        expenses={expenses}
         initialMonth={month}
       />
     </CalendarShell>

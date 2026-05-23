@@ -24,11 +24,13 @@ import { moveEvent } from "../server/actions";
 import { useCalendarUIStore } from "../store/calendar-ui";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
+import type { ExpenseRow } from "@/features/expense/server/queries";
 
 type Props = {
   calendars: CalendarRow[];
   events: EventRow[];
   todos: TaskRow[];
+  expenses: ExpenseRow[];
   initialMonth: string; // YYYY-MM
 };
 
@@ -41,15 +43,23 @@ type CellRenderData = {
   calendars: CalendarRow[];
   eventsByDate: Map<string, EventRow[]>;
   todosByDate: Map<string, TaskRow[]>;
+  expensesByDate: Map<string, number>;
   onEventClick: (e: EventRow) => void;
   onDayClick: (d: Date) => void;
 };
 
-export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
+export function MonthGrid({
+  calendars,
+  events,
+  todos,
+  expenses,
+  initialMonth,
+}: Props) {
   const router = useRouter();
   const fcRef = useRef<FullCalendarInst | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hiddenIds = useCalendarUIStore((s) => s.hiddenCalendarIds);
+  const showDailyExpenses = useCalendarUIStore((s) => s.showDailyExpenses);
 
   const [dayDetailDate, setDayDetailDate] = useState<Date | null>(null);
   const [detailEvent, setDetailEvent] = useState<EventRow | null>(null);
@@ -100,6 +110,17 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
     return map;
   }, [todos]);
 
+  /** 토글 ON 일 때만 그날 지출 합계 — OFF 면 빈 Map 으로 셀에서 표시 X. */
+  const expensesByDate = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!showDailyExpenses) return map;
+    for (const e of expenses) {
+      const key = e.paid_at.slice(0, 10);
+      map.set(key, (map.get(key) ?? 0) + e.amount);
+    }
+    return map;
+  }, [expenses, showDailyExpenses]);
+
   // ── DayCell portal 관리 ──
   // FullCalendar 가 셀을 mount 할 때 빈 div 를 frame 에 추가하고 React root 생성.
   // data 변화 시 useEffect 가 모든 root 를 다시 렌더.
@@ -111,6 +132,7 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
     calendars,
     eventsByDate,
     todosByDate,
+    expensesByDate,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
   });
@@ -121,6 +143,7 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
     calendars,
     eventsByDate,
     todosByDate,
+    expensesByDate,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
   };
@@ -137,6 +160,7 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
         calendars={d.calendars}
         onEventClick={d.onEventClick}
         onDayClick={() => d.onDayClick(date)}
+        dailyExpenseTotal={d.expensesByDate.get(isoDate)}
       />,
     );
   }

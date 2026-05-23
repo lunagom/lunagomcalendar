@@ -18,6 +18,8 @@ type Props = {
   onEventClick: (e: EventRow) => void;
   /** 셀(빈 영역·날짜·배지) 클릭 — DayDetailPopup 열기. 이벤트 막대/체크박스 자체 클릭은 stopPropagation 처리됨. */
   onDayClick: () => void;
+  /** 그날 지출 합계. undefined 또는 0 이면 표시 안 함. */
+  dailyExpenseTotal?: number;
 };
 
 export function DayCell({
@@ -28,6 +30,7 @@ export function DayCell({
   calendars,
   onEventClick,
   onDayClick,
+  dailyExpenseTotal,
 }: Props) {
   const isoDate = date.toISOString().slice(0, 10);
   const day = date.getDay();
@@ -52,7 +55,7 @@ export function DayCell({
       className="h-full flex flex-col p-1.5 cursor-pointer"
       onClick={onDayClick}
     >
-      {/* 날짜 + 음력 */}
+      {/* 날짜 + 음력 + 지출 합계 */}
       <div className="flex items-baseline gap-1">
         <span className={`text-sm font-semibold ${dayNumberColor}`}>
           {date.getDate()}
@@ -60,6 +63,11 @@ export function DayCell({
         {lunar && (
           <span className="text-[10px] text-muted-foreground whitespace-nowrap">
             ·음 {lunar.month}/1
+          </span>
+        )}
+        {dailyExpenseTotal != null && dailyExpenseTotal > 0 && (
+          <span className="ml-auto text-[10px] font-medium tabular-nums text-foreground/70">
+            {dailyExpenseTotal.toLocaleString("ko-KR")}원
           </span>
         )}
       </div>
