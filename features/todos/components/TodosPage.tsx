@@ -38,9 +38,13 @@ export function TodosPage({ todayIso, todayTodos, overdueTodos }: Props) {
               variant="overdue"
             />
           )}
-          {todayTodos.length > 0 && (
-            <TodoSection label="오늘" todos={todayTodos} todayIso={todayIso} />
-          )}
+          {/* 오늘 섹션은 밀린 항목이 있더라도 항상 표시 (빈 상태엔 안내문) */}
+          <TodoSection
+            label="오늘"
+            todos={todayTodos}
+            todayIso={todayIso}
+            emptyMessage="오늘 할 일이 없어요"
+          />
         </>
       )}
 
