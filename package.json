@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
     "db:types": "supabase gen types typescript --linked --schema public > types/database.ts",
     "db:types:local": "supabase gen types typescript --local --schema public > types/database.ts",
     "db:link": "supabase link"
@@ -35,14 +38,20 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^20.19.41",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/ui": "^4.1.7",
     "eslint": "^8",
     "eslint-config-next": "14.2.18",
+    "jsdom": "^29.1.1",
     "postcss": "^8",
     "supabase": "^2.101.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }
