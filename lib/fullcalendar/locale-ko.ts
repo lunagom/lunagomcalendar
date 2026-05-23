@@ -2,7 +2,12 @@ import koLocale from "@fullcalendar/core/locales/ko";
 
 export const FC_KO = {
   ...koLocale,
-  buttonText: { ...koLocale.buttonText, today: "오늘" },
+  buttonText: {
+    ...koLocale.buttonText,
+    today: "오늘",
+    prev: "이전",
+    next: "다음",
+  },
 };
 
 /** FullCalendar 공통 옵션. */

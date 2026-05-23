@@ -87,7 +87,7 @@ export function DayView({ calendars, events, initialDate }: Props) {
         slotMaxTime="24:00:00"
         scrollTime="08:00:00"
         nowIndicator
-        headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
+        headerToolbar={{ left: "prev,next today", center: "", right: "" }}
         {...FC_COMMON}
       />
       {detailEvent && (
