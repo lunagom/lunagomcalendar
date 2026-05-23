@@ -28,6 +28,11 @@ const budgetInputSchema = z.object({
   limit_amount: z.number().int().min(0),
 });
 
+const monthlyTargetInputSchema = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  amount: z.number().int().min(0),
+});
+
 export type ActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
@@ -167,6 +172,42 @@ export async function deleteBudget(id: string): Promise<ActionResult> {
   await getUserId();
   const supabase = createClient();
   const { error } = await supabase.from("budgets").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/expense");
+  return { ok: true, data: undefined };
+}
+
+// === Monthly Target Actions ===
+
+/** (user_id, month) UNIQUE 위에 upsert. 월 전체 목표 지출액 설정. */
+export async function setMonthlyTarget(
+  input: unknown,
+): Promise<ActionResult> {
+  const parsed = monthlyTargetInputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase.from("monthly_targets").upsert(
+    { ...parsed.data, user_id: userId },
+    { onConflict: "user_id,month" },
+  );
+
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/expense");
+  return { ok: true, data: undefined };
+}
+
+export async function deleteMonthlyTarget(
+  month: string,
+): Promise<ActionResult> {
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("monthly_targets")
+    .delete()
+    .eq("user_id", userId)
+    .eq("month", month);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/expense");
   return { ok: true, data: undefined };

@@ -7,6 +7,8 @@ export type ExpenseRow = Database["public"]["Tables"]["expenses"]["Row"];
 export type SubscriptionRow =
   Database["public"]["Tables"]["subscriptions"]["Row"];
 export type BudgetRow = Database["public"]["Tables"]["budgets"]["Row"];
+export type MonthlyTargetRow =
+  Database["public"]["Tables"]["monthly_targets"]["Row"];
 
 /** 'YYYY-MM' 의 첫날 00:00 ~ 다음달 00:00 (로컬 시간 → ISO). */
 function monthRange(month: string): { startIso: string; endIso: string } {
@@ -75,6 +77,23 @@ export async function getSubscriptions(): Promise<SubscriptionRow[]> {
     .order("billing_day");
   if (error) throw error;
   return data ?? [];
+}
+
+/**
+ * 특정 월의 전체 목표 지출액. 없으면 null.
+ * UI 의 헤더 위젯에서 수정 input 의 초기값으로 사용.
+ */
+export async function getMonthlyTarget(
+  month: string,
+): Promise<MonthlyTargetRow | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("monthly_targets")
+    .select("*")
+    .eq("month", month)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 /** 특정 월의 예산 목록. */

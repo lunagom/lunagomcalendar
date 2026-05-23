@@ -11,12 +11,15 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
-import type { ExpenseRow } from "../server/queries";
+import { MonthTargetWidget } from "./MonthTargetWidget";
+import type { ExpenseRow, MonthlyTargetRow } from "../server/queries";
 
 type Props = {
   currentMonth: string; // "YYYY-MM"
   expenses: ExpenseRow[];
   usedCategories: string[];
+  target: MonthlyTargetRow | null;
+  actual: number;
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -34,6 +37,8 @@ export function ExpensePage({
   currentMonth,
   expenses,
   usedCategories,
+  target,
+  actual,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -49,7 +54,19 @@ export function ExpensePage({
 
   return (
     <div className="h-full flex flex-col">
-      <header className="flex items-center justify-between gap-2 px-4 py-3 border-b">
+      <header className="flex items-center gap-2 px-4 py-3 border-b">
+        {/* 좌측: 오늘 버튼 */}
+        <div className="flex-1 flex items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToday}
+            disabled={isThisMonth}
+          >
+            오늘
+          </Button>
+        </div>
+        {/* 가운데: 월 라벨 + prev/next */}
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -69,14 +86,14 @@ export function ExpensePage({
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={goToday}
-          disabled={isThisMonth}
-        >
-          오늘
-        </Button>
+        {/* 우측: 월 목표 + 실제 */}
+        <div className="flex-1 flex justify-end">
+          <MonthTargetWidget
+            month={currentMonth}
+            target={target}
+            actual={actual}
+          />
+        </div>
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-4">
