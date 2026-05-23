@@ -1,6 +1,7 @@
 import { Sidebar } from "./sidebar";
 import { MobileTabbar } from "./mobile-tabbar";
 import { Header } from "./header";
+import type { CalendarRow } from "@/features/calendar/server/queries";
 
 export type AppShellUser = {
   id: string;
@@ -20,14 +21,16 @@ export type AppShellUser = {
  */
 export function AppShell({
   user,
+  calendars,
   children,
 }: {
   user: AppShellUser;
+  calendars: CalendarRow[];
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-dvh bg-background">
-      <Sidebar user={user} />
+      <Sidebar user={user} calendars={calendars} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header user={user} />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -10,13 +11,28 @@ import { navItems } from "@/lib/nav";
 import { LunabearMark } from "./lunabear-mark";
 import { SidebarUserCard } from "./sidebar-user-card";
 import type { AppShellUser } from "./app-shell";
+import type { CalendarRow } from "@/features/calendar/server/queries";
+import { EventModal } from "@/features/calendar/components/EventModal";
+
+function todayIso(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 /**
  * 데스크톱 좌측 사이드바.
  * 모바일에서는 하단 탭바(MobileTabbar)로 대체되므로 md: 이상에서만 노출.
  */
-export function Sidebar({ user }: { user: AppShellUser }) {
+export function Sidebar({
+  user,
+  calendars,
+}: {
+  user: AppShellUser;
+  calendars: CalendarRow[];
+}) {
   const pathname = usePathname();
+  const [createOpen, setCreateOpen] = useState(false);
+  const canCreate = calendars.length > 0;
 
   return (
     <aside
@@ -34,12 +50,13 @@ export function Sidebar({ user }: { user: AppShellUser }) {
         </p>
       </div>
 
-      {/* 새 일정 — 1·2단계엔 비활성, 캘린더 단계에서 모달 */}
+      {/* 새 일정 — 클릭 시 EventModal 오픈 (오늘 날짜 prefill) */}
       <Button
         size="sm"
         className="mb-2 h-9 w-full justify-start rounded-lg gap-2 font-medium"
-        disabled
-        aria-label="새 일정 추가 (준비 중)"
+        disabled={!canCreate}
+        aria-label="새 일정 추가"
+        onClick={() => setCreateOpen(true)}
       >
         <Plus className="h-4 w-4" />새 일정
       </Button>
@@ -77,6 +94,15 @@ export function Sidebar({ user }: { user: AppShellUser }) {
       </nav>
 
       <SidebarUserCard user={user} />
+
+      {canCreate && (
+        <EventModal
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          calendars={calendars}
+          defaultDate={todayIso()}
+        />
+      )}
     </aside>
   );
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/layout/app-shell";
+import { getCalendars } from "@/features/calendar/server/queries";
 
 /**
  * 로그인 사용자만 접근하는 메인 앱 영역.
@@ -19,12 +20,13 @@ export default async function AppLayout({
 
   if (!user) redirect("/login");
 
-  // profile 조회 — 사이드바·헤더에서 사용
+  // profile + 캘린더 — 사이드바·헤더·새 일정 모달에서 사용
   const { data: profile } = await supabase
     .from("profiles")
     .select("nickname, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
+  const calendars = await getCalendars();
 
   return (
     <AppShell
@@ -34,6 +36,7 @@ export default async function AppLayout({
         nickname: profile?.nickname ?? null,
         avatarUrl: profile?.avatar_url ?? null,
       }}
+      calendars={calendars}
     >
       {children}
     </AppShell>
