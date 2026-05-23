@@ -6,16 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:types": "supabase gen types typescript --linked --schema public > types/database.ts",
+    "db:types:local": "supabase gen types typescript --local --schema public > types/database.ts",
+    "db:link": "supabase link"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.106.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^0.460.0",
     "next": "14.2.18",
     "next-themes": "^0.4.6",
     "react": "^18",
@@ -33,6 +41,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.18",
     "postcss": "^8",
+    "supabase": "^2.101.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

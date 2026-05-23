@@ -2,6 +2,13 @@ import { Sidebar } from "./sidebar";
 import { MobileTabbar } from "./mobile-tabbar";
 import { Header } from "./header";
 
+export type AppShellUser = {
+  id: string;
+  email: string;
+  nickname: string | null;
+  avatarUrl: string | null;
+};
+
 /**
  * 전체 화면 골격.
  *   ┌──────────────────────────────┐
@@ -11,12 +18,18 @@ import { Header } from "./header";
  *   └──────────────────────────────┘
  *   모바일은 Sidebar 자리에 아무것도 없고 하단 MobileTabbar.
  */
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  user,
+  children,
+}: {
+  user: AppShellUser;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-dvh bg-background">
-      <Sidebar />
+      <Sidebar user={user} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
+        <Header user={user} />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
       </div>
       <MobileTabbar />

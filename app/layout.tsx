@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { AppShell } from "@/components/layout/app-shell";
 
 import "./globals.css";
 
@@ -36,7 +35,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppShell>{children}</AppShell>
+          {children}
         </ThemeProvider>
       </body>
     </html>

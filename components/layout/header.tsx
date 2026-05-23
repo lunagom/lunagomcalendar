@@ -6,14 +6,15 @@ import { Input } from "@/components/ui/input";
 import { LunabearMark } from "./lunabear-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
+import type { AppShellUser } from "./app-shell";
 
 /**
  * 메인 영역 상단 헤더.
- * - 모바일: 좌측에 로고(사이드바 대신) + 우측 액션
- * - 데스크톱: 좌측에 검색 입력 + 우측 액션
- * 1단계에서 검색은 placeholder, 다음 단계에 cmdk 등으로 교체.
+ * - 모바일: 좌측 로고 (사이드바 대체) + 우측 액션
+ * - 데스크톱: 검색 입력 + 우측 액션
+ * 검색은 캘린더 구현 단계에서 cmdk 등으로 교체.
  */
-export function Header() {
+export function Header({ user }: { user: AppShellUser }) {
   return (
     <header
       className="
@@ -22,12 +23,10 @@ export function Header() {
         px-4 md:px-6
       "
     >
-      {/* 모바일 전용 로고 — 사이드바를 대체 */}
       <div className="md:hidden">
         <LunabearMark size="sm" />
       </div>
 
-      {/* 검색 (데스크톱에서 강조, 모바일은 축소) */}
       <div className="ml-auto md:ml-0 md:flex-1 md:max-w-md">
         <label className="relative flex items-center">
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -48,7 +47,7 @@ export function Header() {
 
       <div className="ml-auto flex items-center gap-1.5">
         <ThemeToggle />
-        <UserMenu />
+        <UserMenu user={user} />
       </div>
     </header>
   );

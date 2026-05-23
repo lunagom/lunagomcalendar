@@ -8,12 +8,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/lib/nav";
 import { LunabearMark } from "./lunabear-mark";
+import { SidebarUserCard } from "./sidebar-user-card";
+import type { AppShellUser } from "./app-shell";
 
 /**
  * 데스크톱 좌측 사이드바.
  * 모바일에서는 하단 탭바(MobileTabbar)로 대체되므로 md: 이상에서만 노출.
  */
-export function Sidebar() {
+export function Sidebar({ user }: { user: AppShellUser }) {
   const pathname = usePathname();
 
   return (
@@ -32,7 +34,7 @@ export function Sidebar() {
         </p>
       </div>
 
-      {/* 새 일정 — 1단계엔 비활성, 다음 단계에서 모달 */}
+      {/* 새 일정 — 1·2단계엔 비활성, 캘린더 단계에서 모달 */}
       <Button
         size="sm"
         className="mb-2 h-9 w-full justify-start rounded-lg gap-2 font-medium"
@@ -74,12 +76,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* 풋터 */}
-      <div className="mt-auto px-2 pt-4">
-        <p className="text-[11px] text-muted-foreground">
-          v0.1.0 · 초기 셋업
-        </p>
-      </div>
+      <SidebarUserCard user={user} />
     </aside>
   );
 }
