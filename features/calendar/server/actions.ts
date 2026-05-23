@@ -21,6 +21,8 @@ const eventInputSchema = z.object({
   is_lunar: z.boolean().default(false),
   lunar_month: z.number().int().min(1).max(12).nullable().optional(),
   lunar_day: z.number().int().min(1).max(30).nullable().optional(),
+  expected_amount: z.number().int().min(0).nullable().optional(),
+  expense_category: z.string().min(1).max(50).nullable().optional(),
 });
 
 export type EventInput = z.infer<typeof eventInputSchema>;

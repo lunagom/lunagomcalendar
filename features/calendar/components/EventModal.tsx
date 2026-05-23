@@ -15,7 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { EmojiPicker } from "./EmojiPicker";
-import { PRESETS, getTextColor } from "@/lib/colors";
+import {
+  PRESETS,
+  EXPENSE_CATEGORY_PRESETS,
+  getTextColor,
+} from "@/lib/colors";
 import { toLunar } from "@/lib/lunar";
 import { createEvent, updateEvent } from "../server/actions";
 import type { CalendarRow, EventRow } from "../server/queries";
@@ -60,6 +64,15 @@ export function EventModal({
   const [location, setLocation] = useState(initial?.location ?? "");
   const [memo, setMemo] = useState(initial?.memo ?? "");
   const [isLunar, setIsLunar] = useState(initial?.is_lunar ?? false);
+  const [expectedAmount, setExpectedAmount] = useState<string>(
+    initial?.expected_amount != null ? String(initial.expected_amount) : "",
+  );
+  const [expenseCategory, setExpenseCategory] = useState<string>(
+    initial?.expense_category ?? "",
+  );
+  const [showExpense, setShowExpense] = useState(
+    initial?.expected_amount != null || !!initial?.expense_category,
+  );
 
   const handleSubmit = () => {
     if (!title.trim()) {
@@ -76,6 +89,11 @@ export function EventModal({
       lunar_day = l.day;
     }
 
+    const expectedAmountNum =
+      expectedAmount && Number(expectedAmount) > 0
+        ? parseInt(expectedAmount, 10)
+        : null;
+
     const payload = {
       title: title.trim(),
       calendar_id: calendarId,
@@ -89,6 +107,8 @@ export function EventModal({
       is_lunar: isLunar,
       lunar_month,
       lunar_day,
+      expected_amount: expectedAmountNum,
+      expense_category: expenseCategory.trim() || null,
     };
 
     startTransition(async () => {
@@ -231,6 +251,60 @@ export function EventModal({
               placeholder="선택사항"
             />
           </div>
+
+          {/* 예상 지출 (옵션) */}
+          {showExpense ? (
+            <div className="space-y-2 rounded-md border p-3 bg-muted/30">
+              <div className="flex items-center">
+                <span className="text-sm font-medium">예상 지출</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowExpense(false);
+                    setExpectedAmount("");
+                    setExpenseCategory("");
+                  }}
+                  className="ml-auto text-xs text-muted-foreground hover:text-foreground"
+                >
+                  삭제
+                </button>
+              </div>
+              <div>
+                <Label htmlFor="expected-amount">금액 (원)</Label>
+                <Input
+                  id="expected-amount"
+                  type="number"
+                  min={0}
+                  value={expectedAmount}
+                  onChange={(e) => setExpectedAmount(e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="expense-category">카테고리</Label>
+                <Input
+                  id="expense-category"
+                  list="event-expense-category-presets"
+                  value={expenseCategory}
+                  onChange={(e) => setExpenseCategory(e.target.value)}
+                  placeholder="식비 / 교통 / 쇼핑 / 구독 / 경조사 / 기타"
+                />
+                <datalist id="event-expense-category-presets">
+                  {EXPENSE_CATEGORY_PRESETS.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowExpense(true)}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              + 예상 지출 추가
+            </button>
+          )}
 
           <div className="flex items-center gap-2">
             <Checkbox
