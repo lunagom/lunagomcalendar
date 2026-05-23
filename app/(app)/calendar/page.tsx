@@ -1,22 +1,39 @@
-import { Calendar } from "lucide-react";
-
-import { PlaceholderPage } from "@/components/placeholder-page";
+import { CalendarShell } from "@/features/calendar/components/CalendarShell";
+import { MonthGrid } from "@/features/calendar/components/MonthGrid";
+import {
+  getCalendars,
+  getEventsForMonth,
+} from "@/features/calendar/server/queries";
+import { getTodosForMonth } from "@/features/todos/server/queries";
 
 export const metadata = { title: "캘린더" };
 
-export default function CalendarPage() {
+type Props = { searchParams: { month?: string } };
+
+function defaultMonth(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export default async function CalendarPage({ searchParams }: Props) {
+  const month = searchParams.month ?? defaultMonth();
+  const [calendars, events, todos] = await Promise.all([
+    getCalendars(),
+    getEventsForMonth(month),
+    getTodosForMonth(month),
+  ]);
+
+  const [year, monthStr] = month.split("-");
+  const monthLabel = `${year}년 ${parseInt(monthStr, 10)}월`;
+
   return (
-    <PlaceholderPage
-      icon={Calendar}
-      subtitle="Calendar"
-      title="캘린더가 들어갈 자리"
-      description="월간 그리드 뷰, 일정 등록, 자연어 입력, 멀티 캘린더 통합이 다음 단계에서 구현됩니다."
-      next={[
-        "월간 / 주간 / 일간 뷰",
-        "자연어 일정 등록",
-        "구글·네이버·카카오톡 동기화",
-        "음력 · 공휴일 · 24절기",
-      ]}
-    />
+    <CalendarShell calendars={calendars} monthLabel={monthLabel}>
+      <MonthGrid
+        calendars={calendars}
+        events={events}
+        todos={todos}
+        initialMonth={month}
+      />
+    </CalendarShell>
   );
 }
