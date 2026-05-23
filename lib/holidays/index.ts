@@ -27,3 +27,19 @@ export function findHoliday(isoDate: string): Holiday | undefined {
   const year = Number(isoDate.slice(0, 4));
   return getHolidays(year).find((h) => h.date === isoDate);
 }
+
+/** YYYY-MM-DD 가 법정 공휴일인지 (24절기는 false). */
+export function isPublicHoliday(isoDate: string): boolean {
+  const h = findHoliday(isoDate);
+  return Boolean(h?.isPublicHoliday);
+}
+
+/** YYYY-MM-DD 의 24절기 이름. 절기 아니면 null. */
+export function get24SolarTerm(isoDate: string): string | null {
+  const year = Number(isoDate.slice(0, 4));
+  // 같은 날짜에 공휴일 + 절기가 있을 수 있어서, isPublicHoliday=false 행만 찾는다.
+  const match = getHolidays(year).find(
+    (h) => h.date === isoDate && !h.isPublicHoliday,
+  );
+  return match?.name ?? null;
+}
