@@ -29,6 +29,10 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     getMonthlyTarget(month),
   ]);
   const actual = expenses.reduce((s, e) => s + e.amount, 0);
+  const totalsByCategory: Record<string, number> = {};
+  for (const e of expenses) {
+    totalsByCategory[e.category] = (totalsByCategory[e.category] ?? 0) + e.amount;
+  }
   return (
     <ExpensePage
       currentMonth={month}
@@ -36,6 +40,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       usedCategories={usedCategories}
       target={target}
       actual={actual}
+      totalsByCategory={totalsByCategory}
     />
   );
 }

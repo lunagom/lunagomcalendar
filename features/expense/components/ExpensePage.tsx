@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/tabs";
 import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
 import { MonthTargetWidget } from "./MonthTargetWidget";
+import { CategoryTotalsBar } from "./CategoryTotalsBar";
 import type { ExpenseRow, MonthlyTargetRow } from "../server/queries";
 
 type Props = {
@@ -20,6 +21,7 @@ type Props = {
   usedCategories: string[];
   target: MonthlyTargetRow | null;
   actual: number;
+  totalsByCategory: Record<string, number>;
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -39,6 +41,7 @@ export function ExpensePage({
   usedCategories,
   target,
   actual,
+  totalsByCategory,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -104,7 +107,8 @@ export function ExpensePage({
             <TabsTrigger value="budgets">예산</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="monthly" className="mt-4">
+          <TabsContent value="monthly" className="mt-4 space-y-4">
+            <CategoryTotalsBar totals={totalsByCategory} />
             <ExpenseMonthGrid
               month={currentMonth}
               expenses={expenses}
