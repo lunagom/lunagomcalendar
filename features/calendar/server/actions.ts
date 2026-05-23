@@ -105,3 +105,67 @@ export async function moveEvent(
   revalidatePath("/day");
   return { ok: true, data: undefined };
 }
+
+// === Calendar Actions ===
+
+const calendarInputSchema = z.object({
+  name: z.string().min(1).max(50),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+});
+
+export async function createCalendar(
+  input: unknown,
+): Promise<ActionResult<{ id: string }>> {
+  const parsed = calendarInputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("calendars")
+    .insert({ ...parsed.data, user_id: userId, is_default: false })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/calendar");
+  return { ok: true, data: { id: data.id } };
+}
+
+export async function updateCalendar(
+  id: string,
+  input: unknown,
+): Promise<ActionResult> {
+  const parsed = calendarInputSchema.partial().safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("calendars")
+    .update(parsed.data)
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
+
+export async function deleteCalendar(id: string): Promise<ActionResult> {
+  await getUserId();
+  const supabase = createClient();
+
+  // 기본 캘린더는 삭제 금지
+  const { data: cal } = await supabase
+    .from("calendars")
+    .select("is_default")
+    .eq("id", id)
+    .single();
+  if (cal?.is_default) return { ok: false, error: "기본 캘린더는 삭제할 수 없습니다" };
+
+  const { error } = await supabase.from("calendars").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
