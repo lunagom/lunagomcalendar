@@ -14,7 +14,9 @@ import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
 import { MonthTargetWidget } from "./MonthTargetWidget";
 import { CategoryTotalsBar } from "./CategoryTotalsBar";
 import { SubscriptionTabContent } from "./SubscriptionTabContent";
+import { BudgetTabContent } from "./BudgetTabContent";
 import type {
+  BudgetRow,
   ExpenseRow,
   MonthlyTargetRow,
   SubscriptionRow,
@@ -28,6 +30,7 @@ type Props = {
   actual: number;
   totalsByCategory: Record<string, number>;
   subscriptions: SubscriptionRow[];
+  budgets: BudgetRow[];
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -49,6 +52,7 @@ export function ExpensePage({
   actual,
   totalsByCategory,
   subscriptions,
+  budgets,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -131,9 +135,12 @@ export function ExpensePage({
           </TabsContent>
 
           <TabsContent value="budgets" className="mt-4">
-            <p className="text-sm text-muted-foreground py-8 text-center">
-              카테고리별 예산 설정이 들어갈 자리 (단위 E 에서 구현)
-            </p>
+            <BudgetTabContent
+              month={currentMonth}
+              budgets={budgets}
+              totalsByCategory={totalsByCategory}
+              usedCategories={usedCategories}
+            />
           </TabsContent>
         </Tabs>
       </main>

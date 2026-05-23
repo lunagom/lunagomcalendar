@@ -1,5 +1,6 @@
 import { ExpensePage } from "@/features/expense/components/ExpensePage";
 import {
+  getBudgetsForMonth,
   getExpensesForMonth,
   getMonthlyTarget,
   getSubscriptions,
@@ -24,12 +25,14 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     searchParams.month && isValidMonth(searchParams.month)
       ? searchParams.month
       : thisMonthIso();
-  const [expenses, usedCategories, target, subscriptions] = await Promise.all([
-    getExpensesForMonth(month),
-    getUsedCategories(),
-    getMonthlyTarget(month),
-    getSubscriptions(),
-  ]);
+  const [expenses, usedCategories, target, subscriptions, budgets] =
+    await Promise.all([
+      getExpensesForMonth(month),
+      getUsedCategories(),
+      getMonthlyTarget(month),
+      getSubscriptions(),
+      getBudgetsForMonth(month),
+    ]);
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
   // 카테고리 칩도 같은 기준으로 — 각 구독의 category 에 amount 누적
   const expenseSum = expenses.reduce((s, e) => s + e.amount, 0);
@@ -56,6 +59,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       actual={actual}
       totalsByCategory={totalsByCategory}
       subscriptions={subscriptions}
+      budgets={budgets}
     />
   );
 }
