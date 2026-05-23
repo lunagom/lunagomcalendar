@@ -147,7 +147,7 @@ export function ExpenseModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
           {/* 자연어 입력 — 생성 모드에서만 */}
           {!initial && (
             <div>
