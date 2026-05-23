@@ -16,7 +16,8 @@ type Props = {
   todos: TaskRow[];
   calendars: CalendarRow[];
   onEventClick: (e: EventRow) => void;
-  onEmptyClick: () => void;
+  /** 셀(빈 영역·날짜·배지) 클릭 — DayDetailPopup 열기. 이벤트 막대/체크박스 자체 클릭은 stopPropagation 처리됨. */
+  onDayClick: () => void;
 };
 
 export function DayCell({
@@ -26,21 +27,21 @@ export function DayCell({
   todos,
   calendars,
   onEventClick,
-  onEmptyClick,
+  onDayClick,
 }: Props) {
   const isoDate = date.toISOString().slice(0, 10);
   const day = date.getDay();
   const lunar = isLunarFirstDay(date) ? toLunar(date) : null;
-  const dayNumberColor =
-    !isCurrentMonth
-      ? "text-muted-foreground/50"
-      : isPublicHoliday(isoDate) || day === 0
+  const dayNumberColor = !isCurrentMonth
+    ? "text-muted-foreground/50"
+    : isPublicHoliday(isoDate) || day === 0
       ? "text-red-600 dark:text-red-400"
       : day === 6
-      ? "text-[#5b6cff]"
-      : "text-foreground";
+        ? "text-[#5b6cff]"
+        : "text-foreground";
 
-  const calColor = (id: string) => calendars.find((c) => c.id === id)?.color ?? "#888";
+  const calColor = (id: string) =>
+    calendars.find((c) => c.id === id)?.color ?? "#888";
   const shownEvents = events.slice(0, 3);
   const moreCount = Math.max(0, events.length - 3);
   const shownTodos = todos.slice(0, 2);
@@ -49,9 +50,7 @@ export function DayCell({
   return (
     <div
       className="h-full flex flex-col p-1.5 cursor-pointer"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onEmptyClick();
-      }}
+      onClick={onDayClick}
     >
       {/* 윗줄: 날짜 + 음력 + 배지 */}
       <div className="flex items-baseline gap-1.5 mb-1">
@@ -110,6 +109,7 @@ function TodoMiniRow({ todo }: { todo: TaskRow }) {
       <Checkbox
         checked={done}
         onCheckedChange={(v) => void toggleTodo(todo.id, Boolean(v))}
+        onClick={(e) => e.stopPropagation()}
         className="h-3 w-3"
       />
       <span

@@ -5,15 +5,19 @@ import FullCalendar from "@fullcalendar/react";
 import type { default as FullCalendarInst } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { EventInput, DateSelectArg, EventDropArg, EventClickArg } from "@fullcalendar/core";
+import type {
+  EventInput,
+  EventDropArg,
+  EventClickArg,
+} from "@fullcalendar/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
 import { DayCell } from "./DayCell";
 import { MonthNavigation } from "./MonthNavigation";
-import { EventModal } from "./EventModal";
 import { EventDetailDialog } from "./EventDetailDialog";
+import { DayDetailPopup } from "./DayDetailPopup";
 import { moveEvent } from "../server/actions";
 import { useCalendarUIStore } from "../store/calendar-ui";
 import type { CalendarRow, EventRow } from "../server/queries";
@@ -32,7 +36,7 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hiddenIds = useCalendarUIStore((s) => s.hiddenCalendarIds);
 
-  const [createOpenForDate, setCreateOpenForDate] = useState<string | null>(null);
+  const [dayDetailDate, setDayDetailDate] = useState<Date | null>(null);
   const [detailEvent, setDetailEvent] = useState<EventRow | null>(null);
 
   const visibleEvents = useMemo(
@@ -85,11 +89,6 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
     router.push(`/calendar?month=${m}`);
   };
 
-  const handleDateClick = (info: DateSelectArg) => {
-    const isoDate = info.startStr.slice(0, 10);
-    setCreateOpenForDate(isoDate);
-  };
-
   const handleEventClick = (info: EventClickArg) => {
     const ev = info.event.extendedProps.rawEvent as EventRow;
     setDetailEvent(ev);
@@ -112,6 +111,10 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
     }
   };
 
+  const popupIsoDate = dayDetailDate
+    ? dayDetailDate.toISOString().slice(0, 10)
+    : null;
+
   return (
     <div ref={containerRef} className="h-full">
       <MonthNavigation
@@ -126,13 +129,13 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
         initialView="dayGridMonth"
         initialDate={`${initialMonth}-01`}
         editable
-        selectable
-        select={handleDateClick}
         eventClick={handleEventClick}
         eventDrop={handleEventDrop}
         events={fcEvents}
         headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
-        dayCellContent={(arg) => <DayCellPortalSlot id={arg.date.toISOString().slice(0, 10)} />}
+        dayCellContent={(arg) => (
+          <DayCellPortalSlot id={arg.date.toISOString().slice(0, 10)} />
+        )}
         {...FC_COMMON}
       />
       {/* DayCell 들을 portal 로 그린다 (각 셀의 .fc-daygrid-day-frame 안) */}
@@ -141,15 +144,16 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
         eventsByDate={eventsByDate}
         todosByDate={todosByDate}
         onEventClick={setDetailEvent}
-        onEmptyClick={setCreateOpenForDate}
+        onDayClick={(isoDate) => setDayDetailDate(new Date(isoDate))}
       />
 
-      {createOpenForDate && (
-        <EventModal
-          open
-          onOpenChange={(v) => !v && setCreateOpenForDate(null)}
+      {popupIsoDate && (
+        <DayDetailPopup
+          date={dayDetailDate}
+          events={eventsByDate.get(popupIsoDate) ?? []}
+          todos={todosByDate.get(popupIsoDate) ?? []}
           calendars={calendars}
-          defaultDate={createOpenForDate}
+          onClose={() => setDayDetailDate(null)}
         />
       )}
       {detailEvent && (
@@ -172,27 +176,30 @@ function DayCellRenderer({
   eventsByDate,
   todosByDate,
   onEventClick,
-  onEmptyClick,
+  onDayClick,
 }: {
   calendars: CalendarRow[];
   eventsByDate: Map<string, EventRow[]>;
   todosByDate: Map<string, TaskRow[]>;
   onEventClick: (e: EventRow) => void;
-  onEmptyClick: (date: string) => void;
+  onDayClick: (date: string) => void;
 }) {
   // SSR 호환을 위해 클라이언트 마운트 후 portal
   if (typeof document === "undefined") return null;
-  const slots = Array.from(document.querySelectorAll<HTMLElement>("[data-cell-id]"));
+  const slots = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-cell-id]"),
+  );
   return (
     <>
       {slots.map((el) => {
         const isoDate = el.dataset.cellId!;
         const date = new Date(isoDate);
-        const cellMonth = (date.getMonth());
+        const cellMonth = date.getMonth();
         // currentMonth 판정: 부모 FullCalendar 의 viewed month 와 비교 — 간단화: title 에서 추출
         const titleEl = document.querySelector(".fc-toolbar-title");
         const titleStr = titleEl?.textContent ?? "";
-        const viewedMonth = parseInt(titleStr.match(/(\d{1,2})월/)?.[1] ?? "0", 10) - 1;
+        const viewedMonth =
+          parseInt(titleStr.match(/(\d{1,2})월/)?.[1] ?? "0", 10) - 1;
         const isCurrentMonth = viewedMonth === cellMonth;
         return createPortal(
           <DayCell
@@ -202,7 +209,7 @@ function DayCellRenderer({
             todos={todosByDate.get(isoDate) ?? []}
             calendars={calendars}
             onEventClick={onEventClick}
-            onEmptyClick={() => onEmptyClick(isoDate)}
+            onDayClick={() => onDayClick(isoDate)}
           />,
           el,
         );

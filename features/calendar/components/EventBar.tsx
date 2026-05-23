@@ -7,15 +7,22 @@ type Props = {
   emoji?: string | null;
   color: string; // hex
   onClick?: () => void;
+  /** true 면 텍스트 truncate 안 하고 줄바꿈 (팝업에서 사용) */
+  fullText?: boolean;
 };
 
-export function EventBar({ title, emoji, color, onClick }: Props) {
+export function EventBar({ title, emoji, color, onClick, fullText }: Props) {
   const textColor = getTextColor(color);
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="w-full text-left px-1.5 py-0.5 rounded text-[11px] truncate hover:opacity-80 transition"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
+      className={`w-full text-left px-2 py-1 rounded text-[11px] hover:opacity-80 transition ${
+        fullText ? "whitespace-normal break-words py-1.5" : "truncate"
+      }`}
       style={{ backgroundColor: color, color: textColor }}
     >
       {emoji ? `${emoji} ` : ""}
