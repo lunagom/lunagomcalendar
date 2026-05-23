@@ -1,0 +1,43 @@
+/* lib/fullcalendar/theme.css */
+.fc {
+  --fc-border-color: hsl(var(--border));
+  --fc-page-bg-color: transparent;
+  --fc-today-bg-color: hsl(var(--accent) / 0.4);
+  --fc-neutral-bg-color: transparent;
+  font-family: inherit;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 0.75rem;
+}
+
+/* 요일 헤더 */
+.fc .fc-col-header-cell-cushion {
+  padding: 0.5rem 0.25rem;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+.fc .fc-day-sun .fc-col-header-cell-cushion {
+  color: #d92d20;
+}
+.fc .fc-day-sat .fc-col-header-cell-cushion {
+  color: #5b6cff;
+}
+
+/* 다른 달 셀 흐리게 */
+.fc .fc-day-other {
+  opacity: 0.4;
+}
+
+.fc .fc-daygrid-day-number {
+  padding: 0.25rem;
+}
+
+/* 월 전환 시 살짝 fade + slide-in */
+.fc-view-harness > .fc-view {
+  animation: fc-month-in 0.18s ease-out;
+}
+@keyframes fc-month-in {
+  from { opacity: 0; transform: translateX(6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
