@@ -33,6 +33,18 @@
   padding: 0.25rem;
 }
 
+/* DayCell 컴포넌트가 frame 위에 absolute 로 렌더하므로 FC 기본 top/events/bottom 영역 숨김.
+   DnD 는 events 영역에 의존하지만 fcEvents 가 display:"none" 이라 빈 상태로 OK. */
+.fc .fc-daygrid-day-top,
+.fc .fc-daygrid-day-events,
+.fc .fc-daygrid-day-bottom {
+  visibility: hidden;
+  height: 0;
+}
+.fc .fc-daygrid-day-frame {
+  min-height: 7rem;
+}
+
 /* 월 전환 시 살짝 fade + slide-in */
 .fc-view-harness > .fc-view {
   animation: fc-month-in 0.18s ease-out;

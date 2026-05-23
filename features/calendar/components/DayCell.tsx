@@ -52,19 +52,20 @@ export function DayCell({
       className="h-full flex flex-col p-1.5 cursor-pointer"
       onClick={onDayClick}
     >
-      {/* 윗줄: 날짜 + 음력 + 배지 */}
-      <div className="flex items-baseline gap-1.5 mb-1">
+      {/* 날짜 + 음력 */}
+      <div className="flex items-baseline gap-1">
         <span className={`text-sm font-semibold ${dayNumberColor}`}>
           {date.getDate()}
         </span>
         {lunar && (
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
             ·음 {lunar.month}/1
           </span>
         )}
-        <span className="ml-auto">
-          <HolidayBadge isoDate={isoDate} />
-        </span>
+      </div>
+      {/* 공휴일/24절기 배지 — 셀 전체 너비 사용 */}
+      <div className="mb-1">
+        <HolidayBadge isoDate={isoDate} />
       </div>
 
       {/* 이벤트 막대 */}
