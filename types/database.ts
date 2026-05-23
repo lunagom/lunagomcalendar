@@ -76,6 +76,7 @@ export type Database = {
           calendar_id: string
           color: string | null
           created_at: string
+          emoji: string | null
           end_at: string
           expected_amount: number | null
           expense_category: string | null
@@ -95,6 +96,7 @@ export type Database = {
           calendar_id: string
           color?: string | null
           created_at?: string
+          emoji?: string | null
           end_at: string
           expected_amount?: number | null
           expense_category?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           calendar_id?: string
           color?: string | null
           created_at?: string
+          emoji?: string | null
           end_at?: string
           expected_amount?: number | null
           expense_category?: string | null
@@ -277,6 +280,39 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          emoji: string | null
+          id: string
+          scheduled_date: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          scheduled_date: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          scheduled_date?: string
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
