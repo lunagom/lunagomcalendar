@@ -21,11 +21,8 @@ export default async function DayPage({ searchParams }: Props) {
     getEventsForDay(date),
   ]);
 
-  const d = new Date(date);
-  const monthLabel = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-
   return (
-    <CalendarShell calendars={calendars} monthLabel={monthLabel}>
+    <CalendarShell calendars={calendars}>
       <DayView calendars={calendars} events={events} initialDate={date} />
     </CalendarShell>
   );

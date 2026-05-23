@@ -23,11 +23,8 @@ export default async function CalendarPage({ searchParams }: Props) {
     getTodosForMonth(month),
   ]);
 
-  const [year, monthStr] = month.split("-");
-  const monthLabel = `${year}년 ${parseInt(monthStr, 10)}월`;
-
   return (
-    <CalendarShell calendars={calendars} monthLabel={monthLabel}>
+    <CalendarShell calendars={calendars}>
       <MonthGrid
         calendars={calendars}
         events={events}

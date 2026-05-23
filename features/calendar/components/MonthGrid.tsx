@@ -241,7 +241,11 @@ export function MonthGrid({ calendars, events, todos, initialMonth }: Props) {
         datesSet={handleDatesSet}
         dayCellDidMount={handleDayCellDidMount}
         dayCellWillUnmount={handleDayCellWillUnmount}
-        headerToolbar={{ left: "prev,next today", center: "", right: "" }}
+        headerToolbar={{
+          left: "",
+          center: "prev,title,next",
+          right: "today",
+        }}
         {...FC_COMMON}
       />
 
