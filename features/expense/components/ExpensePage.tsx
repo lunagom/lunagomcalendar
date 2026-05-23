@@ -13,7 +13,12 @@ import {
 import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
 import { MonthTargetWidget } from "./MonthTargetWidget";
 import { CategoryTotalsBar } from "./CategoryTotalsBar";
-import type { ExpenseRow, MonthlyTargetRow } from "../server/queries";
+import { SubscriptionTabContent } from "./SubscriptionTabContent";
+import type {
+  ExpenseRow,
+  MonthlyTargetRow,
+  SubscriptionRow,
+} from "../server/queries";
 
 type Props = {
   currentMonth: string; // "YYYY-MM"
@@ -22,6 +27,7 @@ type Props = {
   target: MonthlyTargetRow | null;
   actual: number;
   totalsByCategory: Record<string, number>;
+  subscriptions: SubscriptionRow[];
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -42,6 +48,7 @@ export function ExpensePage({
   target,
   actual,
   totalsByCategory,
+  subscriptions,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -117,9 +124,10 @@ export function ExpensePage({
           </TabsContent>
 
           <TabsContent value="subscriptions" className="mt-4">
-            <p className="text-sm text-muted-foreground py-8 text-center">
-              구독 트래커가 들어갈 자리 (단위 D 에서 구현)
-            </p>
+            <SubscriptionTabContent
+              subscriptions={subscriptions}
+              usedCategories={usedCategories}
+            />
           </TabsContent>
 
           <TabsContent value="budgets" className="mt-4">

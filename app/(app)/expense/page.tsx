@@ -2,6 +2,7 @@ import { ExpensePage } from "@/features/expense/components/ExpensePage";
 import {
   getExpensesForMonth,
   getMonthlyTarget,
+  getSubscriptions,
   getUsedCategories,
 } from "@/features/expense/server/queries";
 
@@ -23,10 +24,11 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     searchParams.month && isValidMonth(searchParams.month)
       ? searchParams.month
       : thisMonthIso();
-  const [expenses, usedCategories, target] = await Promise.all([
+  const [expenses, usedCategories, target, subscriptions] = await Promise.all([
     getExpensesForMonth(month),
     getUsedCategories(),
     getMonthlyTarget(month),
+    getSubscriptions(),
   ]);
   const actual = expenses.reduce((s, e) => s + e.amount, 0);
   const totalsByCategory: Record<string, number> = {};
@@ -41,6 +43,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       target={target}
       actual={actual}
       totalsByCategory={totalsByCategory}
+      subscriptions={subscriptions}
     />
   );
 }
