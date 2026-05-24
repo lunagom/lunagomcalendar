@@ -20,28 +20,24 @@ function todayIso(): string {
 }
 
 /**
- * 데스크톱 좌측 사이드바.
- * 모바일에서는 하단 탭바(MobileTabbar)로 대체되므로 md: 이상에서만 노출.
+ * 사이드바 내용 — 데스크톱 좌측 사이드바와 모바일 드로어가 공유.
+ * `onNavigate` 는 모바일 드로어에서 메뉴 이동 / EventModal 닫힘 시 호출되어 시트를 닫는다.
  */
-export function Sidebar({
+export function SidebarBody({
   user,
   calendars,
+  onNavigate,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const [createOpen, setCreateOpen] = useState(false);
   const canCreate = calendars.length > 0;
 
   return (
-    <aside
-      className={cn(
-        "hidden md:flex md:w-60 lg:w-64 shrink-0",
-        "flex-col gap-2 border-r border-sidebar-border bg-sidebar",
-        "px-4 py-5"
-      )}
-    >
+    <>
       {/* 로고 */}
       <div className="px-2 pb-4">
         <LunabearMark size="md" />
@@ -74,6 +70,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 "group flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors",
                 active
@@ -98,11 +95,38 @@ export function Sidebar({
       {canCreate && (
         <EventModal
           open={createOpen}
-          onOpenChange={setCreateOpen}
+          onOpenChange={(open) => {
+            setCreateOpen(open);
+            if (!open) onNavigate?.();
+          }}
           calendars={calendars}
           defaultDate={todayIso()}
         />
       )}
+    </>
+  );
+}
+
+/**
+ * 데스크톱 좌측 사이드바. md 이상에서만 노출.
+ * 모바일에서는 Header 의 햄버거 → MobileDrawer 가 동일한 SidebarBody 를 렌더한다.
+ */
+export function Sidebar({
+  user,
+  calendars,
+}: {
+  user: AppShellUser;
+  calendars: CalendarRow[];
+}) {
+  return (
+    <aside
+      className={cn(
+        "hidden md:flex md:w-60 lg:w-64 shrink-0",
+        "flex-col gap-2 border-r border-sidebar-border bg-sidebar",
+        "px-4 py-5"
+      )}
+    >
+      <SidebarBody user={user} calendars={calendars} />
     </aside>
   );
 }

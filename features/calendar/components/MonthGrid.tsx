@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
 import { DayCell } from "./DayCell";
 import { MonthNavigation } from "./MonthNavigation";
+import { CalendarHeaderBar } from "./CalendarHeaderBar";
 import { EventDetailDialog } from "./EventDetailDialog";
 import { DayDetailPopup } from "./DayDetailPopup";
 import { moveEvent } from "../server/actions";
@@ -63,10 +64,11 @@ export function MonthGrid({
 
   const [dayDetailDate, setDayDetailDate] = useState<Date | null>(null);
   const [detailEvent, setDetailEvent] = useState<EventRow | null>(null);
-  const [viewedMonth, setViewedMonth] = useState(() => {
-    const [, m] = initialMonth.split("-");
-    return parseInt(m, 10) - 1;
+  const [viewedDate, setViewedDate] = useState<Date>(() => {
+    const [y, m] = initialMonth.split("-").map(Number);
+    return new Date(y, m - 1, 1);
   });
+  const viewedMonth = viewedDate.getMonth();
   const initialDatesSetRef = useRef(true);
 
   const visibleEvents = useMemo(
@@ -210,7 +212,7 @@ export function MonthGrid({
 
   const handleDatesSet = (arg: DatesSetArg) => {
     const currentStart = arg.view.currentStart;
-    setViewedMonth(currentStart.getMonth());
+    setViewedDate(currentStart);
     if (initialDatesSetRef.current) {
       initialDatesSetRef.current = false;
       return;
@@ -245,6 +247,8 @@ export function MonthGrid({
 
   const popupIsoDate = dayDetailDate ? isoOf(dayDetailDate) : null;
 
+  const monthLabel = `${viewedDate.getFullYear()}년 ${viewedDate.getMonth() + 1}월`;
+
   return (
     <div ref={containerRef} className="h-full">
       <MonthNavigation
@@ -252,6 +256,12 @@ export function MonthGrid({
         onNext={() => navigate(1)}
         onToday={() => navigate(0)}
         targetRef={containerRef}
+      />
+      <CalendarHeaderBar
+        label={monthLabel}
+        onPrev={() => navigate(-1)}
+        onNext={() => navigate(1)}
+        onToday={() => navigate(0)}
       />
       <FullCalendar
         ref={fcRef}
@@ -265,11 +275,7 @@ export function MonthGrid({
         datesSet={handleDatesSet}
         dayCellDidMount={handleDayCellDidMount}
         dayCellWillUnmount={handleDayCellWillUnmount}
-        headerToolbar={{
-          left: "",
-          center: "prev,title,next",
-          right: "today",
-        }}
+        headerToolbar={false}
         {...FC_COMMON}
       />
 

@@ -32,7 +32,7 @@ export function AppShell({
     <div className="flex min-h-dvh bg-background">
       <Sidebar user={user} calendars={calendars} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header user={user} />
+        <Header user={user} calendars={calendars} />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
       </div>
       <MobileTabbar />

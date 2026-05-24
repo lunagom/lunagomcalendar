@@ -20,7 +20,7 @@ export function EventBar({ title, emoji, color, onClick, fullText }: Props) {
         e.stopPropagation();
         onClick?.();
       }}
-      className={`w-full text-left px-2 py-1 rounded text-[11px] hover:opacity-80 transition ${
+      className={`w-full text-left px-1.5 py-1 rounded text-[10px] sm:text-[11px] sm:px-2 hover:opacity-80 transition ${
         fullText ? "whitespace-normal break-words py-1.5" : "truncate"
       }`}
       style={{ backgroundColor: color, color: textColor }}

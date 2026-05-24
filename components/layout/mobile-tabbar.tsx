@@ -4,14 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { navItems } from "@/lib/nav";
+import { mobileTabItems } from "@/lib/nav";
+import { useMobileDrawerStore } from "./mobile-drawer-store";
 
 /**
  * 모바일 하단 탭바. md 미만에서만 노출.
+ * 4개 고정: 캘린더 / 할 일 / 가계부 / 더보기.
+ * "더보기" 는 헤더 햄버거와 같은 드로어를 연다.
  * iOS 노치 대응을 위해 env(safe-area-inset-bottom) 적용.
  */
 export function MobileTabbar() {
   const pathname = usePathname();
+  const setDrawerOpen = useMobileDrawerStore((s) => s.setOpen);
 
   return (
     <nav
@@ -23,10 +27,31 @@ export function MobileTabbar() {
       aria-label="하단 메뉴"
     >
       <ul className="grid grid-cols-4">
-        {navItems.map((item) => {
+        {mobileTabItems.map((item) => {
+          const Icon = item.icon;
+
+          if (item.kind === "more") {
+            return (
+              <li key="more">
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(true)}
+                  className="flex h-14 w-full flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="더보기 메뉴 열기"
+                >
+                  <Icon
+                    className="h-[20px] w-[20px] text-muted-foreground"
+                    strokeWidth={1.8}
+                  />
+                  <span>{item.label}</span>
+                </button>
+              </li>
+            );
+          }
+
           const active =
             pathname === item.href || pathname.startsWith(item.href + "/");
-          const Icon = item.icon;
+
           return (
             <li key={item.href}>
               <Link

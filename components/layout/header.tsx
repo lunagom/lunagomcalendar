@@ -1,28 +1,69 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { LunabearMark } from "./lunabear-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
+import { SidebarBody } from "./sidebar";
+import { useMobileDrawerStore } from "./mobile-drawer-store";
 import type { AppShellUser } from "./app-shell";
+import type { CalendarRow } from "@/features/calendar/server/queries";
 
 /**
  * 메인 영역 상단 헤더.
- * - 모바일: 좌측 로고 (사이드바 대체) + 우측 액션
- * - 데스크톱: 검색 입력 + 우측 액션
- * 검색은 캘린더 구현 단계에서 cmdk 등으로 교체.
+ * - 모바일: 햄버거(드로어) + 로고 좌측, 우측 액션
+ * - 데스크톱: 검색 입력 + 우측 액션 (햄버거는 숨김)
  */
-export function Header({ user }: { user: AppShellUser }) {
+export function Header({
+  user,
+  calendars,
+}: {
+  user: AppShellUser;
+  calendars: CalendarRow[];
+}) {
+  const drawerOpen = useMobileDrawerStore((s) => s.open);
+  const setDrawerOpen = useMobileDrawerStore((s) => s.setOpen);
+
   return (
     <header
       className="
-        sticky top-0 z-30 flex h-14 items-center gap-3
+        sticky top-0 z-30 flex h-14 items-center gap-2
         border-b border-border bg-background/85 backdrop-blur
-        px-4 md:px-6
+        px-3 md:px-6
       "
     >
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden h-9 w-9"
+          aria-label="메뉴 열기"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <SheetContent className="px-4 py-5">
+          <SheetTitle className="sr-only">메뉴</SheetTitle>
+          <SheetDescription className="sr-only">
+            캘린더, 가계부, 공유 등 주요 메뉴
+          </SheetDescription>
+          <SidebarBody
+            user={user}
+            calendars={calendars}
+            onNavigate={() => setDrawerOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
+
       <div className="md:hidden">
         <LunabearMark size="sm" />
       </div>

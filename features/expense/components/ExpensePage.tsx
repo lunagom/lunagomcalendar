@@ -68,45 +68,85 @@ export function ExpensePage({
 
   return (
     <div className="h-full flex flex-col">
-      <header className="flex items-center gap-2 px-4 py-3 border-b">
-        {/* 좌측: 오늘 버튼 */}
-        <div className="flex-1 flex items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToday}
-            disabled={isThisMonth}
-          >
-            오늘
-          </Button>
+      <header className="px-4 py-3 border-b">
+        {/* 모바일: 2행 스택 — 1행 (오늘 + 월 네비), 2행 (월 목표 위젯) */}
+        <div className="flex flex-col gap-2 sm:hidden">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToday}
+              disabled={isThisMonth}
+            >
+              오늘
+            </Button>
+            <div className="ml-auto flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => goMonth(-1)}
+                aria-label="이전 달"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <h1 className="text-lg font-semibold px-1">{monthLabel}</h1>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => goMonth(1)}
+                aria-label="다음 달"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <MonthTargetWidget
+              month={currentMonth}
+              target={target}
+              actual={actual}
+            />
+          </div>
         </div>
-        {/* 가운데: 월 라벨 + prev/next */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => goMonth(-1)}
-            aria-label="이전 달"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-semibold px-1">{monthLabel}</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => goMonth(1)}
-            aria-label="다음 달"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-        {/* 우측: 월 목표 + 실제 */}
-        <div className="flex-1 flex justify-end">
-          <MonthTargetWidget
-            month={currentMonth}
-            target={target}
-            actual={actual}
-          />
+
+        {/* 데스크톱: 기존 3단 한 줄 — 좌(오늘) | 중(월 네비) | 우(위젯) */}
+        <div className="hidden sm:flex sm:items-center sm:gap-2">
+          <div className="flex-1 flex items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToday}
+              disabled={isThisMonth}
+            >
+              오늘
+            </Button>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => goMonth(-1)}
+              aria-label="이전 달"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-lg font-semibold px-1">{monthLabel}</h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => goMonth(1)}
+              aria-label="다음 달"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <MonthTargetWidget
+              month={currentMonth}
+              target={target}
+              actual={actual}
+            />
+          </div>
         </div>
       </header>
 

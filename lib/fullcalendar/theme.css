@@ -9,6 +9,38 @@
 
 .fc .fc-toolbar.fc-header-toolbar {
   margin-bottom: 0.75rem;
+  flex-wrap: nowrap !important;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+/* 좁은 폭에서도 타이틀이 prev/next 를 밀어내지 않도록 폰트 슬림 + 줄바꿈 금지 */
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0 0.25rem;
+}
+@media (min-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* prev/next 묶음을 컴팩트하게 */
+.fc .fc-toolbar .fc-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* center chunk (prev/title/next) 한 줄 강제 — grid 로 prev|title|next 3컬럼 고정 */
+.fc .fc-toolbar-chunk {
+  display: inline-grid !important;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
 /* 요일 헤더 */
@@ -42,7 +74,12 @@
   height: 0;
 }
 .fc .fc-daygrid-day-frame {
-  min-height: 7rem;
+  min-height: 5rem;
+}
+@media (min-width: 640px) {
+  .fc .fc-daygrid-day-frame {
+    min-height: 7rem;
+  }
 }
 
 /* 월 전환 시 살짝 fade + slide-in */

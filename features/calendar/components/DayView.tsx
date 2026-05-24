@@ -12,6 +12,7 @@ import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
 import { moveEvent } from "../server/actions";
 import { getTextColor } from "@/lib/colors";
 import { EventDetailDialog } from "./EventDetailDialog";
+import { CalendarHeaderBar } from "./CalendarHeaderBar";
 import { useState } from "react";
 import type { CalendarRow, EventRow } from "../server/queries";
 
@@ -70,8 +71,17 @@ export function DayView({ calendars, events, initialDate }: Props) {
     }
   };
 
+  const d = new Date(initialDate);
+  const dayLabel = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+
   return (
     <div className="h-full">
+      <CalendarHeaderBar
+        label={dayLabel}
+        onPrev={() => navigate(-1)}
+        onNext={() => navigate(1)}
+        onToday={() => navigate(0)}
+      />
       <FullCalendar
         ref={fcRef}
         plugins={[timeGridPlugin, interactionPlugin]}
@@ -87,11 +97,7 @@ export function DayView({ calendars, events, initialDate }: Props) {
         slotMaxTime="24:00:00"
         scrollTime="08:00:00"
         nowIndicator
-        headerToolbar={{
-          left: "",
-          center: "prev,title,next",
-          right: "today",
-        }}
+        headerToolbar={false}
         {...FC_COMMON}
       />
       {detailEvent && (
