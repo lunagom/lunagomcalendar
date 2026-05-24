@@ -1,7 +1,7 @@
 // features/calendar/components/DayCell.tsx
 "use client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EventBar } from "./EventBar";
+import { EventBar, type SpanRole } from "./EventBar";
 import { HolidayBadge } from "./HolidayBadge";
 import { isLunarFirstDay, toLunar } from "@/lib/lunar";
 import { isPublicHoliday } from "@/lib/holidays";
@@ -9,10 +9,12 @@ import { toggleTodo } from "@/features/todos/server/actions";
 import type { EventRow, CalendarRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
 
+export type DayCellEvent = { event: EventRow; spanRole: SpanRole };
+
 type Props = {
   date: Date;
   isCurrentMonth: boolean;
-  events: EventRow[];
+  events: DayCellEvent[];
   todos: TaskRow[];
   calendars: CalendarRow[];
   onEventClick: (e: EventRow) => void;
@@ -78,13 +80,14 @@ export function DayCell({
 
       {/* 이벤트 막대 */}
       <div className="flex flex-col gap-0.5">
-        {shownEvents.map((ev) => (
+        {shownEvents.map(({ event: ev, spanRole }) => (
           <EventBar
-            key={ev.id}
+            key={`${ev.id}-${spanRole}`}
             title={ev.title}
             emoji={ev.emoji}
             color={ev.color ?? calColor(ev.calendar_id)}
             onClick={() => onEventClick(ev)}
+            spanRole={spanRole}
           />
         ))}
         {moreCount > 0 && (

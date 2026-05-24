@@ -16,7 +16,7 @@ import type {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
-import { DayCell } from "./DayCell";
+import { DayCell, type DayCellEvent } from "./DayCell";
 import { MonthNavigation } from "./MonthNavigation";
 import { CalendarHeaderBar } from "./CalendarHeaderBar";
 import { EventDetailDialog } from "./EventDetailDialog";
@@ -42,7 +42,7 @@ function isoOf(d: Date): string {
 type CellRenderData = {
   viewedMonth: number;
   calendars: CalendarRow[];
-  eventsByDate: Map<string, EventRow[]>;
+  eventsByDate: Map<string, DayCellEvent[]>;
   todosByDate: Map<string, TaskRow[]>;
   expensesByDate: Map<string, number>;
   onEventClick: (e: EventRow) => void;
@@ -91,13 +91,38 @@ export function MonthGrid({
     [visibleEvents],
   );
 
+  /**
+   * 멀티데이 이벤트는 start~end 모든 날짜에 추가하고, 셀별로 spanRole
+   * (start/middle/end) 를 부여해 EventBar 가 좌우 모서리 / 빈 텍스트로
+   * 시각적 연속성을 표현하게 한다. 주(week) 경계 처리는 추후 보완.
+   */
   const eventsByDate = useMemo(() => {
-    const map = new Map<string, EventRow[]>();
+    const map = new Map<string, DayCellEvent[]>();
     for (const e of visibleEvents) {
-      const key = e.start_at.slice(0, 10);
-      const arr = map.get(key) ?? [];
-      arr.push(e);
-      map.set(key, arr);
+      const startKey = e.start_at.slice(0, 10);
+      const endKey = (e.end_at ?? e.start_at).slice(0, 10);
+      if (startKey === endKey) {
+        const arr = map.get(startKey) ?? [];
+        arr.push({ event: e, spanRole: "single" });
+        map.set(startKey, arr);
+        continue;
+      }
+      const start = new Date(`${startKey}T00:00:00`);
+      const end = new Date(`${endKey}T00:00:00`);
+      const cur = new Date(start);
+      while (cur.getTime() <= end.getTime()) {
+        const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`;
+        const role =
+          cur.getTime() === start.getTime()
+            ? ("start" as const)
+            : cur.getTime() === end.getTime()
+              ? ("end" as const)
+              : ("middle" as const);
+        const arr = map.get(key) ?? [];
+        arr.push({ event: e, spanRole: role });
+        map.set(key, arr);
+        cur.setDate(cur.getDate() + 1);
+      }
     }
     return map;
   }, [visibleEvents]);
@@ -282,7 +307,7 @@ export function MonthGrid({
       {popupIsoDate && (
         <DayDetailPopup
           date={dayDetailDate}
-          events={eventsByDate.get(popupIsoDate) ?? []}
+          events={(eventsByDate.get(popupIsoDate) ?? []).map((x) => x.event)}
           todos={todosByDate.get(popupIsoDate) ?? []}
           calendars={calendars}
           onClose={() => setDayDetailDate(null)}
