@@ -45,3 +45,6 @@ supabase/.branches/
 
 # 루트 작업물 (스크린샷·캐릭터 원본 PNG). public/ 안의 이미지는 영향 없음.
 /*.png
+
+# 일회성 부트스트랩 SQL — prod 초기 마이그레이션 적용 후 삭제
+/prod-bootstrap.sql
