@@ -15,8 +15,10 @@ import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
 import { SidebarBody } from "./sidebar";
 import { useMobileDrawerStore } from "./mobile-drawer-store";
+import { NotificationsBell } from "@/features/notifications/components/NotificationsBell";
 import type { AppShellUser } from "./app-shell";
 import type { CalendarRow } from "@/features/calendar/server/queries";
+import type { NotificationRow } from "@/features/notifications/server/queries";
 
 /**
  * 메인 영역 상단 헤더.
@@ -27,10 +29,14 @@ export function Header({
   user,
   calendars,
   unreadBoardCount,
+  recentNotifications,
+  unreadNotificationCount,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
   unreadBoardCount: number;
+  recentNotifications: NotificationRow[];
+  unreadNotificationCount: number;
 }) {
   const drawerOpen = useMobileDrawerStore((s) => s.open);
   const setDrawerOpen = useMobileDrawerStore((s) => s.setOpen);
@@ -90,6 +96,10 @@ export function Header({
       </div>
 
       <div className="ml-auto flex items-center gap-1.5">
+        <NotificationsBell
+          items={recentNotifications}
+          unreadCount={unreadNotificationCount}
+        />
         <ThemeToggle />
         <UserMenu user={user} />
       </div>

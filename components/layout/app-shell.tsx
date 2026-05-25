@@ -2,7 +2,9 @@ import { Sidebar } from "./sidebar";
 import { MobileTabbar } from "./mobile-tabbar";
 import { Header } from "./header";
 import { RealtimeEventsListener } from "@/features/social/components/RealtimeEventsListener";
+import { RealtimeNotificationsListener } from "@/features/notifications/components/RealtimeNotificationsListener";
 import type { CalendarRow } from "@/features/calendar/server/queries";
+import type { NotificationRow } from "@/features/notifications/server/queries";
 
 export type AppShellUser = {
   id: string;
@@ -24,11 +26,15 @@ export function AppShell({
   user,
   calendars,
   unreadBoardCount,
+  recentNotifications,
+  unreadNotificationCount,
   children,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
   unreadBoardCount: number;
+  recentNotifications: NotificationRow[];
+  unreadNotificationCount: number;
   children: React.ReactNode;
 }) {
   return (
@@ -43,11 +49,14 @@ export function AppShell({
           user={user}
           calendars={calendars}
           unreadBoardCount={unreadBoardCount}
+          recentNotifications={recentNotifications}
+          unreadNotificationCount={unreadNotificationCount}
         />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
       </div>
       <MobileTabbar />
       <RealtimeEventsListener />
+      <RealtimeNotificationsListener />
     </div>
   );
 }
