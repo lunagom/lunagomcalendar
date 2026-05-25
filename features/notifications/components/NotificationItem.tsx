@@ -5,6 +5,8 @@ import {
   Calendar,
   CreditCard,
   Heart,
+  HeartCrack,
+  HeartHandshake,
   MessageSquare,
   Users,
   type LucideIcon,
@@ -18,6 +20,9 @@ const ICON_MAP: Record<string, LucideIcon> = {
   board_new_comment: MessageSquare,
   calendar_invite: Users,
   board_like: Heart,
+  partnership_invite: HeartHandshake,
+  partnership_accepted: Heart,
+  partnership_ended: HeartCrack,
 };
 
 function relativeTime(iso: string): string {

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BudgetEditor } from "./BudgetEditor";
 import { getCategoryColor } from "@/lib/colors";
@@ -79,7 +79,15 @@ export function BudgetTabContent({
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: getCategoryColor(b.category) }}
                   />
-                  <span className="font-medium flex-1">{b.category}</span>
+                  <span className="font-medium flex-1">
+                    {b.category}
+                    {b.partner_id && (
+                      <Heart
+                        className="ml-1.5 inline h-3 w-3 fill-pink-500 text-pink-500 align-text-bottom"
+                        aria-label="부부 공유"
+                      />
+                    )}
+                  </span>
                   <span
                     className={`text-sm tabular-nums font-medium ${
                       over ? "text-red-600" : ""

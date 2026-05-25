@@ -32,6 +32,7 @@ type Props = {
   initialNickname: string;
   initialHiddenWidgets: WidgetKey[];
   calendars: CalendarRow[];
+  partnerSlot?: React.ReactNode;
 };
 
 const THEME_OPTIONS = [
@@ -45,6 +46,7 @@ export function SettingsClient({
   initialNickname,
   initialHiddenWidgets,
   calendars,
+  partnerSlot,
 }: Props) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
@@ -144,6 +146,9 @@ export function SettingsClient({
           </div>
         </div>
       </section>
+
+      {/* 1.5 부부 연결 — server component 로 외부에서 주입 */}
+      {partnerSlot}
 
       {/* 2. 테마 */}
       <section className="space-y-3">

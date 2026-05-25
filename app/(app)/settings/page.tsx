@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCalendars } from "@/features/calendar/server/queries";
 import { normalizeHidden } from "@/features/widgets/lib/items";
 import { SettingsClient } from "@/features/settings/components/SettingsClient";
+import { PartnerSection } from "@/features/partnership/components/PartnerSection";
 
 export const metadata = { title: "설정" };
 
@@ -28,6 +29,7 @@ export default async function SettingsPage() {
       initialNickname={profile?.nickname ?? ""}
       initialHiddenWidgets={normalizeHidden(profile?.widget_visibility)}
       calendars={calendars}
+      partnerSlot={<PartnerSection />}
     />
   );
 }

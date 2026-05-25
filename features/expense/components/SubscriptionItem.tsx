@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Heart, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SubscriptionModal } from "./SubscriptionModal";
@@ -85,6 +85,12 @@ export function SubscriptionItem({ subscription, usedCategories }: Props) {
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="font-medium truncate">{subscription.name}</span>
+            {subscription.partner_id && (
+              <Heart
+                className="h-3 w-3 shrink-0 fill-pink-500 text-pink-500"
+                aria-label="부부 공유"
+              />
+            )}
             {badge && (
               <span
                 className={`text-[11px] px-1.5 py-0.5 rounded-md font-medium ${badge.className}`}

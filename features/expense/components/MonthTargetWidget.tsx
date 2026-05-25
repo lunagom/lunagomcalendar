@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Pencil } from "lucide-react";
+import { Heart, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -98,6 +98,12 @@ export function MonthTargetWidget({ month, target, actual }: Props) {
     <div className="flex flex-col items-end gap-0.5 text-sm">
       <div className="flex items-center gap-2">
         <span className="text-xs text-muted-foreground">월 목표</span>
+        {target?.partner_id && (
+          <Heart
+            className="h-3 w-3 shrink-0 fill-pink-500 text-pink-500"
+            aria-label="부부 공유"
+          />
+        )}
         <span className="font-medium tabular-nums">
           {targetAmount != null
             ? `${targetAmount.toLocaleString("ko-KR")}원`

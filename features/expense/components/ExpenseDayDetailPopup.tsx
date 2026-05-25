@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Heart, Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -110,6 +110,12 @@ export function ExpenseDayDetailPopup({
                   {e.category}
                   {e.memo ? ` · ${e.memo}` : ""}
                 </span>
+                {e.partner_id && (
+                  <Heart
+                    className="h-3 w-3 shrink-0 fill-pink-500 text-pink-500"
+                    aria-label="부부 공유"
+                  />
+                )}
                 <span className="ml-auto text-sm font-medium tabular-nums">
                   {e.amount.toLocaleString("ko-KR")}원
                 </span>
