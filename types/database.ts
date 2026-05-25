@@ -14,98 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
-      board_posts: {
-        Row: {
-          id: string
-          calendar_id: string
-          author_id: string
-          title: string
-          body: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          calendar_id: string
-          author_id: string
-          title: string
-          body: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          calendar_id?: string
-          author_id?: string
-          title?: string
-          body?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       board_comments: {
         Row: {
-          id: string
-          post_id: string
           author_id: string
           body: string
           created_at: string
+          id: string
+          post_id: string
         }
         Insert: {
-          id?: string
-          post_id: string
           author_id: string
           body: string
           created_at?: string
+          id?: string
+          post_id: string
         }
         Update: {
-          id?: string
-          post_id?: string
           author_id?: string
           body?: string
           created_at?: string
+          id?: string
+          post_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "board_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "board_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       board_likes: {
         Row: {
-          user_id: string
-          target_type: string
-          target_id: string
           created_at: string
+          target_id: string
+          target_type: string
+          user_id: string
         }
         Insert: {
-          user_id: string
-          target_type: string
-          target_id: string
           created_at?: string
+          target_id: string
+          target_type: string
+          user_id: string
         }
         Update: {
-          user_id?: string
-          target_type?: string
-          target_id?: string
           created_at?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string
         }
         Relationships: []
       }
-      board_reads: {
+      board_posts: {
         Row: {
-          user_id: string
+          author_id: string
+          body: string
           calendar_id: string
-          last_read_at: string
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
         }
         Insert: {
-          user_id: string
+          author_id: string
+          body: string
           calendar_id: string
-          last_read_at?: string
+          created_at?: string
+          id?: string
+          title: string
+          updated_at?: string
         }
         Update: {
-          user_id?: string
+          author_id?: string
+          body?: string
+          calendar_id?: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_posts_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_reads: {
+        Row: {
+          calendar_id: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          calendar_id: string
+          last_read_at?: string
+          user_id: string
+        }
+        Update: {
           calendar_id?: string
           last_read_at?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "board_reads_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendars"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       budgets: {
         Row: {
@@ -114,6 +138,7 @@ export type Database = {
           id: string
           limit_amount: number
           month: string
+          partner_id: string | null
           updated_at: string
           user_id: string
         }
@@ -123,6 +148,7 @@ export type Database = {
           id?: string
           limit_amount: number
           month: string
+          partner_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -132,6 +158,7 @@ export type Database = {
           id?: string
           limit_amount?: number
           month?: string
+          partner_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -244,6 +271,7 @@ export type Database = {
           id: string
           memo: string | null
           paid_at: string
+          partner_id: string | null
           receipt_url: string | null
           user_id: string
         }
@@ -255,6 +283,7 @@ export type Database = {
           id?: string
           memo?: string | null
           paid_at: string
+          partner_id?: string | null
           receipt_url?: string | null
           user_id: string
         }
@@ -266,6 +295,7 @@ export type Database = {
           id?: string
           memo?: string | null
           paid_at?: string
+          partner_id?: string | null
           receipt_url?: string | null
           user_id?: string
         }
@@ -279,48 +309,13 @@ export type Database = {
           },
         ]
       }
-      notifications: {
-        Row: {
-          id: string
-          user_id: string
-          type: string
-          title: string
-          body: string | null
-          link: string | null
-          dedupe_key: string | null
-          created_at: string
-          read_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          type: string
-          title: string
-          body?: string | null
-          link?: string | null
-          dedupe_key?: string | null
-          created_at?: string
-          read_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          type?: string
-          title?: string
-          body?: string | null
-          link?: string | null
-          dedupe_key?: string | null
-          created_at?: string
-          read_at?: string | null
-        }
-        Relationships: []
-      }
       monthly_targets: {
         Row: {
           amount: number
           created_at: string
           id: string
           month: string
+          partner_id: string | null
           updated_at: string
           user_id: string
         }
@@ -329,6 +324,7 @@ export type Database = {
           created_at?: string
           id?: string
           month: string
+          partner_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -337,8 +333,75 @@ export type Database = {
           created_at?: string
           id?: string
           month?: string
+          partner_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      partnerships: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          ended_at: string | null
+          id: string
+          status: string
+          user_a_id: string
+          user_b_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          status?: string
+          user_a_id: string
+          user_b_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          status?: string
+          user_a_id?: string
+          user_b_id?: string
         }
         Relationships: []
       }
@@ -419,6 +482,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          partner_id: string | null
           user_id: string
         }
         Insert: {
@@ -429,6 +493,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          partner_id?: string | null
           user_id: string
         }
         Update: {
@@ -439,6 +504,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          partner_id?: string | null
           user_id?: string
         }
         Relationships: []

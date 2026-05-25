@@ -48,3 +48,6 @@ supabase/.branches/
 
 # 일회성 부트스트랩 SQL — prod 초기 마이그레이션 적용 후 삭제
 /prod-bootstrap.sql
+
+# 일회성 마이그레이션 SQL — dev/prod 양쪽 적용 후 삭제
+/partner-migration-bootstrap.sql
