@@ -1,7 +1,6 @@
 // features/widgets/components/IncomingInvitesWidget.tsx
-import Link from "next/link";
-import { Users } from "lucide-react";
-import { WidgetCard } from "./WidgetCard";
+import { MailX, Users } from "lucide-react";
+import { WidgetCard, WidgetEmpty } from "./WidgetCard";
 import { getMyIncomingInvites } from "../server/queries";
 
 export async function IncomingInvitesWidget() {
@@ -10,8 +9,16 @@ export async function IncomingInvitesWidget() {
     invites = await getMyIncomingInvites();
   } catch {
     return (
-      <WidgetCard icon={Users} title="받은 초대">
+      <WidgetCard icon={Users} title="받은 초대" href="/social">
         <p className="text-muted-foreground">불러오지 못했어요</p>
+      </WidgetCard>
+    );
+  }
+
+  if (invites.length === 0) {
+    return (
+      <WidgetCard icon={Users} title="받은 초대" href="/social">
+        <WidgetEmpty icon={MailX} text="받은 초대 없음" />
       </WidgetCard>
     );
   }
@@ -20,37 +27,30 @@ export async function IncomingInvitesWidget() {
     <WidgetCard
       icon={Users}
       title="받은 초대"
-      trailing={invites.length > 0 ? `${invites.length}개` : undefined}
+      href="/social"
+      trailing={`${invites.length}개`}
     >
-      {invites.length === 0 ? (
-        <p className="text-muted-foreground">받은 초대 없음</p>
-      ) : (
-        <>
-          <ul className="space-y-1.5">
-            {invites.slice(0, 3).map((inv) => (
-              <li key={inv.id} className="flex items-center gap-2">
-                <span
-                  className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: inv.calendar?.color ?? "#888" }}
-                  aria-hidden
-                />
-                <span className="truncate">
-                  {inv.calendar?.name ?? "(삭제됨)"}
-                </span>
-                <span className="ml-auto text-xs text-muted-foreground">
-                  {inv.owner?.nickname ?? "?"}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <Link
-            href="/social"
-            className="mt-2 inline-block text-xs text-primary hover:underline"
-          >
-            모두 보기 →
-          </Link>
-        </>
-      )}
+      <div className="mb-3 flex items-baseline gap-2">
+        <span className="text-3xl font-bold tabular-nums text-primary">
+          {invites.length}
+        </span>
+        <span className="text-sm text-muted-foreground">건의 새 초대</span>
+      </div>
+      <ul className="space-y-1.5 border-t pt-3">
+        {invites.slice(0, 3).map((inv) => (
+          <li key={inv.id} className="flex items-center gap-2">
+            <span
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{ backgroundColor: inv.calendar?.color ?? "#888" }}
+              aria-hidden
+            />
+            <span className="truncate">{inv.calendar?.name ?? "(삭제됨)"}</span>
+            <span className="ml-auto text-xs text-muted-foreground">
+              {inv.owner?.nickname ?? "?"}
+            </span>
+          </li>
+        ))}
+      </ul>
     </WidgetCard>
   );
 }

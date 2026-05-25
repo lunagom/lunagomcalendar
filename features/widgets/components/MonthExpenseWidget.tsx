@@ -9,7 +9,7 @@ export async function MonthExpenseWidget() {
     s = await getMonthExpenseSummary();
   } catch {
     return (
-      <WidgetCard icon={Wallet} title="이번 달 지출">
+      <WidgetCard icon={Wallet} title="이번 달 지출" href="/expense">
         <p className="text-muted-foreground">불러오지 못했어요</p>
       </WidgetCard>
     );
@@ -22,31 +22,33 @@ export async function MonthExpenseWidget() {
   const over = target != null && actual > target;
 
   return (
-    <WidgetCard icon={Wallet} title="이번 달 지출">
-      <div className="flex items-baseline justify-between">
-        <span
-          className={`text-lg font-semibold tabular-nums ${over ? "text-red-600" : ""}`}
-        >
-          {fmt(actual)}
-        </span>
-        <span className="text-xs text-muted-foreground tabular-nums">
-          {target != null ? `목표 ${fmt(target)}` : "월 목표 미설정"}
-        </span>
+    <WidgetCard icon={Wallet} title="이번 달 지출" href="/expense">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p
+            className={`text-3xl font-bold tabular-nums ${over ? "text-red-600" : ""}`}
+          >
+            {fmt(actual)}
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+            {target != null ? `목표 ${fmt(target)}` : "월 목표 미설정"}
+          </p>
+        </div>
+        {target != null && (
+          <p
+            className={`text-sm font-medium tabular-nums ${over ? "text-red-600" : "text-muted-foreground"}`}
+          >
+            {over ? `+${fmt(actual - target)}` : `-${fmt(target - actual)}`}
+          </p>
+        )}
       </div>
       {target != null && (
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
           <div
-            className={`h-full ${over ? "bg-red-600" : "bg-primary"}`}
+            className={`h-full ${over ? "bg-red-600" : "bg-primary"} transition-[width]`}
             style={{ width: `${pct}%` }}
           />
         </div>
-      )}
-      {target != null && (
-        <p className="mt-1.5 text-xs text-muted-foreground tabular-nums">
-          {over
-            ? `초과 ${fmt(actual - target)}`
-            : `잔여 ${fmt(target - actual)}`}
-        </p>
       )}
     </WidgetCard>
   );
