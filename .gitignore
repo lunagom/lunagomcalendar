@@ -42,3 +42,6 @@ supabase/.branches/
 
 # superpowers brainstorm sessions
 .superpowers/
+
+# 루트 작업물 (스크린샷·캐릭터 원본 PNG). public/ 안의 이미지는 영향 없음.
+/*.png
