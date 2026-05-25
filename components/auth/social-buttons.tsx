@@ -5,12 +5,18 @@ import { useTransition } from "react";
 import { signInWithOAuth } from "@/app/(auth)/login/actions";
 
 /**
- * 카카오 / 구글 소셜 로그인 버튼.
- * 둘 다 form action 으로 server action 호출.
- * 브랜드 컬러는 각 플랫폼 가이드에 맞춤 (카카오 옐로우 #FEE500, 구글 화이트 라인).
+ * 카카오 / 구글 소셜 로그인 버튼 (구분선 포함).
+ *
+ * NEXT_PUBLIC_SOCIAL_AUTH_ENABLED 가 "true" 일 때만 렌더.
+ * 그렇지 않으면 null → 호출처는 그대로 두고도 이메일 단독 로그인 UI 가 됨.
+ * prod 에 카카오/구글 OAuth 가 아직 안 등록된 상태에서 안전.
  */
 export function SocialButtons({ next }: { next?: string }) {
   const [isPending, startTransition] = useTransition();
+
+  if (process.env.NEXT_PUBLIC_SOCIAL_AUTH_ENABLED !== "true") {
+    return null;
+  }
 
   const handle = (provider: "kakao" | "google") => {
     startTransition(async () => {
@@ -19,35 +25,46 @@ export function SocialButtons({ next }: { next?: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        disabled={isPending}
-        onClick={() => handle("kakao")}
-        className="
-          flex h-11 items-center justify-center gap-2 rounded-lg
-          bg-[#FEE500] text-[#191600] text-sm font-medium
-          transition-opacity hover:opacity-90 disabled:opacity-50
-        "
-      >
-        <KakaoIcon />
-        카카오로 시작하기
-      </button>
-      <button
-        type="button"
-        disabled={isPending}
-        onClick={() => handle("google")}
-        className="
-          flex h-11 items-center justify-center gap-2 rounded-lg
-          border border-border bg-card text-sm font-medium
-          transition-colors hover:bg-accent hover:text-accent-foreground
-          disabled:opacity-50
-        "
-      >
-        <GoogleIcon />
-        Google로 시작하기
-      </button>
-    </div>
+    <>
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <span className="relative bg-card px-3 text-xs text-muted-foreground mx-auto block w-fit">
+          또는
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => handle("kakao")}
+          className="
+            flex h-11 items-center justify-center gap-2 rounded-lg
+            bg-[#FEE500] text-[#191600] text-sm font-medium
+            transition-opacity hover:opacity-90 disabled:opacity-50
+          "
+        >
+          <KakaoIcon />
+          카카오로 시작하기
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => handle("google")}
+          className="
+            flex h-11 items-center justify-center gap-2 rounded-lg
+            border border-border bg-card text-sm font-medium
+            transition-colors hover:bg-accent hover:text-accent-foreground
+            disabled:opacity-50
+          "
+        >
+          <GoogleIcon />
+          Google로 시작하기
+        </button>
+      </div>
+    </>
   );
 }
 

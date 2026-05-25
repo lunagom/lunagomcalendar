@@ -19,15 +19,6 @@ export default function SignupPage() {
           <SignupForm />
         </div>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
-          <span className="relative bg-card px-3 text-xs text-muted-foreground mx-auto block w-fit">
-            또는
-          </span>
-        </div>
-
         <SocialButtons />
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
