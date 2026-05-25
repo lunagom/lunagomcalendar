@@ -1,7 +1,6 @@
 // lib/nav.ts
 import {
   Calendar,
-  CalendarDays,
   CheckSquare,
   Wallet,
   Users,
@@ -16,10 +15,13 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-/** 사이드바(데스크톱) + 모바일 드로어 메뉴. 전 페이지 노출. */
+/**
+ * 사이드바(데스크톱) + 모바일 드로어 메뉴.
+ * "하루(/day)" 는 캘린더 헤더의 월간/일간 토글에 흡수되어 메뉴에서 제외.
+ * 라우트 자체는 유지 (토글이 /calendar ↔ /day 라우팅).
+ */
 export const navItems: NavItem[] = [
   { href: "/calendar", label: "캘린더", icon: Calendar },
-  { href: "/day", label: "하루", icon: CalendarDays },
   { href: "/todos", label: "오늘의 할 일", icon: CheckSquare },
   { href: "/expense", label: "가계부", icon: Wallet },
   { href: "/social", label: "공유", icon: Users },

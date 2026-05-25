@@ -43,7 +43,7 @@ export function CalendarShell({ calendars, children }: Props) {
             <Wallet className="h-4 w-4" />
           </Button>
         )}
-        <div className="hidden sm:flex rounded-md border bg-background overflow-hidden">
+        <div className="flex rounded-md border bg-background overflow-hidden">
           <Button
             variant={pathname === "/calendar" ? "default" : "ghost"}
             size="sm"
