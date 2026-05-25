@@ -26,10 +26,12 @@ function todayIso(): string {
 export function SidebarBody({
   user,
   calendars,
+  unreadBoardCount,
   onNavigate,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
+  unreadBoardCount: number;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -66,6 +68,7 @@ export function SidebarBody({
           const active =
             pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
+          const showBadge = item.href === "/board" && unreadBoardCount > 0;
           return (
             <Link
               key={item.href}
@@ -85,6 +88,11 @@ export function SidebarBody({
                 )}
               />
               <span>{item.label}</span>
+              {showBadge && (
+                <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                  {unreadBoardCount > 99 ? "99+" : unreadBoardCount}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -114,9 +122,11 @@ export function SidebarBody({
 export function Sidebar({
   user,
   calendars,
+  unreadBoardCount,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
+  unreadBoardCount: number;
 }) {
   return (
     <aside
@@ -126,7 +136,11 @@ export function Sidebar({
         "px-4 py-5"
       )}
     >
-      <SidebarBody user={user} calendars={calendars} />
+      <SidebarBody
+        user={user}
+        calendars={calendars}
+        unreadBoardCount={unreadBoardCount}
+      />
     </aside>
   );
 }

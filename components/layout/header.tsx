@@ -26,9 +26,11 @@ import type { CalendarRow } from "@/features/calendar/server/queries";
 export function Header({
   user,
   calendars,
+  unreadBoardCount,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
+  unreadBoardCount: number;
 }) {
   const drawerOpen = useMobileDrawerStore((s) => s.open);
   const setDrawerOpen = useMobileDrawerStore((s) => s.setOpen);
@@ -59,6 +61,7 @@ export function Header({
           <SidebarBody
             user={user}
             calendars={calendars}
+            unreadBoardCount={unreadBoardCount}
             onNavigate={() => setDrawerOpen(false)}
           />
         </SheetContent>

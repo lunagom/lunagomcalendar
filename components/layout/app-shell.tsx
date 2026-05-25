@@ -23,17 +23,27 @@ export type AppShellUser = {
 export function AppShell({
   user,
   calendars,
+  unreadBoardCount,
   children,
 }: {
   user: AppShellUser;
   calendars: CalendarRow[];
+  unreadBoardCount: number;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-dvh bg-background">
-      <Sidebar user={user} calendars={calendars} />
+      <Sidebar
+        user={user}
+        calendars={calendars}
+        unreadBoardCount={unreadBoardCount}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header user={user} calendars={calendars} />
+        <Header
+          user={user}
+          calendars={calendars}
+          unreadBoardCount={unreadBoardCount}
+        />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
       </div>
       <MobileTabbar />

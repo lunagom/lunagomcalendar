@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/layout/app-shell";
 import { getCalendars } from "@/features/calendar/server/queries";
+import { getUnreadBoardCount } from "@/features/board/server/queries";
 
 /**
  * 로그인 사용자만 접근하는 메인 앱 영역.
@@ -26,7 +27,10 @@ export default async function AppLayout({
     .select("nickname, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
-  const calendars = await getCalendars();
+  const [calendars, unreadBoardCount] = await Promise.all([
+    getCalendars(),
+    getUnreadBoardCount(),
+  ]);
 
   return (
     <AppShell
@@ -37,6 +41,7 @@ export default async function AppLayout({
         avatarUrl: profile?.avatar_url ?? null,
       }}
       calendars={calendars}
+      unreadBoardCount={unreadBoardCount}
     >
       {children}
     </AppShell>

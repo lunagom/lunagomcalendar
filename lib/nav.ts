@@ -6,6 +6,7 @@ import {
   Wallet,
   Users,
   Settings,
+  MessageSquare,
   MoreHorizontal,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -25,6 +26,7 @@ export const navItems: NavItem[] = [
   { href: "/calendar", label: "캘린더", icon: Calendar },
   { href: "/todos", label: "오늘의 할 일", icon: CheckSquare },
   { href: "/expense", label: "가계부", icon: Wallet },
+  { href: "/board", label: "게시판", icon: MessageSquare },
   { href: "/social", label: "공유", icon: Users },
   { href: "/settings", label: "설정", icon: Settings },
 ];
