@@ -1,8 +1,10 @@
+import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
  * 루나곰 — 메인 브랜드 마크.
- * 작은 곰 얼굴 + 워드마크. 두 색만 사용 (primary + currentColor).
+ * 곰 캐릭터 이미지(public/lunabear.png, 투명 배경) + 워드마크. 클릭 시 홈("/") 이동.
  * size: 사이즈 프리셋. 사이드바엔 'md', 좁은 곳엔 'sm'.
  */
 export function LunabearMark({
@@ -14,41 +16,33 @@ export function LunabearMark({
   showWordmark?: boolean;
   className?: string;
 }) {
-  const iconPx = size === "sm" ? 22 : size === "lg" ? 32 : 26;
-  const wordPx = size === "sm" ? "text-sm" : size === "lg" ? "text-xl" : "text-base";
+  // 일러스트에 디테일(스웨터/하트/스파클) 이 있어서 좀 크게 봐야 살아남.
+  const iconPx = size === "sm" ? 44 : size === "lg" ? 64 : 52;
+  const wordPx =
+    size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-lg";
 
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <BearGlyph width={iconPx} height={iconPx} />
+    <Link
+      href="/"
+      aria-label="홈으로"
+      className={cn(
+        "inline-flex items-center gap-2 transition-opacity hover:opacity-80",
+        className,
+      )}
+    >
+      <Image
+        src="/lunabear.png"
+        alt="루나곰"
+        width={iconPx}
+        height={iconPx}
+        priority
+        className="shrink-0"
+      />
       {showWordmark && (
         <span className={cn("font-bold tracking-tight", wordPx)}>
-          루나곰
+          루나곰 캘린더
         </span>
       )}
-    </span>
-  );
-}
-
-function BearGlyph({ width, height }: { width: number; height: number }) {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      {/* 귀 */}
-      <circle cx="8.5" cy="9" r="3.6" fill="hsl(var(--primary))" />
-      <circle cx="23.5" cy="9" r="3.6" fill="hsl(var(--primary))" />
-      {/* 얼굴 */}
-      <circle cx="16" cy="18" r="9.2" fill="hsl(var(--primary))" />
-      {/* 눈 */}
-      <circle cx="12.6" cy="16.8" r="1.15" fill="hsl(var(--primary-foreground))" />
-      <circle cx="19.4" cy="16.8" r="1.15" fill="hsl(var(--primary-foreground))" />
-      {/* 코 */}
-      <ellipse cx="16" cy="20.2" rx="1.4" ry="1.1" fill="hsl(var(--primary-foreground))" />
-    </svg>
+    </Link>
   );
 }

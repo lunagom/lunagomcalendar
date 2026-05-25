@@ -73,7 +73,7 @@ export function Header({
         </SheetContent>
       </Sheet>
 
-      <div className="md:hidden">
+      <div className="md:hidden translate-y-1">
         <LunabearMark size="sm" />
       </div>
 
