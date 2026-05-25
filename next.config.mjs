@@ -1,9 +1,10 @@
+import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config, { dev }) => {
     // Windows + Next.js dev 의 .next/cache/webpack 파일 잠금 충돌을 회피.
-    // 디스크 캐시를 끄고 메모리 캐시만 사용 — dev 핫 리로드는 정상,
-    // 다만 dev 서버 첫 시작이 약간 느려질 수 있음.
+    // 디스크 캐시를 끄고 메모리 캐시만 사용 — dev 핫 리로드는 정상.
     if (dev) {
       config.cache = { type: "memory" };
     }
@@ -11,4 +12,14 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Sentry 래핑 — DSN 없으면 소스맵 업로드 등 모두 no-op.
+// SENTRY_AUTH_TOKEN 이 있을 때만 빌드 시 소스맵 업로드.
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  disableLogger: true,
+  hideSourceMaps: true,
+  widenClientFileUpload: true,
+});

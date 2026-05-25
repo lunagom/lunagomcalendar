@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/react";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -39,6 +40,7 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <Toaster richColors position="top-center" />
+        <Analytics />
       </body>
     </html>
   );
