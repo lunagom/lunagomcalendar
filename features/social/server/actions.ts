@@ -119,18 +119,29 @@ export async function acceptInvite(id: string): Promise<ActionResult> {
  *  · owner — 보낸 초대 취소 (pending) / 멤버 제거 (accepted)
  *  · member — 받은 초대 거절 (pending) / 캘린더에서 나가기 (accepted)
  * 모두 row 삭제 효과.
+ *
+ * RLS 에 막혀도 supabase delete 는 error 없이 0 rows 를 반환하므로
+ * `.select()` 로 실제 삭제 행 수를 검증한다.
  */
 export async function declineInvite(id: string): Promise<ActionResult> {
   await getUserId();
   const supabase = createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("shared_calendars")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
   if (error) return { ok: false, error: error.message };
+  if (!data || data.length === 0) {
+    return {
+      ok: false,
+      error: "권한이 없거나 이미 삭제된 항목입니다",
+    };
+  }
 
+  // 사이드바 캘린더 목록은 (app)/layout 에서 fetch 라 layout 까지 무효화
+  revalidatePath("/", "layout");
   revalidatePath("/social");
-  revalidatePath("/calendar");
   return { ok: true, data: undefined };
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Check, LogOut, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export function SocialClient({ invites, accepted, owned }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [leaving, setLeaving] = useState<SharedCalendarWithMeta | null>(null);
 
@@ -40,6 +42,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
       }
       toast.success("캘린더에서 나왔어요");
       setLeaving(null);
+      router.refresh();
     });
   };
 
@@ -50,7 +53,10 @@ export function SocialClient({ invites, accepted, owned }: Props) {
     startTransition(async () => {
       const r = await fn();
       if (!r.ok) toast.error(r.error);
-      else toast.success(successMsg);
+      else {
+        toast.success(successMsg);
+        router.refresh();
+      }
     });
   };
 
