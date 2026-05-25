@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      board_posts: {
+        Row: {
+          id: string
+          calendar_id: string
+          author_id: string
+          title: string
+          body: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          calendar_id: string
+          author_id: string
+          title: string
+          body: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          calendar_id?: string
+          author_id?: string
+          title?: string
+          body?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      board_comments: {
+        Row: {
+          id: string
+          post_id: string
+          author_id: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          author_id: string
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          author_id?: string
+          body?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      board_likes: {
+        Row: {
+          user_id: string
+          target_type: string
+          target_id: string
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          target_type: string
+          target_id: string
+          created_at?: string
+        }
+        Update: {
+          user_id?: string
+          target_type?: string
+          target_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      board_reads: {
+        Row: {
+          user_id: string
+          calendar_id: string
+          last_read_at: string
+        }
+        Insert: {
+          user_id: string
+          calendar_id: string
+          last_read_at?: string
+        }
+        Update: {
+          user_id?: string
+          calendar_id?: string
+          last_read_at?: string
+        }
+        Relationships: []
+      }
       budgets: {
         Row: {
           category: string
