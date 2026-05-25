@@ -1,6 +1,7 @@
 // features/calendar/components/CalendarSettingsDialog.tsx
 "use client";
 import { useState, useTransition } from "react";
+import { Users } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 import { PRESETS } from "@/lib/colors";
 import { updateCalendar, deleteCalendar } from "../server/actions";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { ShareDialog } from "@/features/social/components/ShareDialog";
 import type { CalendarRow } from "../server/queries";
 
 type Props = {
@@ -27,6 +29,7 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
   const [name, setName] = useState(calendar?.name ?? "");
   const [color, setColor] = useState(calendar?.color ?? PRESETS[9]);
   const [confirming, setConfirming] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [pending, startTransition] = useTransition();
 
   if (!calendar) return null;
@@ -62,7 +65,7 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
 
   return (
     <>
-      <Dialog open={!confirming} onOpenChange={(v) => !v && onClose()}>
+      <Dialog open={!confirming && !sharing} onOpenChange={(v) => !v && onClose()}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
               <DialogTitle>캘린더 설정</DialogTitle>
@@ -97,6 +100,16 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
               </div>
             </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2"
+            onClick={() => setSharing(true)}
+            disabled={pending}
+          >
+            <Users className="h-4 w-4" />
+            공유 관리
+          </Button>
           <DialogFooter className="justify-between">
             <Button
               variant="destructive"
@@ -124,6 +137,13 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
         onConfirm={handleDelete}
         title="캘린더 삭제"
         description={`"${calendar.name}" 와 그 안의 모든 일정이 함께 삭제됩니다.`}
+      />
+
+      <ShareDialog
+        calendarId={calendar.id}
+        calendarName={calendar.name}
+        open={sharing}
+        onOpenChange={setSharing}
       />
     </>
   );

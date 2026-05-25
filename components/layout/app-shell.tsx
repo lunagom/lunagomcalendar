@@ -1,6 +1,7 @@
 import { Sidebar } from "./sidebar";
 import { MobileTabbar } from "./mobile-tabbar";
 import { Header } from "./header";
+import { RealtimeEventsListener } from "@/features/social/components/RealtimeEventsListener";
 import type { CalendarRow } from "@/features/calendar/server/queries";
 
 export type AppShellUser = {
@@ -36,6 +37,7 @@ export function AppShell({
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
       </div>
       <MobileTabbar />
+      <RealtimeEventsListener />
     </div>
   );
 }
