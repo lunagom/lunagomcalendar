@@ -88,6 +88,15 @@ export function EventDetailDialog({ event, calendars, onClose }: Props) {
                 {event.location}
               </div>
             )}
+            {event.expected_amount != null && event.expected_amount > 0 && (
+              <div>
+                <span className="text-muted-foreground">예상 지출</span>{" "}
+                <span className="tabular-nums">
+                  {event.expected_amount.toLocaleString("ko-KR")}원
+                </span>
+                {event.expense_category ? ` · ${event.expense_category}` : ""}
+              </div>
+            )}
             {event.memo && (
               <div className="mt-2 whitespace-pre-wrap text-foreground/80">
                 {event.memo}
