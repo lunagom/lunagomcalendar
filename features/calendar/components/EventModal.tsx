@@ -52,7 +52,9 @@ export function EventModal({
   const [color, setColor] = useState<string>(
     initial?.color ?? defaultCal?.color ?? PRESETS[9],
   );
-  const [isAllDay, setIsAllDay] = useState(initial?.is_all_day ?? true);
+  // 새 일정 기본: 시간 지정 (시작 09:00 ~ 10:00). "종일" 원하면 사용자가 체크.
+  // 일간 view 의 시간 슬롯에 자동 표시되려면 종일이 아니어야 함.
+  const [isAllDay, setIsAllDay] = useState(initial?.is_all_day ?? false);
   const [startAt, setStartAt] = useState(
     initial?.start_at?.slice(0, 16) ??
       (defaultDate ? `${defaultDate}T09:00` : ""),
