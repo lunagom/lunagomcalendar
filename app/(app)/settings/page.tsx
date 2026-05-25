@@ -1,23 +1,31 @@
-import { Settings } from "lucide-react";
+import { redirect } from "next/navigation";
 
-import { PlaceholderPage } from "@/components/placeholder-page";
+import { createClient } from "@/lib/supabase/server";
+import { getCalendars } from "@/features/calendar/server/queries";
+import { SettingsClient } from "@/features/settings/components/SettingsClient";
 
 export const metadata = { title: "설정" };
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nickname")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const calendars = await getCalendars();
+
   return (
-    <PlaceholderPage
-      icon={Settings}
-      subtitle="Settings"
-      title="설정이 들어갈 자리"
-      description="계정, 연결된 캘린더, 알림, 테마, 위젯 등 환경 설정을 한 곳에서 관리합니다."
-      next={[
-        "프로필 · 계정",
-        "연결된 캘린더 관리",
-        "알림 설정",
-        "테마 · 글자 크기",
-        "위젯 커스터마이징",
-      ]}
+    <SettingsClient
+      email={user.email ?? ""}
+      initialNickname={profile?.nickname ?? ""}
+      calendars={calendars}
     />
   );
 }
