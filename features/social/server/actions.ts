@@ -113,17 +113,16 @@ export async function acceptInvite(id: string): Promise<ActionResult> {
   return { ok: true, data: undefined };
 }
 
-/** 받은 초대 거절 (= row 삭제). owner 도 'pending' 이면 취소 효과. */
+/**
+ * shared_calendars row 삭제 — 한 함수가 4가지 케이스 커버.
+ * RLS 의 OR 정책 (owner_id = me OR member_id = me) 이 케이스마다 권한 결정:
+ *  · owner — 보낸 초대 취소 (pending) / 멤버 제거 (accepted)
+ *  · member — 받은 초대 거절 (pending) / 캘린더에서 나가기 (accepted)
+ * 모두 row 삭제 효과.
+ */
 export async function declineInvite(id: string): Promise<ActionResult> {
   await getUserId();
   const supabase = createClient();
-  // RLS: member 본인 update 가능, owner delete 가능. delete 권한이 owner 만이라
-  // 거절은 member 가 status 를 declined 로 둘 자리가 없으니 owner-cancel 만 가능.
-  // 대신 member 가 직접 delete 시도 — RLS delete 정책상 owner 만이라 실패.
-  // 그래서 member 가 거절하면 status 만 변경 (예: 'pending' 그대로 두기는 부자연).
-  // 단순화: owner 가 본 권한으로 취소 가능. member 거절도 같은 effect 를 위해
-  // RLS 를 member delete 까지 허용하도록 보강하는 게 정공이지만, 일단 owner
-  // 권한으로만 'cancel/decline' 동작. member 거절 UX 는 후속에서.
   const { error } = await supabase
     .from("shared_calendars")
     .delete()
@@ -131,10 +130,11 @@ export async function declineInvite(id: string): Promise<ActionResult> {
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/social");
+  revalidatePath("/calendar");
   return { ok: true, data: undefined };
 }
 
-/** 멤버 제거 — owner 만 (RLS) */
+/** 멤버 제거 (owner 권한) — declineInvite 와 동일 effect, alias. */
 export async function removeMember(id: string): Promise<ActionResult> {
   return declineInvite(id);
 }
@@ -187,15 +187,7 @@ export async function fetchMembers(
   }
 }
 
-/**
- * 공유받은 캘린더에서 나가기 — member 본인.
- * RLS delete 정책상 owner 만 가능하므로 status 만 별도 처리할 자리 없음.
- * 임시: leaveCalendar 도 declineInvite 와 같은 한계 — owner 가 제거해주는
- * 방식이 가장 간단. 후속 작업에서 member 의 leave 권한 RLS 보강 검토.
- */
-export async function leaveCalendar(_id: string): Promise<ActionResult> {
-  return {
-    ok: false,
-    error: "현재 버전에서는 캘린더 소유자에게 제거를 요청해주세요",
-  };
+/** 공유받은 캘린더에서 나가기 — member 본인 권한 (RLS 보강 후 가능). */
+export async function leaveCalendar(id: string): Promise<ActionResult> {
+  return declineInvite(id);
 }

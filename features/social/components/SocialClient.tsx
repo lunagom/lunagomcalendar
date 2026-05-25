@@ -1,14 +1,16 @@
 "use client";
 
-import { useTransition } from "react";
-import { Check, Trash2 } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Check, LogOut, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/features/calendar/components/DeleteConfirmDialog";
 import {
   acceptInvite,
   changePermission,
   declineInvite,
+  leaveCalendar,
   removeMember,
   type ActionResult,
 } from "../server/actions";
@@ -26,6 +28,20 @@ type Props = {
 
 export function SocialClient({ invites, accepted, owned }: Props) {
   const [pending, startTransition] = useTransition();
+  const [leaving, setLeaving] = useState<SharedCalendarWithMeta | null>(null);
+
+  const confirmLeave = () => {
+    if (!leaving) return;
+    startTransition(async () => {
+      const r = await leaveCalendar(leaving.id);
+      if (!r.ok) {
+        toast.error(r.error);
+        return;
+      }
+      toast.success("캘린더에서 나왔어요");
+      setLeaving(null);
+    });
+  };
 
   const handle = (
     fn: () => Promise<ActionResult>,
@@ -115,6 +131,16 @@ export function SocialClient({ invites, accepted, owned }: Props) {
                     {s.permission === "edit" ? "편집" : "보기"} 권한
                   </p>
                 </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={pending}
+                  onClick={() => setLeaving(s)}
+                  className="gap-1.5 text-muted-foreground"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  나가기
+                </Button>
               </li>
             ))}
           </ul>
@@ -196,6 +222,18 @@ export function SocialClient({ invites, accepted, owned }: Props) {
           </div>
         )}
       </section>
+
+      <DeleteConfirmDialog
+        open={!!leaving}
+        onOpenChange={(v) => !v && setLeaving(null)}
+        onConfirm={confirmLeave}
+        title="캘린더에서 나갈까요?"
+        description={
+          leaving
+            ? `"${leaving.calendar?.name ?? "(이 캘린더)"}" 에서 나가면 더 이상 이 캘린더의 일정을 볼 수 없어요. 다시 보려면 소유자에게 재초대를 받아야 해요.`
+            : ""
+        }
+      />
     </div>
   );
 }
