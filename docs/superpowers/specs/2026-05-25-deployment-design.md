@@ -19,7 +19,8 @@
 | OAuth provider | 카카오 + 구글 + 이메일 (Supabase prod에서 활성) |
 | 에러 추적 | Sentry (무료 티어, 5k events/월) |
 | 방문 분석 | Vercel Web Analytics (무료, 익명) |
-| Cron | 없음 — 알림 시드는 진입 시 `seedDailyNotifications` |
+| Cron | Vercel Cron 일 1회 (한국 새벽 4시) → `/api/keepalive` → Supabase 가벼운 쿼리 1번. 알림 시드는 별도, 여전히 진입 시 `seedDailyNotifications` |
+| Supabase 일시정지 대비 | keepalive 라우트가 매일 DB 깨어 있게 함 — 사용자가 며칠 안 들어와도 콜드 스타트 없음 |
 | Stage 순서 | A 푸시 → B prod 생성 → C 마이그레이션 → D Vercel → E OAuth → F Sentry+Analytics |
 
 ## 환경 분리 그림
@@ -107,6 +108,7 @@
    - `SUPABASE_PROJECT_ID` = prod project id
    - `NEXT_PUBLIC_SENTRY_DSN` = (Stage F 에서 받을 값, 일단 비우거나 생략)
    - `SENTRY_AUTH_TOKEN` = (Stage F)
+   - `CRON_SECRET` = (Stage F — 무작위 32자, keepalive 라우트 보호용)
 4. **Deploy** 클릭.
 
 **체크포인트**: Vercel 빌드 로그 성공 → `xxx.vercel.app` 접속 → 로그인 페이지 표시.
@@ -174,6 +176,21 @@ prod URL이 확정된 다음 진행 (Stage D 직후).
 
 **Vercel 콘솔**: 프로젝트 → Analytics 탭 → Enable.
 
+### Vercel Cron + keepalive 라우트
+
+**목적**: Supabase 무료 플랜이 7일간 쿼리 0이면 DB를 일시정지함. 매일 1번 자동 핑으로 카운터 리셋 → 사용자가 며칠 안 들어와도 콜드 스타트 없음.
+
+**생성 파일**:
+- `app/api/keepalive/route.ts` — admin client 로 `profiles select limit 1` 1번 실행하고 OK 반환
+- `vercel.json` — `{ "crons": [{ "path": "/api/keepalive", "schedule": "0 19 * * *" }] }` (UTC 19시 = 한국 새벽 4시)
+
+**보안**: Vercel cron 호출 시 `Authorization: Bearer <CRON_SECRET>` 헤더 자동 첨부. 라우트가 이 토큰 검증 → 외부 누구나 호출해서 쿼리 비용 못 일으키게 차단.
+
+**환경변수 추가** (Vercel 콘솔):
+- `CRON_SECRET` = 무작위 32자 문자열 (한 번 생성, Vercel 변수로만 보관)
+
+**체크포인트**: 배포 후 Vercel → Settings → Cron Jobs 에 잡 1개 보임. 다음 날 Logs 탭에서 200 응답 확인.
+
 ### 검증 시나리오
 
 배포 완료 후 시크릿 브라우저로 처음부터:
@@ -210,9 +227,11 @@ sentry.server.config.ts      # 신규 — Node Sentry init
 sentry.edge.config.ts        # 신규 — Edge Sentry init
 instrumentation.ts           # 신규 — Next 14 표준 위치
 app/global-error.tsx         # 신규 — 최상위 에러 바운더리 + Sentry 캡처
+app/api/keepalive/route.ts   # 신규 — Vercel cron 용 DB 핑 라우트
+vercel.json                  # 신규 — cron 스케줄 정의
 app/layout.tsx               # 수정 — <Analytics /> 마운트
 next.config.mjs              # 수정 — withSentryConfig 래핑
-.env.local.example           # 수정 — Sentry 변수 2개 추가
+.env.local.example           # 수정 — Sentry 변수 2개 + CRON_SECRET 추가
 .gitignore                   # 수정 — /*.png 추가
 package.json                 # 수정 — @sentry/nextjs, @vercel/analytics 추가
 ```
@@ -235,7 +254,8 @@ package.json                 # 수정 — @sentry/nextjs, @vercel/analytics 추�
 | Sentry DSN 잘못 입력 → 빌드 실패 | 환경변수 비워두면 SDK no-op, 비활성으로 안전 |
 | Vercel 빌드 typecheck 실패 | 사전 로컬 `pnpm typecheck` 통과 후 푸시 |
 | Supabase prod Confirm email 꺼져 있어 누구나 가입 | Stage F 검증 직전 Supabase prod Auth 설정 확인 |
-| Supabase 무료 티어 — 7일 무활동 시 프로젝트 일시정지 | 베타 사용자 외에 본인이라도 주 1회 접속, 또는 v2 에서 Pro($25/mo) 승급 |
+| Supabase 무료 티어 — 7일 무활동 시 프로젝트 일시정지 | `/api/keepalive` 가 Vercel Cron 으로 매일 DB 깨움 (Stage F) |
+| keepalive 라우트가 외부 호출로 비용 일으킬 위험 | `CRON_SECRET` Bearer 토큰 검증으로 Vercel cron 만 호출 가능 |
 
 ## YAGNI (지금은 안 함)
 
