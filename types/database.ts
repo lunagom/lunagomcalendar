@@ -221,6 +221,7 @@ export type Database = {
           nickname: string | null
           theme_preference: string
           updated_at: string
+          widget_visibility: Json | null
         }
         Insert: {
           avatar_url?: string | null
@@ -229,6 +230,7 @@ export type Database = {
           nickname?: string | null
           theme_preference?: string
           updated_at?: string
+          widget_visibility?: Json | null
         }
         Update: {
           avatar_url?: string | null
@@ -237,6 +239,7 @@ export type Database = {
           nickname?: string | null
           theme_preference?: string
           updated_at?: string
+          widget_visibility?: Json | null
         }
         Relationships: []
       }

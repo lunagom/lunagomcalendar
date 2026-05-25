@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { getCalendars } from "@/features/calendar/server/queries";
+import { normalizeHidden } from "@/features/widgets/lib/items";
 import { SettingsClient } from "@/features/settings/components/SettingsClient";
 
 export const metadata = { title: "설정" };
@@ -15,7 +16,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname")
+    .select("nickname, widget_visibility")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -25,6 +26,7 @@ export default async function SettingsPage() {
     <SettingsClient
       email={user.email ?? ""}
       initialNickname={profile?.nickname ?? ""}
+      initialHiddenWidgets={normalizeHidden(profile?.widget_visibility)}
       calendars={calendars}
     />
   );

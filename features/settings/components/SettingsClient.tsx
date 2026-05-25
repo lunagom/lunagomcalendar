@@ -14,16 +14,23 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NewCalendarDialog } from "@/features/calendar/components/NewCalendarDialog";
 import { CalendarSettingsDialog } from "@/features/calendar/components/CalendarSettingsDialog";
+import {
+  WIDGET_ITEMS,
+  type WidgetKey,
+} from "@/features/widgets/lib/items";
+import { updateWidgetVisibility } from "@/features/widgets/server/actions";
 import { signOut, updateNickname } from "../server/actions";
 import type { CalendarRow } from "@/features/calendar/server/queries";
 
 type Props = {
   email: string;
   initialNickname: string;
+  initialHiddenWidgets: WidgetKey[];
   calendars: CalendarRow[];
 };
 
@@ -33,14 +40,37 @@ const THEME_OPTIONS = [
   { value: "system", label: "시스템", icon: Monitor },
 ] as const;
 
-export function SettingsClient({ email, initialNickname, calendars }: Props) {
+export function SettingsClient({
+  email,
+  initialNickname,
+  initialHiddenWidgets,
+  calendars,
+}: Props) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [nickname, setNickname] = useState(initialNickname);
   const [savedNickname, setSavedNickname] = useState(initialNickname);
+  const [hiddenWidgets, setHiddenWidgets] =
+    useState<WidgetKey[]>(initialHiddenWidgets);
   const [creatingCal, setCreatingCal] = useState(false);
   const [editingCal, setEditingCal] = useState<CalendarRow | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const handleWidgetToggle = (key: WidgetKey, visible: boolean) => {
+    const next = visible
+      ? hiddenWidgets.filter((k) => k !== key)
+      : Array.from(new Set([...hiddenWidgets, key]));
+    startTransition(async () => {
+      const r = await updateWidgetVisibility(next);
+      if (!r.ok) {
+        toast.error(r.error);
+        return;
+      }
+      setHiddenWidgets(next);
+      toast.success("위젯 설정 저장됨");
+      router.refresh();
+    });
+  };
 
   const nicknameDirty = nickname.trim() !== savedNickname;
 
@@ -141,7 +171,34 @@ export function SettingsClient({ email, initialNickname, calendars }: Props) {
         </div>
       </section>
 
-      {/* 3. 연결된 캘린더 */}
+      {/* 3. 메인 위젯 */}
+      <section className="space-y-3">
+        <h2 className="text-base font-semibold">메인 위젯</h2>
+        <div className="rounded-lg border p-4 space-y-1">
+          {WIDGET_ITEMS.map((w) => {
+            const visible = !hiddenWidgets.includes(w.key);
+            const Icon = w.icon;
+            return (
+              <label
+                key={w.key}
+                className="flex items-center gap-3 py-1.5 cursor-pointer"
+              >
+                <Checkbox
+                  checked={visible}
+                  onCheckedChange={(v) =>
+                    handleWidgetToggle(w.key, Boolean(v))
+                  }
+                  disabled={pending}
+                />
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">{w.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. 연결된 캘린더 */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">연결된 캘린더</h2>

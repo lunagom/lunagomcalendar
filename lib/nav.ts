@@ -1,5 +1,6 @@
 // lib/nav.ts
 import {
+  Home,
   Calendar,
   CheckSquare,
   Wallet,
@@ -17,10 +18,10 @@ export type NavItem = {
 
 /**
  * 사이드바(데스크톱) + 모바일 드로어 메뉴.
- * "하루(/day)" 는 캘린더 헤더의 월간/일간 토글에 흡수되어 메뉴에서 제외.
- * 라우트 자체는 유지 (토글이 /calendar ↔ /day 라우팅).
+ * "/" 홈은 메인 위젯 페이지. "하루(/day)" 는 캘린더 헤더 토글에 흡수.
  */
 export const navItems: NavItem[] = [
+  { href: "/", label: "홈", icon: Home },
   { href: "/calendar", label: "캘린더", icon: Calendar },
   { href: "/todos", label: "오늘의 할 일", icon: CheckSquare },
   { href: "/expense", label: "가계부", icon: Wallet },
@@ -33,11 +34,11 @@ export type MobileTabItem =
   | { kind: "more"; label: string; icon: LucideIcon };
 
 /**
- * 모바일 하단 탭바 4개. iOS 패턴.
- * "더보기" 는 헤더 햄버거와 같은 드로어를 연다 ({@link useMobileDrawerStore}).
+ * 모바일 하단 탭바 4개.
+ * 캘린더는 더보기 드로어의 사이드바 nav 에서 진입.
  */
 export const mobileTabItems: MobileTabItem[] = [
-  { kind: "link", href: "/calendar", label: "캘린더", icon: Calendar },
+  { kind: "link", href: "/", label: "홈", icon: Home },
   { kind: "link", href: "/todos", label: "할 일", icon: CheckSquare },
   { kind: "link", href: "/expense", label: "가계부", icon: Wallet },
   { kind: "more", label: "더보기", icon: MoreHorizontal },
