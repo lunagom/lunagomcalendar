@@ -68,7 +68,7 @@ export function DayCell({
           </span>
         )}
         {dailyExpenseTotal != null && dailyExpenseTotal > 0 && (
-          <span className="ml-auto text-[10px] font-medium tabular-nums text-foreground/70">
+          <span className="ml-auto min-w-0 truncate text-[10px] font-medium tabular-nums text-foreground/70">
             {dailyExpenseTotal.toLocaleString("ko-KR")}원
           </span>
         )}

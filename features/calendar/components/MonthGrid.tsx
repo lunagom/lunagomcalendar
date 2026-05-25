@@ -21,6 +21,8 @@ import { MonthNavigation } from "./MonthNavigation";
 import { CalendarHeaderBar } from "./CalendarHeaderBar";
 import { EventDetailDialog } from "./EventDetailDialog";
 import { DayDetailPopup } from "./DayDetailPopup";
+import { WeekMultiDayLayer } from "./WeekMultiDayLayer";
+import { buildWeekSegments, weekKeyOfDate, type WeekSegment } from "../lib/multi-day";
 import { moveEvent } from "../server/actions";
 import { useCalendarUIStore } from "../store/calendar-ui";
 import type { CalendarRow, EventRow } from "../server/queries";
@@ -45,6 +47,7 @@ type CellRenderData = {
   eventsByDate: Map<string, DayCellEvent[]>;
   todosByDate: Map<string, TaskRow[]>;
   expensesByDate: Map<string, number>;
+  weekSegments: WeekSegment[];
   onEventClick: (e: EventRow) => void;
   onDayClick: (d: Date) => void;
 };
@@ -92,40 +95,27 @@ export function MonthGrid({
   );
 
   /**
-   * 멀티데이 이벤트는 start~end 모든 날짜에 추가하고, 셀별로 spanRole
-   * (start/middle/end) 를 부여해 EventBar 가 좌우 모서리 / 빈 텍스트로
-   * 시각적 연속성을 표현하게 한다. 주(week) 경계 처리는 추후 보완.
+   * single-day 이벤트만 셀별 매핑. 멀티데이는 WeekMultiDayLayer 가 주(week) 단위
+   * absolute 막대로 처리 (옵션 B).
    */
   const eventsByDate = useMemo(() => {
     const map = new Map<string, DayCellEvent[]>();
     for (const e of visibleEvents) {
       const startKey = e.start_at.slice(0, 10);
       const endKey = (e.end_at ?? e.start_at).slice(0, 10);
-      if (startKey === endKey) {
-        const arr = map.get(startKey) ?? [];
-        arr.push({ event: e, spanRole: "single" });
-        map.set(startKey, arr);
-        continue;
-      }
-      const start = new Date(`${startKey}T00:00:00`);
-      const end = new Date(`${endKey}T00:00:00`);
-      const cur = new Date(start);
-      while (cur.getTime() <= end.getTime()) {
-        const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`;
-        const role =
-          cur.getTime() === start.getTime()
-            ? ("start" as const)
-            : cur.getTime() === end.getTime()
-              ? ("end" as const)
-              : ("middle" as const);
-        const arr = map.get(key) ?? [];
-        arr.push({ event: e, spanRole: role });
-        map.set(key, arr);
-        cur.setDate(cur.getDate() + 1);
-      }
+      if (startKey !== endKey) continue; // 멀티데이는 layer 가 그림
+      const arr = map.get(startKey) ?? [];
+      arr.push({ event: e, spanRole: "single" });
+      map.set(startKey, arr);
     }
     return map;
   }, [visibleEvents]);
+
+  /** 멀티데이 이벤트만 주별 segment + slot 할당. layer 가 사용. */
+  const weekSegments = useMemo(
+    () => buildWeekSegments(visibleEvents),
+    [visibleEvents],
+  );
 
   const todosByDate = useMemo(() => {
     const map = new Map<string, TaskRow[]>();
@@ -148,10 +138,14 @@ export function MonthGrid({
     return map;
   }, [expenses, showDailyExpenses]);
 
-  // ── DayCell portal 관리 ──
+  // ── DayCell + WeekMultiDayLayer portal 관리 ──
   // FullCalendar 가 셀을 mount 할 때 빈 div 를 frame 에 추가하고 React root 생성.
+  // 일요일 셀이면 부모 tr 에 멀티데이 layer 도 mount.
   // data 변화 시 useEffect 가 모든 root 를 다시 렌더.
   const rootsRef = useRef(
+    new Map<string, { root: Root; container: HTMLDivElement }>(),
+  );
+  const weekRootsRef = useRef(
     new Map<string, { root: Root; container: HTMLDivElement }>(),
   );
   const dataRef = useRef<CellRenderData>({
@@ -160,6 +154,7 @@ export function MonthGrid({
     eventsByDate,
     todosByDate,
     expensesByDate,
+    weekSegments,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
   });
@@ -171,6 +166,7 @@ export function MonthGrid({
     eventsByDate,
     todosByDate,
     expensesByDate,
+    weekSegments,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
   };
@@ -192,10 +188,25 @@ export function MonthGrid({
     );
   }
 
-  // 데이터 변화 시 모든 셀 다시 렌더
+  function renderWeekLayerInto(weekKey: string, root: Root) {
+    const d = dataRef.current;
+    const segs = d.weekSegments.filter((s) => s.weekKey === weekKey);
+    root.render(
+      <WeekMultiDayLayer
+        segments={segs}
+        calendars={d.calendars}
+        onEventClick={d.onEventClick}
+      />,
+    );
+  }
+
+  // 데이터 변화 시 모든 셀 + 모든 week layer 다시 렌더
   useEffect(() => {
     rootsRef.current.forEach(({ root }, isoDate) => {
       renderCellInto(isoDate, root);
+    });
+    weekRootsRef.current.forEach(({ root }, weekKey) => {
+      renderWeekLayerInto(weekKey, root);
     });
   });
 
@@ -212,6 +223,31 @@ export function MonthGrid({
     const root = createRoot(container);
     rootsRef.current.set(isoDate, { root, container });
     renderCellInto(isoDate, root);
+
+    // 일요일 셀이면 td 자체에 멀티데이 layer mount.
+    // (tr 에 position:relative 부여하면 일부 브라우저에서 데이터 row 의 cell
+    //  width 계산이 헤더와 어긋남 — td 에 mount 하면 안전. layer width 700%
+    //  로 한 주 전체 폭을 확보.)
+    if (arg.date.getDay() === 0) {
+      const td = arg.el;
+      const weekKey = weekKeyOfDate(arg.date);
+      if (weekRootsRef.current.has(weekKey)) return;
+      if (window.getComputedStyle(td).position === "static") {
+        td.style.position = "relative";
+      }
+      td.style.overflow = "visible";
+      const layerEl = document.createElement("div");
+      layerEl.style.cssText =
+        "position:absolute;left:0;top:0;width:700%;height:0;pointer-events:none;z-index:10;";
+      layerEl.setAttribute("data-week-layer", weekKey);
+      td.appendChild(layerEl);
+      const layerRoot = createRoot(layerEl);
+      weekRootsRef.current.set(weekKey, {
+        root: layerRoot,
+        container: layerEl,
+      });
+      renderWeekLayerInto(weekKey, layerRoot);
+    }
   };
 
   const handleDayCellWillUnmount = (arg: DayCellMountArg) => {
@@ -224,6 +260,19 @@ export function MonthGrid({
         entry.container.remove();
       }, 0);
       rootsRef.current.delete(isoDate);
+    }
+
+    // 일요일 셀이면 그 주의 layer 도 unmount
+    if (arg.date.getDay() === 0) {
+      const weekKey = weekKeyOfDate(arg.date);
+      const layer = weekRootsRef.current.get(weekKey);
+      if (layer) {
+        setTimeout(() => {
+          layer.root.unmount();
+          layer.container.remove();
+        }, 0);
+        weekRootsRef.current.delete(weekKey);
+      }
     }
   };
 

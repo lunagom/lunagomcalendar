@@ -43,7 +43,10 @@
   min-width: 0;
 }
 
-/* 요일 헤더 */
+/* 요일 헤더 — 모든 셀에 border-bottom 보장 (일부 셀 line 누락 회피) */
+.fc .fc-col-header-cell {
+  border-bottom: 1px solid hsl(var(--border));
+}
 .fc .fc-col-header-cell-cushion {
   padding: 0.5rem 0.25rem;
   font-size: 0.75rem;
@@ -75,6 +78,10 @@
 }
 .fc .fc-daygrid-day-frame {
   min-height: 5rem;
+}
+/* 멀티데이 layer 가 일요일 td 에서 width:700% 로 뻗어나갈 수 있게 */
+.fc .fc-daygrid-day {
+  overflow: visible;
 }
 @media (min-width: 640px) {
   .fc .fc-daygrid-day-frame {
