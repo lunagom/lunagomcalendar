@@ -309,6 +309,75 @@ export type Database = {
           },
         ]
       }
+      incomes: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          id: string
+          memo: string | null
+          partner_id: string | null
+          received_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          id?: string
+          memo?: string | null
+          partner_id?: string | null
+          received_at: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          id?: string
+          memo?: string | null
+          partner_id?: string | null
+          received_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recurring_incomes: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          partner_id: string | null
+          receive_day: number
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          partner_id?: string | null
+          receive_day: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          partner_id?: string | null
+          receive_day?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       monthly_targets: {
         Row: {
           amount: number
