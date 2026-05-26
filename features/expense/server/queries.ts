@@ -9,6 +9,9 @@ export type SubscriptionRow =
 export type BudgetRow = Database["public"]["Tables"]["budgets"]["Row"];
 export type MonthlyTargetRow =
   Database["public"]["Tables"]["monthly_targets"]["Row"];
+export type IncomeRow = Database["public"]["Tables"]["incomes"]["Row"];
+export type RecurringIncomeRow =
+  Database["public"]["Tables"]["recurring_incomes"]["Row"];
 
 /** 'YYYY-MM' 의 첫날 00:00 ~ 다음달 00:00 (로컬 시간 → ISO). */
 function monthRange(month: string): { startIso: string; endIso: string } {
@@ -114,7 +117,7 @@ export async function getBudgetsForMonth(month: string): Promise<BudgetRow[]> {
  */
 export async function getUsedCategories(): Promise<string[]> {
   const supabase = createClient();
-  const [exp, sub, bud, evt] = await Promise.all([
+  const [exp, sub, bud, evt, inc, rinc] = await Promise.all([
     supabase.from("expenses").select("category"),
     supabase.from("subscriptions").select("category"),
     supabase.from("budgets").select("category"),
@@ -122,11 +125,15 @@ export async function getUsedCategories(): Promise<string[]> {
       .from("events")
       .select("expense_category")
       .not("expense_category", "is", null),
+    supabase.from("incomes").select("category"),
+    supabase.from("recurring_incomes").select("category"),
   ]);
   if (exp.error) throw exp.error;
   if (sub.error) throw sub.error;
   if (bud.error) throw bud.error;
   if (evt.error) throw evt.error;
+  if (inc.error) throw inc.error;
+  if (rinc.error) throw rinc.error;
 
   const set = new Set<string>();
   exp.data?.forEach((r) => r.category && set.add(r.category));
@@ -135,5 +142,67 @@ export async function getUsedCategories(): Promise<string[]> {
   evt.data?.forEach(
     (r) => r.expense_category && set.add(r.expense_category),
   );
+  inc.data?.forEach((r) => r.category && set.add(r.category));
+  rinc.data?.forEach((r) => r.category && set.add(r.category));
   return Array.from(set).sort();
+}
+
+// ============================================================================
+// 수입 — incomes / recurring_incomes
+// ============================================================================
+
+/** 특정 월의 수입. received_at 오름차순. */
+export async function getIncomesForMonth(
+  month: string,
+): Promise<IncomeRow[]> {
+  const supabase = createClient();
+  const { startIso, endIso } = monthRange(month);
+  const { data, error } = await supabase
+    .from("incomes")
+    .select("*")
+    .gte("received_at", startIso)
+    .lt("received_at", endIso)
+    .order("received_at");
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** 특정 날짜의 수입. */
+export async function getIncomesForDay(date: string): Promise<IncomeRow[]> {
+  const supabase = createClient();
+  const start = new Date(date + "T00:00:00");
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+  const { data, error } = await supabase
+    .from("incomes")
+    .select("*")
+    .gte("received_at", start.toISOString())
+    .lt("received_at", end.toISOString())
+    .order("received_at");
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** 월별 수입 카테고리별 합계. */
+export async function getMonthlyTotalsByIncomeCategory(
+  month: string,
+): Promise<Record<string, number>> {
+  const incomes = await getIncomesForMonth(month);
+  const totals: Record<string, number> = {};
+  for (const i of incomes) {
+    totals[i.category] = (totals[i.category] ?? 0) + i.amount;
+  }
+  return totals;
+}
+
+/** 모든 정기 수입. 활성 먼저 → 수령일 순. */
+export async function getRecurringIncomes(): Promise<RecurringIncomeRow[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("recurring_incomes")
+    .select("*")
+    .order("is_active", { ascending: false })
+    .order("receive_day");
+  if (error) throw error;
+  return data ?? [];
 }
