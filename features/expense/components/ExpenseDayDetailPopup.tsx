@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { ExpenseModal } from "./ExpenseModal";
+import { TransactionModal } from "./TransactionModal";
 import { DeleteConfirmDialog } from "@/features/calendar/components/DeleteConfirmDialog";
 import { deleteExpense } from "../server/actions";
 import { getCategoryColor } from "@/lib/colors";
@@ -166,7 +166,7 @@ export function ExpenseDayDetailPopup({
       )}
 
       {creating && (
-        <ExpenseModal
+        <TransactionModal
           open
           onOpenChange={(v) => !v && setCreating(false)}
           defaultDate={isoDate}
@@ -175,7 +175,7 @@ export function ExpenseDayDetailPopup({
       )}
 
       {editing && (
-        <ExpenseModal
+        <TransactionModal
           open
           onOpenChange={(v) => !v && setEditing(null)}
           initial={editing}

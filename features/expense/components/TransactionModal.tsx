@@ -1,4 +1,4 @@
-// features/expense/components/ExpenseModal.tsx
+// features/expense/components/TransactionModal.tsx
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
@@ -48,7 +48,7 @@ function formatThousands(n: string): string {
   return Number(digits).toLocaleString("ko-KR");
 }
 
-export function ExpenseModal({
+export function TransactionModal({
   open,
   onOpenChange,
   initial,
