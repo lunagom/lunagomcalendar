@@ -92,3 +92,54 @@ function parseHex(hex: string): [number, number, number] {
     parseInt(full.slice(4, 6), 16),
   ];
 }
+
+/**
+ * 수입 카테고리 5종 — 한국 가계부 표준 + 비트코인 상징색 (앰버).
+ * 색은 라이트모드 hex. 다크모드는 자체 분기 (TRANSACTION_DELTA_COLORS 참조).
+ */
+export const INCOME_CATEGORY_PRESETS = [
+  "월급",
+  "투자",
+  "코인",
+  "부수입",
+  "기타",
+] as const;
+
+export type IncomeCategoryPreset = (typeof INCOME_CATEGORY_PRESETS)[number];
+
+export const INCOME_CATEGORY_COLOR: Record<IncomeCategoryPreset, string> = {
+  월급: "#16A34A",
+  투자: "#10B981",
+  코인: "#F59E0B",
+  부수입: "#84CC16",
+  기타: "#6B7280",
+};
+
+/** 자유 입력 카테고리 fallback 색. */
+export const CUSTOM_INCOME_CATEGORY_COLOR = "#6B7280";
+
+export function getIncomeCategoryColor(category: string): string {
+  if (category in INCOME_CATEGORY_COLOR) {
+    return INCOME_CATEGORY_COLOR[category as IncomeCategoryPreset];
+  }
+  return CUSTOM_INCOME_CATEGORY_COLOR;
+}
+
+/**
+ * 수입/지출 강조 색 — 라이트 + 다크 분기.
+ * 다크모드는 채도 낮춰 눈 피로 완화.
+ */
+export const TRANSACTION_DELTA_COLORS = {
+  income: { light: "#16A34A", dark: "#4ADE80" },
+  expense: { light: "#DC2626", dark: "#F87171" },
+} as const;
+
+/**
+ * 금액 → 부호 포함 한국 원 표기.
+ * 색맹 대응 — 색 없이도 +/- 로 구분 가능.
+ */
+export function formatDelta(amount: number): string {
+  if (amount === 0) return "0원";
+  const sign = amount > 0 ? "+" : "-";
+  return `${sign}${Math.abs(amount).toLocaleString("ko-KR")}원`;
+}
