@@ -212,3 +212,142 @@ export async function deleteMonthlyTarget(
   revalidatePath("/expense");
   return { ok: true, data: undefined };
 }
+
+// ============================================================================
+// 수입 — incomes / recurring_incomes
+// ============================================================================
+
+const incomeInputSchema = z.object({
+  amount: z.number().int().min(0).max(2_000_000_000),
+  category: z.string().min(1).max(50),
+  memo: z.string().nullable().optional(),
+  received_at: z.string(), // ISO
+});
+
+export async function createIncome(
+  input: unknown,
+): Promise<ActionResult<{ id: string }>> {
+  const parsed = incomeInputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("incomes")
+    .insert({ ...parsed.data, user_id: userId })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  revalidatePath("/calendar");
+  return { ok: true, data: { id: data.id } };
+}
+
+export async function updateIncome(
+  id: string,
+  input: unknown,
+): Promise<ActionResult> {
+  const parsed = incomeInputSchema.partial().safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("incomes")
+    .update(parsed.data)
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
+
+export async function deleteIncome(id: string): Promise<ActionResult> {
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase.from("incomes").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
+
+const recurringIncomeInputSchema = z.object({
+  name: z.string().min(1).max(50),
+  amount: z.number().int().min(0).max(2_000_000_000),
+  receive_day: z.number().int().min(1).max(31),
+  category: z.string().min(1).max(50),
+  is_active: z.boolean().optional().default(true),
+});
+
+export async function createRecurringIncome(
+  input: unknown,
+): Promise<ActionResult<{ id: string }>> {
+  const parsed = recurringIncomeInputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("recurring_incomes")
+    .insert({ ...parsed.data, user_id: userId })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  return { ok: true, data: { id: data.id } };
+}
+
+export async function updateRecurringIncome(
+  id: string,
+  input: unknown,
+): Promise<ActionResult> {
+  const parsed = recurringIncomeInputSchema.partial().safeParse(input);
+  if (!parsed.success) return { ok: false, error: "유효하지 않은 입력입니다" };
+
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("recurring_incomes")
+    .update(parsed.data)
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  return { ok: true, data: undefined };
+}
+
+export async function deleteRecurringIncome(
+  id: string,
+): Promise<ActionResult> {
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("recurring_incomes")
+    .delete()
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  return { ok: true, data: undefined };
+}
+
+export async function toggleRecurringIncomeActive(
+  id: string,
+  isActive: boolean,
+): Promise<ActionResult> {
+  await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("recurring_incomes")
+    .update({ is_active: isActive })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/expense");
+  return { ok: true, data: undefined };
+}
