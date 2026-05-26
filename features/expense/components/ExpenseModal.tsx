@@ -21,6 +21,7 @@ import {
   type ExpenseCategoryPreset,
 } from "@/lib/colors";
 import { parseExpense } from "@/lib/expense-parser";
+import { isoToLocalDateKey } from "@/lib/datetime";
 import { createExpense, updateExpense } from "../server/actions";
 import type { ExpenseRow } from "../server/queries";
 
@@ -64,7 +65,9 @@ export function ExpenseModal({
   );
   const [category, setCategory] = useState<string>(initial?.category ?? "");
   const [paidAt, setPaidAt] = useState<string>(
-    initial?.paid_at?.slice(0, 10) ?? defaultDate ?? todayIso(),
+    initial?.paid_at
+      ? isoToLocalDateKey(initial.paid_at)
+      : (defaultDate ?? todayIso()),
   );
   const [memo, setMemo] = useState<string>(initial?.memo ?? "");
   const [showNewCategory, setShowNewCategory] = useState(false);

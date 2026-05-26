@@ -24,6 +24,7 @@ import { DayDetailPopup } from "./DayDetailPopup";
 import { WeekMultiDayLayer } from "./WeekMultiDayLayer";
 import { buildWeekSegments, weekKeyOfDate, type WeekSegment } from "../lib/multi-day";
 import { moveEvent } from "../server/actions";
+import { isoToLocalDateKey } from "@/lib/datetime";
 import { useCalendarUIStore } from "../store/calendar-ui";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
@@ -101,8 +102,8 @@ export function MonthGrid({
   const eventsByDate = useMemo(() => {
     const map = new Map<string, DayCellEvent[]>();
     for (const e of visibleEvents) {
-      const startKey = e.start_at.slice(0, 10);
-      const endKey = (e.end_at ?? e.start_at).slice(0, 10);
+      const startKey = isoToLocalDateKey(e.start_at);
+      const endKey = isoToLocalDateKey(e.end_at ?? e.start_at);
       if (startKey !== endKey) continue; // 멀티데이는 layer 가 그림
       const arr = map.get(startKey) ?? [];
       arr.push({ event: e, spanRole: "single" });
@@ -132,7 +133,7 @@ export function MonthGrid({
     const map = new Map<string, number>();
     if (!showDailyExpenses) return map;
     for (const e of expenses) {
-      const key = e.paid_at.slice(0, 10);
+      const key = isoToLocalDateKey(e.paid_at);
       map.set(key, (map.get(key) ?? 0) + e.amount);
     }
     return map;

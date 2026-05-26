@@ -21,6 +21,7 @@ import {
   getTextColor,
 } from "@/lib/colors";
 import { toLunar } from "@/lib/lunar";
+import { isoToLocalInput } from "@/lib/datetime";
 import { createEvent, updateEvent } from "../server/actions";
 import type { CalendarRow, EventRow } from "../server/queries";
 
@@ -56,12 +57,18 @@ export function EventModal({
   // 일간 view 의 시간 슬롯에 자동 표시되려면 종일이 아니어야 함.
   const [isAllDay, setIsAllDay] = useState(initial?.is_all_day ?? false);
   const [startAt, setStartAt] = useState(
-    initial?.start_at?.slice(0, 16) ??
-      (defaultDate ? `${defaultDate}T09:00` : ""),
+    initial?.start_at
+      ? isoToLocalInput(initial.start_at)
+      : defaultDate
+        ? `${defaultDate}T09:00`
+        : "",
   );
   const [endAt, setEndAt] = useState(
-    initial?.end_at?.slice(0, 16) ??
-      (defaultDate ? `${defaultDate}T10:00` : ""),
+    initial?.end_at
+      ? isoToLocalInput(initial.end_at)
+      : defaultDate
+        ? `${defaultDate}T10:00`
+        : "",
   );
   const [location, setLocation] = useState(initial?.location ?? "");
   const [memo, setMemo] = useState(initial?.memo ?? "");

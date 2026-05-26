@@ -3,6 +3,7 @@
 
 import { useMemo, useState } from "react";
 import { ExpenseDayDetailPopup } from "./ExpenseDayDetailPopup";
+import { isoToLocalDateKey } from "@/lib/datetime";
 import type { ExpenseRow } from "../server/queries";
 
 type Props = {
@@ -20,11 +21,11 @@ function isoOf(d: Date): string {
 export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // paid_at 첫 10자 → ISO 날짜로 그룹핑
+  // paid_at (UTC ISO) → 로컬 날짜로 그룹핑
   const expensesByDate = useMemo(() => {
     const map = new Map<string, ExpenseRow[]>();
     for (const e of expenses) {
-      const key = e.paid_at.slice(0, 10);
+      const key = isoToLocalDateKey(e.paid_at);
       const arr = map.get(key) ?? [];
       arr.push(e);
       map.set(key, arr);

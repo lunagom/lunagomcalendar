@@ -1,5 +1,6 @@
 // features/calendar/lib/multi-day.ts
 import type { EventRow } from "../server/queries";
+import { isoToLocalDateKey } from "@/lib/datetime";
 
 export type WeekSegment = {
   event: EventRow;
@@ -39,8 +40,8 @@ export function buildWeekSegments(events: EventRow[]): WeekSegment[] {
   const raw: Seg[] = [];
 
   for (const e of events) {
-    const startKey = e.start_at.slice(0, 10);
-    const endKey = (e.end_at ?? e.start_at).slice(0, 10);
+    const startKey = isoToLocalDateKey(e.start_at);
+    const endKey = isoToLocalDateKey(e.end_at ?? e.start_at);
     if (startKey === endKey) continue;
 
     const startDate = new Date(`${startKey}T00:00:00`);
