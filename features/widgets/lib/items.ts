@@ -7,11 +7,13 @@ import {
   BarChart3,
   CheckSquare,
   Users,
+  TrendingUp,
 } from "lucide-react";
 
 export type WidgetKey =
   | "today_events"
   | "upcoming"
+  | "month_summary"
   | "month_expense"
   | "category"
   | "today_todos"
@@ -22,6 +24,7 @@ export type WidgetMeta = { key: WidgetKey; label: string; icon: LucideIcon };
 export const WIDGET_ITEMS: WidgetMeta[] = [
   { key: "today_events", label: "오늘의 일정", icon: Calendar },
   { key: "upcoming", label: "다가오는 일정", icon: CalendarDays },
+  { key: "month_summary", label: "이번 달 월 요약", icon: TrendingUp },
   { key: "month_expense", label: "이번 달 지출", icon: Wallet },
   { key: "category", label: "카테고리별 지출", icon: BarChart3 },
   { key: "today_todos", label: "오늘 할 일", icon: CheckSquare },

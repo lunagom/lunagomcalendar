@@ -8,6 +8,7 @@ import {
 } from "@/features/widgets/lib/items";
 import { TodayEventsWidget } from "@/features/widgets/components/TodayEventsWidget";
 import { UpcomingEventsWidget } from "@/features/widgets/components/UpcomingEventsWidget";
+import { MonthSummaryWidget } from "@/features/widgets/components/MonthSummaryWidget";
 import { MonthExpenseWidget } from "@/features/widgets/components/MonthExpenseWidget";
 import { CategoryExpenseWidget } from "@/features/widgets/components/CategoryExpenseWidget";
 import { TodayTodosWidget } from "@/features/widgets/components/TodayTodosWidget";
@@ -18,6 +19,7 @@ export const metadata = { title: "홈" };
 const WIDGET_COMPONENTS: Record<WidgetKey, React.ComponentType> = {
   today_events: TodayEventsWidget,
   upcoming: UpcomingEventsWidget,
+  month_summary: MonthSummaryWidget,
   month_expense: MonthExpenseWidget,
   category: CategoryExpenseWidget,
   today_todos: TodayTodosWidget,

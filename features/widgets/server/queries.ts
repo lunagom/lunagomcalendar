@@ -158,5 +158,49 @@ export async function getTodayAndOverdueTodos(): Promise<TodayTodo[]> {
     }));
 }
 
+export type MonthSummary = {
+  totalIncome: number;
+  totalExpense: number;
+};
+
+/**
+ * 이번 달 월 요약 — 일회성 + 활성 정기 모두 합산.
+ *   수입 = incomes(이번 달) + 활성 recurring_incomes
+ *   지출 = expenses(이번 달) + 활성 subscriptions
+ */
+export async function getMonthSummary(): Promise<MonthSummary> {
+  const supabase = createClient();
+  const month = thisMonthIso();
+  const start = new Date(`${month}-01T00:00:00`).toISOString();
+  const next = new Date(`${month}-01T00:00:00`);
+  next.setMonth(next.getMonth() + 1);
+  const end = next.toISOString();
+
+  const [expRes, incRes, subRes, rincRes] = await Promise.all([
+    supabase.from("expenses").select("amount").gte("paid_at", start).lt("paid_at", end),
+    supabase.from("incomes").select("amount").gte("received_at", start).lt("received_at", end),
+    supabase.from("subscriptions").select("amount, is_active"),
+    supabase.from("recurring_incomes").select("amount, is_active"),
+  ]);
+  if (expRes.error) throw expRes.error;
+  if (incRes.error) throw incRes.error;
+  if (subRes.error) throw subRes.error;
+  if (rincRes.error) throw rincRes.error;
+
+  const oneOffExpense = (expRes.data ?? []).reduce((s, e) => s + e.amount, 0);
+  const oneOffIncome = (incRes.data ?? []).reduce((s, i) => s + i.amount, 0);
+  const activeSub = (subRes.data ?? [])
+    .filter((s) => s.is_active)
+    .reduce((sum, s) => sum + s.amount, 0);
+  const activeRecurringIncome = (rincRes.data ?? [])
+    .filter((r) => r.is_active)
+    .reduce((sum, r) => sum + r.amount, 0);
+
+  return {
+    totalIncome: oneOffIncome + activeRecurringIncome,
+    totalExpense: oneOffExpense + activeSub,
+  };
+}
+
 /** social 의 받은 초대 — 재export (위젯에서 직접 사용). */
 export { getMyIncomingInvites };
