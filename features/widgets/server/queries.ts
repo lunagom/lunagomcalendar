@@ -75,61 +75,6 @@ export async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
   }));
 }
 
-export type MonthExpenseSummary = {
-  actual: number;
-  target: number | null;
-};
-
-/** 이번 달 지출 합계 + 월 목표. */
-export async function getMonthExpenseSummary(): Promise<MonthExpenseSummary> {
-  const supabase = createClient();
-  const month = thisMonthIso();
-  const start = new Date(`${month}-01T00:00:00`).toISOString();
-  const next = new Date(`${month}-01T00:00:00`);
-  next.setMonth(next.getMonth() + 1);
-
-  const [expRes, targetRes] = await Promise.all([
-    supabase
-      .from("expenses")
-      .select("amount")
-      .gte("paid_at", start)
-      .lt("paid_at", next.toISOString()),
-    supabase
-      .from("monthly_targets")
-      .select("amount")
-      .eq("month", month)
-      .maybeSingle(),
-  ]);
-  if (expRes.error) throw expRes.error;
-  const actual = (expRes.data ?? []).reduce((s, e) => s + e.amount, 0);
-  return { actual, target: targetRes.data?.amount ?? null };
-}
-
-export type CategoryTotal = { category: string; amount: number };
-
-/** 이번 달 카테고리별 지출 (금액 내림차순). */
-export async function getCategoryTotals(): Promise<CategoryTotal[]> {
-  const supabase = createClient();
-  const month = thisMonthIso();
-  const start = new Date(`${month}-01T00:00:00`).toISOString();
-  const next = new Date(`${month}-01T00:00:00`);
-  next.setMonth(next.getMonth() + 1);
-
-  const { data, error } = await supabase
-    .from("expenses")
-    .select("category, amount")
-    .gte("paid_at", start)
-    .lt("paid_at", next.toISOString());
-  if (error) throw error;
-  const map = new Map<string, number>();
-  for (const e of data ?? []) {
-    map.set(e.category, (map.get(e.category) ?? 0) + e.amount);
-  }
-  return Array.from(map.entries())
-    .map(([category, amount]) => ({ category, amount }))
-    .sort((a, b) => b.amount - a.amount);
-}
-
 export type TodayTodo = {
   id: string;
   title: string;
