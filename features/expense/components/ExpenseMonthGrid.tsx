@@ -4,11 +4,13 @@
 import { useMemo, useState } from "react";
 import { ExpenseDayDetailPopup } from "./ExpenseDayDetailPopup";
 import { isoToLocalDateKey } from "@/lib/datetime";
-import type { ExpenseRow } from "../server/queries";
+import { formatDelta } from "@/lib/colors";
+import type { ExpenseRow, IncomeRow } from "../server/queries";
 
 type Props = {
   month: string; // "YYYY-MM"
   expenses: ExpenseRow[];
+  incomes: IncomeRow[];
   usedCategories: string[];
 };
 
@@ -18,7 +20,12 @@ function isoOf(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
+export function ExpenseMonthGrid({
+  month,
+  expenses,
+  incomes,
+  usedCategories,
+}: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   // paid_at (UTC ISO) → 로컬 날짜로 그룹핑
@@ -33,16 +40,31 @@ export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
     return map;
   }, [expenses]);
 
-  const totalByDate = useMemo(() => {
+  // received_at (UTC ISO) → 로컬 날짜로 그룹핑
+  const incomesByDate = useMemo(() => {
+    const map = new Map<string, IncomeRow[]>();
+    for (const i of incomes) {
+      const key = isoToLocalDateKey(i.received_at);
+      const arr = map.get(key) ?? [];
+      arr.push(i);
+      map.set(key, arr);
+    }
+    return map;
+  }, [incomes]);
+
+  // 일별 순수익 = 수입 - 지출
+  const deltaByDate = useMemo(() => {
+    const dates = new Set<string>();
+    expensesByDate.forEach((_, k) => dates.add(k));
+    incomesByDate.forEach((_, k) => dates.add(k));
     const map = new Map<string, number>();
-    expensesByDate.forEach((list, date) => {
-      map.set(
-        date,
-        list.reduce((s: number, e: ExpenseRow) => s + e.amount, 0),
-      );
+    dates.forEach((d) => {
+      const inc = (incomesByDate.get(d) ?? []).reduce((s, i) => s + i.amount, 0);
+      const exp = (expensesByDate.get(d) ?? []).reduce((s, e) => s + e.amount, 0);
+      map.set(d, inc - exp);
     });
     return map;
-  }, [expensesByDate]);
+  }, [expensesByDate, incomesByDate]);
 
   // 6주 그리드 — 캘린더와 동일 패턴
   const [yStr, mStr] = month.split("-");
@@ -78,8 +100,12 @@ export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
           const iso = isoOf(d);
           const isCurrentMonth = d.getMonth() === monthIdx;
           const isToday = iso === todayIso;
-          const total = totalByDate.get(iso) ?? 0;
+          const delta = deltaByDate.get(iso) ?? 0;
           const dow = d.getDay();
+          const deltaCls =
+            delta > 0
+              ? "text-[#16A34A] dark:text-[#4ADE80]"
+              : "text-[#DC2626] dark:text-[#F87171]";
 
           return (
             <button
@@ -103,9 +129,11 @@ export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
               >
                 {d.getDate()}
               </span>
-              {total > 0 && (
-                <span className="mt-auto text-right text-[11px] text-foreground font-medium tabular-nums">
-                  {total.toLocaleString("ko-KR")}원
+              {delta !== 0 && (
+                <span
+                  className={`mt-auto text-right text-[11px] font-medium tabular-nums truncate ${deltaCls}`}
+                >
+                  {formatDelta(delta)}
                 </span>
               )}
             </button>
@@ -117,6 +145,7 @@ export function ExpenseMonthGrid({ month, expenses, usedCategories }: Props) {
         <ExpenseDayDetailPopup
           date={selectedDate}
           expenses={expensesByDate.get(isoOf(selectedDate)) ?? []}
+          incomes={incomesByDate.get(isoOf(selectedDate)) ?? []}
           usedCategories={usedCategories}
           onClose={() => setSelectedDate(null)}
         />
