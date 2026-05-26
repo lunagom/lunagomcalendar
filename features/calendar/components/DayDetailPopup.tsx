@@ -25,14 +25,18 @@ import { TodoItem } from "@/features/todos/components/TodoItem";
 import { QuickAddInput } from "@/features/todos/components/QuickAddInput";
 import { isLunarFirstDay, toLunar } from "@/lib/lunar";
 import { isPublicHoliday } from "@/lib/holidays";
+import { formatDelta } from "@/lib/colors";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
+import type { IncomeRow } from "@/features/expense/server/queries";
 
 type Props = {
   date: Date | null;
   events: EventRow[];
   todos: TaskRow[];
   calendars: CalendarRow[];
+  /** 그날 수입 — 캘린더는 헤더 한 줄로만 표시 (상세는 /expense 의 DayDetailPopup). */
+  incomes?: IncomeRow[];
   onClose: () => void;
 };
 
@@ -43,6 +47,7 @@ export function DayDetailPopup({
   events,
   todos,
   calendars,
+  incomes,
   onClose,
 }: Props) {
   const isMobile = useMediaQuery("(max-width: 639px)");
@@ -73,6 +78,7 @@ export function DayDetailPopup({
 
   const description = "선택한 날짜의 일정과 할 일을 확인하고 관리합니다.";
 
+  const incomeTotal = (incomes ?? []).reduce((s, i) => s + i.amount, 0);
   const titleContent = (
     <span className="flex items-center gap-2 flex-wrap text-base">
       <span className={dateColor}>
@@ -84,6 +90,11 @@ export function DayDetailPopup({
         </span>
       )}
       <HolidayBadge isoDate={isoDate} />
+      {incomeTotal > 0 && (
+        <span className="text-xs font-medium tabular-nums text-[#16A34A] dark:text-[#4ADE80]">
+          수입 {formatDelta(incomeTotal)}
+        </span>
+      )}
     </span>
   );
 

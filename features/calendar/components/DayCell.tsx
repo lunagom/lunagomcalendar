@@ -6,6 +6,7 @@ import { HolidayBadge } from "./HolidayBadge";
 import { isLunarFirstDay, toLunar } from "@/lib/lunar";
 import { isPublicHoliday } from "@/lib/holidays";
 import { toggleTodo } from "@/features/todos/server/actions";
+import { formatDelta } from "@/lib/colors";
 import type { EventRow, CalendarRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
 
@@ -20,8 +21,8 @@ type Props = {
   onEventClick: (e: EventRow) => void;
   /** 셀(빈 영역·날짜·배지) 클릭 — DayDetailPopup 열기. 이벤트 막대/체크박스 자체 클릭은 stopPropagation 처리됨. */
   onDayClick: () => void;
-  /** 그날 지출 합계. undefined 또는 0 이면 표시 안 함. */
-  dailyExpenseTotal?: number;
+  /** 그날 순수익 (수입 - 지출). undefined 또는 0 이면 표시 안 함. */
+  dailyDelta?: number;
 };
 
 export function DayCell({
@@ -32,7 +33,7 @@ export function DayCell({
   calendars,
   onEventClick,
   onDayClick,
-  dailyExpenseTotal,
+  dailyDelta,
 }: Props) {
   const isoDate = date.toISOString().slice(0, 10);
   const day = date.getDay();
@@ -67,9 +68,15 @@ export function DayCell({
             ·음 {lunar.month}/1
           </span>
         )}
-        {dailyExpenseTotal != null && dailyExpenseTotal > 0 && (
-          <span className="ml-auto min-w-0 truncate text-[10px] font-medium tabular-nums text-foreground/70">
-            {dailyExpenseTotal.toLocaleString("ko-KR")}원
+        {dailyDelta != null && dailyDelta !== 0 && (
+          <span
+            className={`ml-auto min-w-0 truncate text-[10px] font-medium tabular-nums ${
+              dailyDelta > 0
+                ? "text-[#16A34A] dark:text-[#4ADE80]"
+                : "text-[#DC2626] dark:text-[#F87171]"
+            }`}
+          >
+            {formatDelta(dailyDelta)}
           </span>
         )}
       </div>

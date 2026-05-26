@@ -28,13 +28,17 @@ import { isoToLocalDateKey } from "@/lib/datetime";
 import { useCalendarUIStore } from "../store/calendar-ui";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
-import type { ExpenseRow } from "@/features/expense/server/queries";
+import type {
+  ExpenseRow,
+  IncomeRow,
+} from "@/features/expense/server/queries";
 
 type Props = {
   calendars: CalendarRow[];
   events: EventRow[];
   todos: TaskRow[];
   expenses: ExpenseRow[];
+  incomes: IncomeRow[];
   initialMonth: string; // YYYY-MM
 };
 
@@ -47,7 +51,8 @@ type CellRenderData = {
   calendars: CalendarRow[];
   eventsByDate: Map<string, DayCellEvent[]>;
   todosByDate: Map<string, TaskRow[]>;
-  expensesByDate: Map<string, number>;
+  /** 그날 순수익 (수입 - 지출). showDailyExpenses 토글 OFF 면 빈 Map. */
+  dailyDeltaByDate: Map<string, number>;
   weekSegments: WeekSegment[];
   onEventClick: (e: EventRow) => void;
   onDayClick: (d: Date) => void;
@@ -58,6 +63,7 @@ export function MonthGrid({
   events,
   todos,
   expenses,
+  incomes,
   initialMonth,
 }: Props) {
   const router = useRouter();
@@ -128,16 +134,32 @@ export function MonthGrid({
     return map;
   }, [todos]);
 
-  /** 토글 ON 일 때만 그날 지출 합계 — OFF 면 빈 Map 으로 셀에서 표시 X. */
-  const expensesByDate = useMemo(() => {
+  /** 토글 ON 일 때만 그날 순수익 — OFF 면 빈 Map 으로 셀에서 표시 X. */
+  const dailyDeltaByDate = useMemo(() => {
     const map = new Map<string, number>();
     if (!showDailyExpenses) return map;
+    for (const i of incomes) {
+      const key = isoToLocalDateKey(i.received_at);
+      map.set(key, (map.get(key) ?? 0) + i.amount);
+    }
     for (const e of expenses) {
       const key = isoToLocalDateKey(e.paid_at);
-      map.set(key, (map.get(key) ?? 0) + e.amount);
+      map.set(key, (map.get(key) ?? 0) - e.amount);
     }
     return map;
-  }, [expenses, showDailyExpenses]);
+  }, [expenses, incomes, showDailyExpenses]);
+
+  /** 그날 수입 목록 — DayDetailPopup 에 전달용. */
+  const incomesByDate = useMemo(() => {
+    const map = new Map<string, IncomeRow[]>();
+    for (const i of incomes) {
+      const key = isoToLocalDateKey(i.received_at);
+      const arr = map.get(key) ?? [];
+      arr.push(i);
+      map.set(key, arr);
+    }
+    return map;
+  }, [incomes]);
 
   // ── DayCell + WeekMultiDayLayer portal 관리 ──
   // FullCalendar 가 셀을 mount 할 때 빈 div 를 frame 에 추가하고 React root 생성.
@@ -154,7 +176,7 @@ export function MonthGrid({
     calendars,
     eventsByDate,
     todosByDate,
-    expensesByDate,
+    dailyDeltaByDate,
     weekSegments,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
@@ -166,7 +188,7 @@ export function MonthGrid({
     calendars,
     eventsByDate,
     todosByDate,
-    expensesByDate,
+    dailyDeltaByDate,
     weekSegments,
     onEventClick: setDetailEvent,
     onDayClick: setDayDetailDate,
@@ -184,7 +206,7 @@ export function MonthGrid({
         calendars={d.calendars}
         onEventClick={d.onEventClick}
         onDayClick={() => d.onDayClick(date)}
-        dailyExpenseTotal={d.expensesByDate.get(isoDate)}
+        dailyDelta={d.dailyDeltaByDate.get(isoDate)}
       />,
     );
   }
@@ -359,6 +381,7 @@ export function MonthGrid({
           date={dayDetailDate}
           events={(eventsByDate.get(popupIsoDate) ?? []).map((x) => x.event)}
           todos={todosByDate.get(popupIsoDate) ?? []}
+          incomes={incomesByDate.get(popupIsoDate) ?? []}
           calendars={calendars}
           onClose={() => setDayDetailDate(null)}
         />
