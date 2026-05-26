@@ -167,8 +167,10 @@ export function ExpenseDayDetailPopup({
 
       {creating && (
         <TransactionModal
+          mode="create"
           open
           onOpenChange={(v) => !v && setCreating(false)}
+          defaultType="expense"
           defaultDate={isoDate}
           usedCategories={usedCategories}
         />
@@ -176,6 +178,8 @@ export function ExpenseDayDetailPopup({
 
       {editing && (
         <TransactionModal
+          mode="edit"
+          type="expense"
           open
           onOpenChange={(v) => !v && setEditing(null)}
           initial={editing}
