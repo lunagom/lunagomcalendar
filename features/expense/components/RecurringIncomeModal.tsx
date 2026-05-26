@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
   INCOME_CATEGORY_PRESETS,
+  EXPENSE_CATEGORY_PRESETS,
   getIncomeCategoryColor,
   getTextColor,
 } from "@/lib/colors";
@@ -57,10 +58,13 @@ export function RecurringIncomeModal({
   const [category, setCategory] = useState<string>(initial?.category ?? "월급");
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);
 
+  // 자기 preset (수입) 에도 반대편 (지출) preset 에도 없는 것만 custom 으로
+  const expensePresetSet = new Set<string>(EXPENSE_CATEGORY_PRESETS);
+  const incomePresetSet = new Set<string>(INCOME_CATEGORY_PRESETS);
   const allCategories = [
     ...INCOME_CATEGORY_PRESETS,
     ...usedCategories.filter(
-      (c) => !INCOME_CATEGORY_PRESETS.includes(c as never),
+      (c) => !incomePresetSet.has(c) && !expensePresetSet.has(c),
     ),
   ];
 

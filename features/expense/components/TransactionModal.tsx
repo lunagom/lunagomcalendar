@@ -111,8 +111,17 @@ export function TransactionModal(props: Props) {
       type === "income"
         ? [...INCOME_CATEGORY_PRESETS]
         : [...EXPENSE_CATEGORY_PRESETS];
+    const otherPresets =
+      type === "income"
+        ? [...EXPENSE_CATEGORY_PRESETS]
+        : [...INCOME_CATEGORY_PRESETS];
     const presetSet = new Set<string>(presets);
-    const custom = usedCategories.filter((c) => !presetSet.has(c));
+    const otherSet = new Set<string>(otherPresets);
+    // 자기 preset 에도 없고, 반대편 preset 에도 없는 것만 custom 으로.
+    // "기타" 처럼 양쪽에 다 있는 라벨은 자기 preset 에서 이미 표시되므로 OK.
+    const custom = usedCategories.filter(
+      (c) => !presetSet.has(c) && !otherSet.has(c),
+    );
     return [...presets, ...custom];
   }, [usedCategories, type]);
 
