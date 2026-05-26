@@ -65,6 +65,13 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     totalsByCategory[sub.category] =
       (totalsByCategory[sub.category] ?? 0) + sub.amount;
   }
+
+  // 수입 카테고리 합계에 활성 정기 수입도 합산
+  for (const ri of recurringIncomes) {
+    if (!ri.is_active) continue;
+    totalsByIncomeCategory[ri.category] =
+      (totalsByIncomeCategory[ri.category] ?? 0) + ri.amount;
+  }
   return (
     <ExpensePage
       currentMonth={month}

@@ -69,8 +69,19 @@ export function ExpensePage({
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
   const isThisMonth = currentMonth === thisMonthIso();
 
-  const totalIncome = incomes.reduce((s, i) => s + i.amount, 0);
-  const totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
+  // 월 요약은 일회성 + 활성 정기까지 모두 포함 (가계부의 진짜 월 흐름)
+  const oneOffIncome = incomes.reduce((s, i) => s + i.amount, 0);
+  const recurringIncomeSum = recurringIncomes
+    .filter((r) => r.is_active)
+    .reduce((s, r) => s + r.amount, 0);
+  const totalIncome = oneOffIncome + recurringIncomeSum;
+
+  const oneOffExpense = expenses.reduce((s, e) => s + e.amount, 0);
+  const recurringExpenseSum = subscriptions
+    .filter((s) => s.is_active)
+    .reduce((sum, sub) => sum + sub.amount, 0);
+  const totalExpense = oneOffExpense + recurringExpenseSum;
+
   const isProfit = totalIncome - totalExpense > 0;
 
   const goMonth = (delta: -1 | 1) => {
