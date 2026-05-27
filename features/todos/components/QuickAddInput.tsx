@@ -1,5 +1,6 @@
 // features/todos/components/QuickAddInput.tsx
 "use client";
+
 import { useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -29,14 +30,17 @@ export function QuickAddInput({ date }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 px-3 py-2">
-      <Plus className="h-4 w-4 text-muted-foreground" />
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-1.5 px-2 py-1.5"
+    >
+      <Plus className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="할 일 추가"
         disabled={pending}
-        className="border-0 focus-visible:ring-0 px-0"
+        className="border-0 focus-visible:ring-0 px-0 h-7 text-sm"
       />
     </form>
   );

@@ -56,7 +56,6 @@ export async function createEvent(
 
   if (error) return { ok: false, error: error.message };
   revalidatePath("/calendar");
-  revalidatePath("/day");
   return { ok: true, data: { id: data.id } };
 }
 
@@ -76,7 +75,6 @@ export async function updateEvent(
 
   if (error) return { ok: false, error: error.message };
   revalidatePath("/calendar");
-  revalidatePath("/day");
   return { ok: true, data: undefined };
 }
 
@@ -86,7 +84,6 @@ export async function deleteEvent(id: string): Promise<ActionResult> {
   const { error } = await supabase.from("events").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/calendar");
-  revalidatePath("/day");
   return { ok: true, data: undefined };
 }
 
@@ -104,7 +101,6 @@ export async function moveEvent(
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/calendar");
-  revalidatePath("/day");
   return { ok: true, data: undefined };
 }
 

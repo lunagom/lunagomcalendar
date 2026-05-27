@@ -51,3 +51,4 @@ supabase/.branches/
 
 # 일회성 마이그레이션 SQL — dev/prod 양쪽 적용 후 삭제
 /partner-migration-bootstrap.sql
+/tasks-board-bootstrap.sql

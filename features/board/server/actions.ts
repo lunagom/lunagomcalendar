@@ -41,7 +41,6 @@ export async function createPost(
     .single();
   if (error) return { ok: false, error: error.message };
   revalidatePath("/board");
-  revalidatePath("/", "layout");
   return { ok: true, data: { id: data.id } };
 }
 
@@ -77,7 +76,6 @@ export async function deletePost(id: string): Promise<ActionResult> {
   if (!data || data.length === 0)
     return { ok: false, error: "권한이 없거나 이미 삭제된 글입니다" };
   revalidatePath("/board");
-  revalidatePath("/", "layout");
   return { ok: true, data: undefined };
 }
 

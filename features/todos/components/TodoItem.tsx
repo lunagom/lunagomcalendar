@@ -1,7 +1,7 @@
 // features/todos/components/TodoItem.tsx
 "use client";
 import { useTransition } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { CalendarClock, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -47,15 +47,21 @@ export function TodoItem({ todo, todayIso }: Props) {
   };
 
   return (
-    <div className="flex items-center gap-3 py-2 px-3 rounded hover:bg-accent/30 group">
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-accent/30 group">
       <Checkbox checked={done} onCheckedChange={(v) => handleToggle(Boolean(v))} />
       <span
-        className={`flex-1 text-sm ${
+        className={`flex-1 text-sm truncate flex items-center gap-1 ${
           done ? "line-through text-muted-foreground" : ""
         }`}
       >
         {todo.emoji ? `${todo.emoji} ` : ""}
         {todo.title}
+        {todo.linked_event_id && (
+          <CalendarClock
+            className="h-3 w-3 shrink-0 text-muted-foreground"
+            aria-label="일정 연결됨"
+          />
+        )}
       </span>
       {daysOverdue > 0 && !done && (
         <span className="text-[10px] text-red-600 bg-red-50 dark:bg-red-950/40 px-1.5 py-px rounded-full">
@@ -72,7 +78,11 @@ export function TodoItem({ todo, todayIso }: Props) {
               오늘로 이동
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onSelect={handleDelete} disabled={pending} className="text-red-600">
+          <DropdownMenuItem
+            onSelect={handleDelete}
+            disabled={pending}
+            className="text-red-600"
+          >
             삭제
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,18 +1,25 @@
 // features/calendar/components/MonthGrid.tsx
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { createRoot, type Root } from "react-dom/client";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import FullCalendar from "@fullcalendar/react";
 import type { default as FullCalendarInst } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type {
   EventInput,
-  EventDropArg,
-  EventClickArg,
   DatesSetArg,
   DayCellMountArg,
 } from "@fullcalendar/core";
+import {
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
@@ -22,7 +29,7 @@ import { CalendarHeaderBar } from "./CalendarHeaderBar";
 import { EventDetailDialog } from "./EventDetailDialog";
 import { DayDetailPopup } from "./DayDetailPopup";
 import { WeekMultiDayLayer } from "./WeekMultiDayLayer";
-import { buildWeekSegments, weekKeyOfDate, type WeekSegment } from "../lib/multi-day";
+import { buildWeekSegments, weekKeyOfDate } from "../lib/multi-day";
 import { moveEvent } from "../server/actions";
 import { isoToLocalDateKey } from "@/lib/datetime";
 import { useCalendarUIStore } from "../store/calendar-ui";
@@ -46,18 +53,6 @@ function isoOf(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-type CellRenderData = {
-  viewedMonth: number;
-  calendars: CalendarRow[];
-  eventsByDate: Map<string, DayCellEvent[]>;
-  todosByDate: Map<string, TaskRow[]>;
-  /** 그날 순수익 (수입 - 지출). showDailyExpenses 토글 OFF 면 빈 Map. */
-  dailyDeltaByDate: Map<string, number>;
-  weekSegments: WeekSegment[];
-  onEventClick: (e: EventRow) => void;
-  onDayClick: (d: Date) => void;
-};
-
 export function MonthGrid({
   calendars,
   events,
@@ -78,15 +73,62 @@ export function MonthGrid({
     const [y, m] = initialMonth.split("-").map(Number);
     return new Date(y, m - 1, 1);
   });
+  const [, startTransition] = useTransition();
   const viewedMonth = viewedDate.getMonth();
   const initialDatesSetRef = useRef(true);
 
-  const visibleEvents = useMemo(
-    () => events.filter((e) => !hiddenIds.includes(e.calendar_id)),
-    [events, hiddenIds],
+  // 드롭 직후 서버 revalidate 완료 전에 일정이 원래 위치로 돌아갔다 새 위치로
+  // 점프하는 깜박임 방지 — 드롭 즉시 로컬에서 새 날짜로 덮어쓰고, props 가
+  // 서버 데이터로 따라오면 덮어쓰기 해제.
+  const [optimisticOverrides, setOptimisticOverrides] = useState<
+    Map<string, { start_at: string; end_at: string }>
+  >(() => new Map());
+
+  useEffect(() => {
+    setOptimisticOverrides((prev) => {
+      if (prev.size === 0) return prev;
+      const next = new Map(prev);
+      let changed = false;
+      prev.forEach((override, id) => {
+        const real = events.find((e) => e.id === id);
+        if (
+          real &&
+          real.start_at === override.start_at &&
+          real.end_at === override.end_at
+        ) {
+          next.delete(id);
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [events]);
+
+  // 셀 / 주(week) 컨테이너 — FC 가 mount 한 cell 의 div 요소를 추적.
+  // createPortal 로 React tree 안에서 렌더 → DndContext context 가 자식 컴포넌트에 도달.
+  const [cellContainers, setCellContainers] = useState<Map<string, HTMLElement>>(
+    () => new Map(),
+  );
+  const [weekContainers, setWeekContainers] = useState<Map<string, HTMLElement>>(
+    () => new Map(),
   );
 
-  // FC 자체 이벤트 렌더는 끄고 (display:"none") DnD 만 활용. 시각적 이벤트는 DayCell 이 그림.
+  // optimistic override 가 있으면 그 일정의 start_at/end_at 을 덮어쓴 결과로 처리.
+  const effectiveEvents = useMemo(() => {
+    if (optimisticOverrides.size === 0) return events;
+    return events.map((e) => {
+      const o = optimisticOverrides.get(e.id);
+      return o ? { ...e, start_at: o.start_at, end_at: o.end_at } : e;
+    });
+  }, [events, optimisticOverrides]);
+
+  const visibleEvents = useMemo(
+    () => effectiveEvents.filter((e) => !hiddenIds.includes(e.calendar_id)),
+    [effectiveEvents, hiddenIds],
+  );
+
+  // FC 자체 이벤트 렌더는 끄고 (display:"none") FC 가 일정 데이터를 갖고 있게만.
+  // 시각적 이벤트 막대 + 드래그앤드롭은 DayCell / WeekMultiDayLayer 가 dnd-kit 으로 처리.
   const fcEvents: EventInput[] = useMemo(
     () =>
       visibleEvents.map((e) => ({
@@ -101,16 +143,12 @@ export function MonthGrid({
     [visibleEvents],
   );
 
-  /**
-   * single-day 이벤트만 셀별 매핑. 멀티데이는 WeekMultiDayLayer 가 주(week) 단위
-   * absolute 막대로 처리 (옵션 B).
-   */
   const eventsByDate = useMemo(() => {
     const map = new Map<string, DayCellEvent[]>();
     for (const e of visibleEvents) {
       const startKey = isoToLocalDateKey(e.start_at);
       const endKey = isoToLocalDateKey(e.end_at ?? e.start_at);
-      if (startKey !== endKey) continue; // 멀티데이는 layer 가 그림
+      if (startKey !== endKey) continue;
       const arr = map.get(startKey) ?? [];
       arr.push({ event: e, spanRole: "single" });
       map.set(startKey, arr);
@@ -118,11 +156,26 @@ export function MonthGrid({
     return map;
   }, [visibleEvents]);
 
-  /** 멀티데이 이벤트만 주별 segment + slot 할당. layer 가 사용. */
   const weekSegments = useMemo(
     () => buildWeekSegments(visibleEvents),
     [visibleEvents],
   );
+
+  /** 각 셀을 지나가는 멀티데이 막대의 최대 slot 수 — 단일 일정 offset 계산용. */
+  const multiDaySlotsByDate = useMemo(() => {
+    const map = new Map<string, number>();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    for (const seg of weekSegments) {
+      const [wy, wm, wd] = seg.weekKey.split("-").map(Number);
+      for (let col = seg.startCol; col <= seg.endCol; col++) {
+        const cellDate = new Date(wy, wm - 1, wd + col);
+        const iso = `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(cellDate.getDate())}`;
+        const current = map.get(iso) ?? 0;
+        map.set(iso, Math.max(current, seg.slot + 1));
+      }
+    }
+    return map;
+  }, [weekSegments]);
 
   const todosByDate = useMemo(() => {
     const map = new Map<string, TaskRow[]>();
@@ -134,7 +187,6 @@ export function MonthGrid({
     return map;
   }, [todos]);
 
-  /** 토글 ON 일 때만 그날 순수익 — OFF 면 빈 Map 으로 셀에서 표시 X. */
   const dailyDeltaByDate = useMemo(() => {
     const map = new Map<string, number>();
     if (!showDailyExpenses) return map;
@@ -149,7 +201,6 @@ export function MonthGrid({
     return map;
   }, [expenses, incomes, showDailyExpenses]);
 
-  /** 그날 수입 목록 — DayDetailPopup 에 전달용. */
   const incomesByDate = useMemo(() => {
     const map = new Map<string, IncomeRow[]>();
     for (const i of incomes) {
@@ -161,100 +212,27 @@ export function MonthGrid({
     return map;
   }, [incomes]);
 
-  // ── DayCell + WeekMultiDayLayer portal 관리 ──
-  // FullCalendar 가 셀을 mount 할 때 빈 div 를 frame 에 추가하고 React root 생성.
-  // 일요일 셀이면 부모 tr 에 멀티데이 layer 도 mount.
-  // data 변화 시 useEffect 가 모든 root 를 다시 렌더.
-  const rootsRef = useRef(
-    new Map<string, { root: Root; container: HTMLDivElement }>(),
-  );
-  const weekRootsRef = useRef(
-    new Map<string, { root: Root; container: HTMLDivElement }>(),
-  );
-  const dataRef = useRef<CellRenderData>({
-    viewedMonth,
-    calendars,
-    eventsByDate,
-    todosByDate,
-    dailyDeltaByDate,
-    weekSegments,
-    onEventClick: setDetailEvent,
-    onDayClick: setDayDetailDate,
-  });
-
-  // 매 렌더마다 dataRef 갱신 (callback closure 갱신용)
-  dataRef.current = {
-    viewedMonth,
-    calendars,
-    eventsByDate,
-    todosByDate,
-    dailyDeltaByDate,
-    weekSegments,
-    onEventClick: setDetailEvent,
-    onDayClick: setDayDetailDate,
-  };
-
-  function renderCellInto(isoDate: string, root: Root) {
-    const date = new Date(isoDate);
-    const d = dataRef.current;
-    root.render(
-      <DayCell
-        date={date}
-        isCurrentMonth={d.viewedMonth === date.getMonth()}
-        events={d.eventsByDate.get(isoDate) ?? []}
-        todos={d.todosByDate.get(isoDate) ?? []}
-        calendars={d.calendars}
-        onEventClick={d.onEventClick}
-        onDayClick={() => d.onDayClick(date)}
-        dailyDelta={d.dailyDeltaByDate.get(isoDate)}
-      />,
-    );
-  }
-
-  function renderWeekLayerInto(weekKey: string, root: Root) {
-    const d = dataRef.current;
-    const segs = d.weekSegments.filter((s) => s.weekKey === weekKey);
-    root.render(
-      <WeekMultiDayLayer
-        segments={segs}
-        calendars={d.calendars}
-        onEventClick={d.onEventClick}
-      />,
-    );
-  }
-
-  // 데이터 변화 시 모든 셀 + 모든 week layer 다시 렌더
-  useEffect(() => {
-    rootsRef.current.forEach(({ root }, isoDate) => {
-      renderCellInto(isoDate, root);
-    });
-    weekRootsRef.current.forEach(({ root }, weekKey) => {
-      renderWeekLayerInto(weekKey, root);
-    });
-  });
-
+  // ── 셀 / 주 컨테이너 mount / unmount ──
   const handleDayCellDidMount = (arg: DayCellMountArg) => {
     const isoDate = isoOf(arg.date);
     const frame = arg.el.querySelector<HTMLElement>(".fc-daygrid-day-frame");
     if (!frame) return;
-    // frame 은 position: relative 이므로 absolute inset-0 이 정확히 셀을 채움
+
     const container = document.createElement("div");
     container.style.cssText =
       "position:absolute;inset:0;z-index:5;pointer-events:auto;";
     container.setAttribute("data-day-cell", isoDate);
     frame.appendChild(container);
-    const root = createRoot(container);
-    rootsRef.current.set(isoDate, { root, container });
-    renderCellInto(isoDate, root);
+    setCellContainers((prev) => {
+      const next = new Map(prev);
+      next.set(isoDate, container);
+      return next;
+    });
 
-    // 일요일 셀이면 td 자체에 멀티데이 layer mount.
-    // (tr 에 position:relative 부여하면 일부 브라우저에서 데이터 row 의 cell
-    //  width 계산이 헤더와 어긋남 — td 에 mount 하면 안전. layer width 700%
-    //  로 한 주 전체 폭을 확보.)
+    // 일요일 셀: tr 에 멀티데이 layer mount
     if (arg.date.getDay() === 0) {
       const td = arg.el;
       const weekKey = weekKeyOfDate(arg.date);
-      if (weekRootsRef.current.has(weekKey)) return;
       if (window.getComputedStyle(td).position === "static") {
         td.style.position = "relative";
       }
@@ -264,38 +242,36 @@ export function MonthGrid({
         "position:absolute;left:0;top:0;width:700%;height:0;pointer-events:none;z-index:10;";
       layerEl.setAttribute("data-week-layer", weekKey);
       td.appendChild(layerEl);
-      const layerRoot = createRoot(layerEl);
-      weekRootsRef.current.set(weekKey, {
-        root: layerRoot,
-        container: layerEl,
+      setWeekContainers((prev) => {
+        const next = new Map(prev);
+        next.set(weekKey, layerEl);
+        return next;
       });
-      renderWeekLayerInto(weekKey, layerRoot);
     }
   };
 
   const handleDayCellWillUnmount = (arg: DayCellMountArg) => {
     const isoDate = isoOf(arg.date);
-    const entry = rootsRef.current.get(isoDate);
-    if (entry) {
-      // 비동기 unmount (현재 렌더 사이클 이후)
-      setTimeout(() => {
-        entry.root.unmount();
-        entry.container.remove();
-      }, 0);
-      rootsRef.current.delete(isoDate);
-    }
+    setCellContainers((prev) => {
+      const el = prev.get(isoDate);
+      if (!el) return prev;
+      // DOM 제거는 microtask 로 — React 가 portal unmount 한 뒤 정리.
+      setTimeout(() => el.remove(), 0);
+      const next = new Map(prev);
+      next.delete(isoDate);
+      return next;
+    });
 
-    // 일요일 셀이면 그 주의 layer 도 unmount
     if (arg.date.getDay() === 0) {
       const weekKey = weekKeyOfDate(arg.date);
-      const layer = weekRootsRef.current.get(weekKey);
-      if (layer) {
-        setTimeout(() => {
-          layer.root.unmount();
-          layer.container.remove();
-        }, 0);
-        weekRootsRef.current.delete(weekKey);
-      }
+      setWeekContainers((prev) => {
+        const el = prev.get(weekKey);
+        if (!el) return prev;
+        setTimeout(() => el.remove(), 0);
+        const next = new Map(prev);
+        next.delete(weekKey);
+        return next;
+      });
     }
   };
 
@@ -320,79 +296,161 @@ export function MonthGrid({
     }
   };
 
-  const handleEventClick = (info: EventClickArg) => {
-    const ev = info.event.extendedProps.rawEvent as EventRow;
-    setDetailEvent(ev);
-  };
+  // ── 드래그앤드롭 (dnd-kit) ──
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 500, tolerance: 5 },
+    }),
+  );
 
-  const handleEventDrop = async (info: EventDropArg) => {
-    const ev = info.event.extendedProps.rawEvent as EventRow;
-    const newStart = info.event.start?.toISOString();
-    const newEnd = (info.event.end ?? info.event.start)?.toISOString();
-    if (!newStart || !newEnd) {
-      info.revert();
-      return;
-    }
-    const r = await moveEvent(ev.id, newStart, newEnd);
-    if (!r.ok) {
-      toast.error(r.error);
-      info.revert();
-    } else {
-      toast.success("이동되었습니다");
-    }
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over) return;
+    const event = (active.data.current as { event?: EventRow } | undefined)
+      ?.event;
+    const newDate = (over.data.current as { date?: Date } | undefined)?.date;
+    if (!event || !newDate) return;
+
+    const oldStart = new Date(event.start_at);
+    const oldEnd = new Date(event.end_at);
+
+    // 새 셀의 자정 (로컬)
+    const newDayMidnight = new Date(
+      newDate.getFullYear(),
+      newDate.getMonth(),
+      newDate.getDate(),
+    );
+    // 기존 시작 일자의 자정 (로컬)
+    const oldStartMidnight = new Date(
+      oldStart.getFullYear(),
+      oldStart.getMonth(),
+      oldStart.getDate(),
+    );
+
+    // 같은 날이면 무시
+    if (newDayMidnight.getTime() === oldStartMidnight.getTime()) return;
+
+    // 일자만 이동, 시간은 유지. duration 보존 (멀티데이도 자동 처리).
+    const timeOfDay = oldStart.getTime() - oldStartMidnight.getTime();
+    const newStart = new Date(newDayMidnight.getTime() + timeOfDay);
+    const duration = oldEnd.getTime() - oldStart.getTime();
+    const newEnd = new Date(newStart.getTime() + duration);
+    const newStartIso = newStart.toISOString();
+    const newEndIso = newEnd.toISOString();
+
+    // 즉시 로컬에서 새 위치 반영 (서버 응답 기다리는 동안 깜박임 방지)
+    setOptimisticOverrides((prev) => {
+      const next = new Map(prev);
+      next.set(event.id, { start_at: newStartIso, end_at: newEndIso });
+      return next;
+    });
+
+    startTransition(async () => {
+      const r = await moveEvent(event.id, newStartIso, newEndIso);
+      if (!r.ok) {
+        toast.error(r.error);
+        // 실패 시 override 제거 (원래 위치로 복귀)
+        setOptimisticOverrides((prev) => {
+          if (!prev.has(event.id)) return prev;
+          const next = new Map(prev);
+          next.delete(event.id);
+          return next;
+        });
+      } else {
+        toast.success("이동되었습니다");
+      }
+    });
   };
 
   const popupIsoDate = dayDetailDate ? isoOf(dayDetailDate) : null;
-
   const monthLabel = `${viewedDate.getFullYear()}년 ${viewedDate.getMonth() + 1}월`;
 
   return (
-    <div ref={containerRef} className="h-full">
-      <MonthNavigation
-        onPrev={() => navigate(-1)}
-        onNext={() => navigate(1)}
-        onToday={() => navigate(0)}
-        targetRef={containerRef}
-      />
-      <CalendarHeaderBar
-        label={monthLabel}
-        onPrev={() => navigate(-1)}
-        onNext={() => navigate(1)}
-        onToday={() => navigate(0)}
-      />
-      <FullCalendar
-        ref={fcRef}
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        initialDate={`${initialMonth}-01`}
-        editable
-        eventClick={handleEventClick}
-        eventDrop={handleEventDrop}
-        events={fcEvents}
-        datesSet={handleDatesSet}
-        dayCellDidMount={handleDayCellDidMount}
-        dayCellWillUnmount={handleDayCellWillUnmount}
-        headerToolbar={false}
-        {...FC_COMMON}
-      />
+    <DndContext
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      onDragEnd={handleDragEnd}
+    >
+      <div ref={containerRef} className="h-full">
+        <MonthNavigation
+          onPrev={() => navigate(-1)}
+          onNext={() => navigate(1)}
+          onToday={() => navigate(0)}
+          targetRef={containerRef}
+        />
+        <CalendarHeaderBar
+          label={monthLabel}
+          onPrev={() => navigate(-1)}
+          onNext={() => navigate(1)}
+          onToday={() => navigate(0)}
+        />
+        <FullCalendar
+          ref={fcRef}
+          plugins={[dayGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          initialDate={`${initialMonth}-01`}
+          events={fcEvents}
+          datesSet={handleDatesSet}
+          dayCellDidMount={handleDayCellDidMount}
+          dayCellWillUnmount={handleDayCellWillUnmount}
+          headerToolbar={false}
+          {...FC_COMMON}
+        />
 
-      {popupIsoDate && (
-        <DayDetailPopup
-          date={dayDetailDate}
-          events={(eventsByDate.get(popupIsoDate) ?? []).map((x) => x.event)}
-          todos={todosByDate.get(popupIsoDate) ?? []}
-          incomes={incomesByDate.get(popupIsoDate) ?? []}
-          calendars={calendars}
-          onClose={() => setDayDetailDate(null)}
-        />
-      )}
-      {detailEvent && (
-        <EventDetailDialog
-          event={detailEvent}
-          calendars={calendars}
-          onClose={() => setDetailEvent(null)}
-        />
-      )}
-    </div>
+        {/* 셀별 React portal — DndContext 컨텍스트 전파됨 */}
+        {Array.from(cellContainers.entries()).map(([isoDate, container]) => {
+          const [y, m, d] = isoDate.split("-").map(Number);
+          const date = new Date(y, m - 1, d);
+          return createPortal(
+            <DayCell
+              date={date}
+              isCurrentMonth={viewedMonth === date.getMonth()}
+              events={eventsByDate.get(isoDate) ?? []}
+              todos={todosByDate.get(isoDate) ?? []}
+              calendars={calendars}
+              onEventClick={setDetailEvent}
+              onDayClick={() => setDayDetailDate(date)}
+              dailyDelta={dailyDeltaByDate.get(isoDate)}
+              multiDaySlots={multiDaySlotsByDate.get(isoDate) ?? 0}
+            />,
+            container,
+            isoDate,
+          );
+        })}
+
+        {/* 주별 멀티데이 layer portal */}
+        {Array.from(weekContainers.entries()).map(([weekKey, container]) => {
+          const segs = weekSegments.filter((s) => s.weekKey === weekKey);
+          return createPortal(
+            <WeekMultiDayLayer
+              segments={segs}
+              calendars={calendars}
+              onEventClick={setDetailEvent}
+            />,
+            container,
+            weekKey,
+          );
+        })}
+
+        {popupIsoDate && (
+          <DayDetailPopup
+            date={dayDetailDate}
+            events={(eventsByDate.get(popupIsoDate) ?? []).map((x) => x.event)}
+            todos={todosByDate.get(popupIsoDate) ?? []}
+            incomes={incomesByDate.get(popupIsoDate) ?? []}
+            calendars={calendars}
+            onClose={() => setDayDetailDate(null)}
+          />
+        )}
+        {detailEvent && (
+          <EventDetailDialog
+            event={detailEvent}
+            calendars={calendars}
+            onClose={() => setDetailEvent(null)}
+          />
+        )}
+      </div>
+    </DndContext>
   );
 }

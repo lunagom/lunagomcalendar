@@ -54,37 +54,32 @@ export async function getPostsForCalendar(
   const postIds = posts.map((p) => p.id);
   const authorIds = Array.from(new Set(posts.map((p) => p.author_id)));
 
-  // 댓글 카운트
-  const { data: comments } = await supabase
-    .from("board_comments")
-    .select("post_id")
-    .in("post_id", postIds);
+  // 댓글 / 좋아요 / 작성자 닉네임 — 서로 독립이라 병렬 fetch.
+  const admin = createAdminClient();
+  const [commentsRes, likesRes, profsRes] = await Promise.all([
+    supabase.from("board_comments").select("post_id").in("post_id", postIds),
+    supabase
+      .from("board_likes")
+      .select("target_id, user_id")
+      .eq("target_type", "post")
+      .in("target_id", postIds),
+    admin.from("profiles").select("id, nickname").in("id", authorIds),
+  ]);
+
   const commentCount = new Map<string, number>();
-  for (const c of comments ?? []) {
+  for (const c of commentsRes.data ?? []) {
     commentCount.set(c.post_id, (commentCount.get(c.post_id) ?? 0) + 1);
   }
 
-  // 좋아요
-  const { data: likes } = await supabase
-    .from("board_likes")
-    .select("target_id, user_id")
-    .eq("target_type", "post")
-    .in("target_id", postIds);
   const likeCount = new Map<string, number>();
   const likedByMe = new Set<string>();
-  for (const l of likes ?? []) {
+  for (const l of likesRes.data ?? []) {
     likeCount.set(l.target_id, (likeCount.get(l.target_id) ?? 0) + 1);
     if (l.user_id === me) likedByMe.add(l.target_id);
   }
 
-  // 작성자 닉네임 (admin client 로 profiles RLS 우회)
-  const admin = createAdminClient();
-  const { data: profs } = await admin
-    .from("profiles")
-    .select("id, nickname")
-    .in("id", authorIds);
   const nick = new Map<string, string | null>(
-    (profs ?? []).map((p) => [p.id, p.nickname]),
+    (profsRes.data ?? []).map((p) => [p.id, p.nickname]),
   );
 
   return posts.map((p) => ({
@@ -105,55 +100,60 @@ export async function getPostDetail(postId: string): Promise<{
   const me = await currentUserId();
   if (!me) return null;
 
-  const { data: post } = await supabase
-    .from("board_posts")
-    .select("id, calendar_id, author_id, title, body, created_at")
-    .eq("id", postId)
-    .maybeSingle();
+  // 글 + 글 좋아요 + 댓글 병렬 fetch (서로 독립)
+  const [postRes, postLikesRes, commentsRes] = await Promise.all([
+    supabase
+      .from("board_posts")
+      .select("id, calendar_id, author_id, title, body, created_at")
+      .eq("id", postId)
+      .maybeSingle(),
+    supabase
+      .from("board_likes")
+      .select("user_id")
+      .eq("target_type", "post")
+      .eq("target_id", postId),
+    supabase
+      .from("board_comments")
+      .select("id, post_id, author_id, body, created_at")
+      .eq("post_id", postId)
+      .order("created_at"),
+  ]);
+
+  const post = postRes.data;
   if (!post) return null;
 
-  // 글 좋아요
-  const { data: postLikes } = await supabase
-    .from("board_likes")
-    .select("user_id")
-    .eq("target_type", "post")
-    .eq("target_id", postId);
+  const postLikes = postLikesRes.data;
   const postLikeCount = postLikes?.length ?? 0;
   const postLikedByMe = (postLikes ?? []).some((l) => l.user_id === me);
 
-  // 댓글
-  const { data: comments } = await supabase
-    .from("board_comments")
-    .select("id, post_id, author_id, body, created_at")
-    .eq("post_id", postId)
-    .order("created_at");
+  const comments = commentsRes.data;
   const commentIds = (comments ?? []).map((c) => c.id);
 
-  // 댓글 좋아요
-  let cLikeCount = new Map<string, number>();
-  let cLikedByMe = new Set<string>();
-  if (commentIds.length > 0) {
-    const { data: cLikes } = await supabase
-      .from("board_likes")
-      .select("target_id, user_id")
-      .eq("target_type", "comment")
-      .in("target_id", commentIds);
-    for (const l of cLikes ?? []) {
-      cLikeCount.set(l.target_id, (cLikeCount.get(l.target_id) ?? 0) + 1);
-      if (l.user_id === me) cLikedByMe.add(l.target_id);
-    }
-  }
-
+  // 댓글 좋아요 + 프로필 닉네임 병렬 fetch (둘 다 comments 결과만 필요)
   const allAuthorIds = Array.from(
     new Set([post.author_id, ...(comments ?? []).map((c) => c.author_id)]),
   );
   const admin = createAdminClient();
-  const { data: profs } = await admin
-    .from("profiles")
-    .select("id, nickname")
-    .in("id", allAuthorIds);
+  const [cLikesRes, profsRes] = await Promise.all([
+    commentIds.length > 0
+      ? supabase
+          .from("board_likes")
+          .select("target_id, user_id")
+          .eq("target_type", "comment")
+          .in("target_id", commentIds)
+      : Promise.resolve({ data: [] as Array<{ target_id: string; user_id: string }> }),
+    admin.from("profiles").select("id, nickname").in("id", allAuthorIds),
+  ]);
+
+  const cLikeCount = new Map<string, number>();
+  const cLikedByMe = new Set<string>();
+  for (const l of cLikesRes.data ?? []) {
+    cLikeCount.set(l.target_id, (cLikeCount.get(l.target_id) ?? 0) + 1);
+    if (l.user_id === me) cLikedByMe.add(l.target_id);
+  }
+
   const nick = new Map<string, string | null>(
-    (profs ?? []).map((p) => [p.id, p.nickname]),
+    (profsRes.data ?? []).map((p) => [p.id, p.nickname]),
   );
 
   return {
@@ -187,18 +187,21 @@ export async function getUnreadBoardCount(): Promise<number> {
     if (!cals || cals.length === 0) return 0;
     const calIds = cals.map((c) => c.id);
 
-    const { data: reads } = await supabase
-      .from("board_reads")
-      .select("calendar_id, last_read_at")
-      .in("calendar_id", calIds);
+    // reads + posts 병렬 fetch (둘 다 calIds 만 필요)
+    const [readsRes, postsRes] = await Promise.all([
+      supabase
+        .from("board_reads")
+        .select("calendar_id, last_read_at")
+        .in("calendar_id", calIds),
+      supabase
+        .from("board_posts")
+        .select("id, calendar_id, created_at, author_id")
+        .in("calendar_id", calIds),
+    ]);
     const readMap = new Map(
-      (reads ?? []).map((r) => [r.calendar_id, r.last_read_at]),
+      (readsRes.data ?? []).map((r) => [r.calendar_id, r.last_read_at]),
     );
-
-    const { data: posts } = await supabase
-      .from("board_posts")
-      .select("id, calendar_id, created_at, author_id")
-      .in("calendar_id", calIds);
+    const posts = postsRes.data;
     if (!posts) return 0;
 
     let unread = 0;

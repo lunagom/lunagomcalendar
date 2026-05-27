@@ -1,7 +1,9 @@
 // features/calendar/components/DayCell.tsx
 "use client";
+import { useDroppable } from "@dnd-kit/core";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EventBar, type SpanRole } from "./EventBar";
+import { DraggableEventBar } from "./DraggableEventBar";
+import { type SpanRole } from "./EventBar";
 import { HolidayBadge } from "./HolidayBadge";
 import { isLunarFirstDay, toLunar } from "@/lib/lunar";
 import { isPublicHoliday } from "@/lib/holidays";
@@ -19,11 +21,23 @@ type Props = {
   todos: TaskRow[];
   calendars: CalendarRow[];
   onEventClick: (e: EventRow) => void;
-  /** 셀(빈 영역·날짜·배지) 클릭 — DayDetailPopup 열기. 이벤트 막대/체크박스 자체 클릭은 stopPropagation 처리됨. */
+  /** 셀(빈 영역·날짜·배지) 클릭 — DayDetailPopup 열기. */
   onDayClick: () => void;
   /** 그날 순수익 (수입 - 지출). undefined 또는 0 이면 표시 안 함. */
   dailyDelta?: number;
+  /**
+   * 이 셀을 지나가는 멀티데이 막대 슬롯 수 (0=없음). 단일 일정을 그만큼 아래로
+   * 밀어서 멀티데이 layer 와 겹치지 않게 함.
+   */
+  multiDaySlots?: number;
 };
+
+/** WeekMultiDayLayer 의 BAR_HEIGHT(18) + BAR_GAP(2) 와 동기화. */
+const MULTI_DAY_SLOT_HEIGHT = 20;
+
+function isoOf(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 export function DayCell({
   date,
@@ -34,8 +48,9 @@ export function DayCell({
   onEventClick,
   onDayClick,
   dailyDelta,
+  multiDaySlots = 0,
 }: Props) {
-  const isoDate = date.toISOString().slice(0, 10);
+  const isoDate = isoOf(date);
   const day = date.getDay();
   const lunar = isLunarFirstDay(date) ? toLunar(date) : null;
   const dayNumberColor = !isCurrentMonth
@@ -53,9 +68,18 @@ export function DayCell({
   const shownTodos = todos.slice(0, 2);
   const moreTodoCount = Math.max(0, todos.length - 2);
 
+  // 일정 드롭 타겟 — 다른 셀에서 드래그한 일정이 여기로 떨어지면 그 날짜로 이동.
+  const { setNodeRef, isOver } = useDroppable({
+    id: `day-${isoDate}`,
+    data: { date, isoDate },
+  });
+
   return (
     <div
-      className="h-full flex flex-col p-1.5 cursor-pointer"
+      ref={setNodeRef}
+      className={`h-full flex flex-col p-1.5 cursor-pointer transition-colors ${
+        isOver ? "bg-primary/10 ring-1 ring-primary/40 rounded" : ""
+      }`}
       onClick={onDayClick}
     >
       {/* 날짜 + 음력 + 지출 합계 */}
@@ -80,18 +104,24 @@ export function DayCell({
           </span>
         )}
       </div>
-      {/* 공휴일/24절기 배지 — 셀 전체 너비 사용 */}
+      {/* 공휴일/24절기 배지 */}
       <div className="mb-1">
         <HolidayBadge isoDate={isoDate} />
       </div>
 
-      {/* 이벤트 막대 */}
-      <div className="flex flex-col gap-0.5">
+      {/* 이벤트 막대 — 드래그 가능. 멀티데이가 지나가는 셀이면 그만큼 아래로 밀림. */}
+      <div
+        className="flex flex-col gap-0.5"
+        style={
+          multiDaySlots > 0
+            ? { marginTop: multiDaySlots * MULTI_DAY_SLOT_HEIGHT }
+            : undefined
+        }
+      >
         {shownEvents.map(({ event: ev, spanRole }) => (
-          <EventBar
+          <DraggableEventBar
             key={`${ev.id}-${spanRole}`}
-            title={ev.title}
-            emoji={ev.emoji}
+            event={ev}
             color={ev.color ?? calColor(ev.calendar_id)}
             onClick={() => onEventClick(ev)}
             spanRole={spanRole}
@@ -104,7 +134,7 @@ export function DayCell({
         )}
       </div>
 
-      {/* 할 일 (점선 구분) */}
+      {/* 할 일 */}
       {(shownTodos.length > 0 || moreTodoCount > 0) && (
         <div className="mt-auto pt-1.5 border-t border-dashed border-border flex flex-col gap-0.5">
           {shownTodos.map((t) => (

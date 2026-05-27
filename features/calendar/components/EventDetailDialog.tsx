@@ -1,6 +1,7 @@
 // features/calendar/components/EventDetailDialog.tsx
 "use client";
 import { useState, useTransition } from "react";
+import { CheckSquare } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,8 @@ import { toast } from "sonner";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { EventModal } from "./EventModal";
 import { deleteEvent } from "../server/actions";
+import { createTodo } from "@/features/todos/server/actions";
+import { isoToLocalDateKey } from "@/lib/datetime";
 import type { CalendarRow, EventRow } from "../server/queries";
 
 type Props = {
@@ -42,6 +45,22 @@ export function EventDetailDialog({ event, calendars, onClose }: Props) {
       toast.success("삭제되었습니다");
       setConfirming(false);
       onClose();
+    });
+  };
+
+  const handleConvertToTodo = () => {
+    startTransition(async () => {
+      const r = await createTodo({
+        title: event.title,
+        scheduled_date: isoToLocalDateKey(event.start_at),
+        emoji: event.emoji,
+        linked_event_id: event.id,
+      });
+      if (!r.ok) {
+        toast.error(r.error);
+        return;
+      }
+      toast.success("할 일로 추가되었습니다");
     });
   };
 
@@ -108,7 +127,17 @@ export function EventDetailDialog({ event, calendars, onClose }: Props) {
               </div>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-2 flex-wrap">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleConvertToTodo}
+              disabled={pending}
+              className="gap-1.5 mr-auto"
+            >
+              <CheckSquare className="h-4 w-4" />
+              할 일로 추가
+            </Button>
             <Button variant="outline" onClick={() => setEditing(true)}>
               수정
             </Button>

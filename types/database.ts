@@ -580,36 +580,59 @@ export type Database = {
       }
       tasks: {
         Row: {
+          category: string | null
           completed_at: string | null
           created_at: string
           emoji: string | null
           id: string
+          is_recurring: boolean
+          linked_event_id: string | null
+          recurrence_rule: Json | null
           scheduled_date: string
+          sort_order: number
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          category?: string | null
           completed_at?: string | null
           created_at?: string
           emoji?: string | null
           id?: string
+          is_recurring?: boolean
+          linked_event_id?: string | null
+          recurrence_rule?: Json | null
           scheduled_date: string
+          sort_order?: number
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          category?: string | null
           completed_at?: string | null
           created_at?: string
           emoji?: string | null
           id?: string
+          is_recurring?: boolean
+          linked_event_id?: string | null
+          recurrence_rule?: Json | null
           scheduled_date?: string
+          sort_order?: number
           title?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_linked_event_id_fkey"
+            columns: ["linked_event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
