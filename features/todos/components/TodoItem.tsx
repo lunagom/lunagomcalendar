@@ -1,6 +1,7 @@
 // features/todos/components/TodoItem.tsx
 "use client";
 import { useEffect, useState, useTransition } from "react";
+import { motion } from "framer-motion";
 import { CalendarClock, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -62,10 +63,15 @@ export function TodoItem({ todo, todayIso }: Props) {
 
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-accent/30 group">
-      <Checkbox checked={done} onCheckedChange={(v) => handleToggle(Boolean(v))} />
+      <motion.div
+        animate={done ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Checkbox checked={done} onCheckedChange={(v) => handleToggle(Boolean(v))} />
+      </motion.div>
       <span
-        className={`flex-1 text-sm truncate flex items-center gap-1 ${
-          done ? "line-through text-muted-foreground" : ""
+        className={`flex-1 text-sm truncate flex items-center gap-1 transition-all duration-200 ${
+          done ? "line-through text-muted-foreground opacity-70" : ""
         }`}
       >
         {todo.emoji ? `${todo.emoji} ` : ""}
