@@ -53,7 +53,7 @@ export function WeekNavigation({
   return (
     <div className="flex items-center justify-between gap-2">
       <div>
-        <h1 className="text-xl font-semibold">주간 할 일</h1>
+        <h1 className="text-2xl font-bold">주간 할 일</h1>
         <p className="text-sm text-muted-foreground tabular-nums">
           {formatWeekRange(weekStartIso)}
         </p>
