@@ -107,7 +107,7 @@ export function CalendarSettingsDialog({ calendar, onClose }: Props) {
             onClick={() => setSharing(true)}
             disabled={pending}
           >
-            <Users className="h-4 w-4" />
+            <Users className="h-4 w-4" strokeWidth={1.8} />
             공유 관리
           </Button>
           <DialogFooter className="justify-between">

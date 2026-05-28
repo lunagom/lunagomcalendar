@@ -48,7 +48,7 @@ export function NotificationsBell({ items, unreadCount }: Props) {
           aria-label="알림"
           className="relative h-9 w-9 rounded-lg"
         >
-          <Bell className="h-[18px] w-[18px]" />
+          <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
           {unreadCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold text-primary-foreground">
               {unreadCount > 99 ? "99+" : unreadCount}

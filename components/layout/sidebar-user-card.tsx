@@ -36,7 +36,7 @@ export function SidebarUserCard({ user }: { user: AppShellUser }) {
             aria-label="로그아웃"
             className="grid h-8 w-8 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4" strokeWidth={1.8} />
           </button>
         </form>
       </div>

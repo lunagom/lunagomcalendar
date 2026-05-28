@@ -32,7 +32,7 @@ export function RecurringIncomeTabContent({ items, usedCategories }: Props) {
           </p>
         </div>
         <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-1" strokeWidth={1.8} />
           정기 수입 추가
         </Button>
       </div>

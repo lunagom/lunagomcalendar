@@ -112,7 +112,7 @@ export function ExpensePage({
                 onClick={() => goMonth(-1)}
                 aria-label="이전 달"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
               </Button>
               <h1 className="text-lg font-semibold px-1">{monthLabel}</h1>
               <Button
@@ -121,7 +121,7 @@ export function ExpensePage({
                 onClick={() => goMonth(1)}
                 aria-label="다음 달"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" strokeWidth={1.8} />
               </Button>
             </div>
           </div>

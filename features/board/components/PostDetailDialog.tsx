@@ -120,7 +120,7 @@ export function PostDetailDialog({
                         className="text-muted-foreground hover:text-foreground"
                         aria-label="글 수정"
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="h-3.5 w-3.5" strokeWidth={1.8} />
                       </button>
                       <button
                         type="button"
@@ -128,7 +128,7 @@ export function PostDetailDialog({
                         className="text-muted-foreground hover:text-destructive"
                         aria-label="글 삭제"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
                       </button>
                     </>
                   )}

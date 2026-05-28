@@ -32,7 +32,7 @@ export function CalendarHeaderBar({
           onClick={onPrev}
           aria-label="이전"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
         </Button>
         <h2 className="text-base font-semibold px-1 whitespace-nowrap sm:text-lg">
           {label}
@@ -43,7 +43,7 @@ export function CalendarHeaderBar({
           onClick={onNext}
           aria-label="다음"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" strokeWidth={1.8} />
         </Button>
       </div>
       <div className="flex-1 flex justify-end">

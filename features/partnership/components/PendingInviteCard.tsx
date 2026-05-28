@@ -50,7 +50,7 @@ export function PendingInviteCard({ partnership, mode }: Props) {
   return (
     <div className="space-y-3 rounded-lg border border-border p-4">
       <div className="flex items-center gap-2">
-        <Heart className="h-4 w-4 text-pink-500" aria-hidden />
+        <Heart className="h-4 w-4 text-pink-500" aria-hidden strokeWidth={1.8} />
         <p className="text-sm">
           {mode === "received" ? (
             <>

@@ -33,7 +33,7 @@ export function PlaceholderPage({
       <Card className="border-border bg-card rounded-xl">
         <CardContent className="flex flex-col items-center gap-5 px-6 py-16 md:py-24">
           <div className="grid h-14 w-14 place-items-center rounded-2xl bg-accent text-accent-foreground">
-            <Icon className="h-6 w-6" />
+            <Icon className="h-6 w-6" strokeWidth={1.8} />
           </div>
           <div className="max-w-md text-center">
             <p className="text-base font-semibold">준비 중인 화면입니다</p>

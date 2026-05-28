@@ -53,7 +53,7 @@ export function NotificationItem({ item, onClick }: Props) {
         unread ? "bg-primary/5" : ""
       }`}
     >
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.8} />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <p className="truncate text-sm font-medium">{item.title}</p>

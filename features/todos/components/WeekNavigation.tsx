@@ -65,7 +65,7 @@ export function WeekNavigation({
           onClick={onOpenRecurring}
           className="gap-1.5"
         >
-          <Repeat className="h-3.5 w-3.5" />
+          <Repeat className="h-3.5 w-3.5" strokeWidth={1.8} />
           반복 추가
         </Button>
         {!isCurrentWeek && (
@@ -79,7 +79,7 @@ export function WeekNavigation({
           onClick={() => go(-1)}
           aria-label="이전 주"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
         </Button>
         <Button
           size="icon"
@@ -87,7 +87,7 @@ export function WeekNavigation({
           onClick={() => go(1)}
           aria-label="다음 주"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" strokeWidth={1.8} />
         </Button>
       </div>
     </div>

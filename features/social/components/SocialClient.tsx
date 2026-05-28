@@ -93,7 +93,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
                   disabled={pending}
                   onClick={() => handle(() => acceptInvite(inv.id), "초대를 수락했어요")}
                 >
-                  <Check className="mr-1 h-4 w-4" /> 수락
+                  <Check className="mr-1 h-4 w-4" strokeWidth={1.8} /> 수락
                 </Button>
                 <Button
                   size="sm"
@@ -144,7 +144,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
                   onClick={() => setLeaving(s)}
                   className="gap-1.5 text-muted-foreground"
                 >
-                  <LogOut className="h-3.5 w-3.5" />
+                  <LogOut className="h-3.5 w-3.5" strokeWidth={1.8} />
                   나가기
                 </Button>
               </li>
@@ -218,7 +218,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
                         }
                         aria-label="제거"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
                       </Button>
                     </li>
                   ))}

@@ -17,7 +17,7 @@ export function SignupForm() {
   if (state.status === "sent") {
     return (
       <div className="rounded-xl border border-border bg-muted/20 p-5 text-center">
-        <MailCheck className="mx-auto h-8 w-8 text-primary" />
+        <MailCheck className="mx-auto h-8 w-8 text-primary" strokeWidth={1.8} />
         <p className="mt-3 text-sm font-semibold">이메일을 확인해주세요</p>
         <p className="mt-1.5 text-sm text-muted-foreground">
           <span className="font-medium text-foreground">{state.email}</span> 로
@@ -87,7 +87,7 @@ export function SignupForm() {
 
       {state.status === "error" && (
         <p className="flex items-start gap-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
           <span>{state.error}</span>
         </p>
       )}

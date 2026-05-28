@@ -97,6 +97,7 @@ export function DayColumn({
             className={`h-4 w-4 text-muted-foreground transition-transform ${
               open ? "" : "-rotate-90"
             } ${total > 0 ? "" : "ml-auto"}`}
+            strokeWidth={1.8}
           />
         )}
       </header>

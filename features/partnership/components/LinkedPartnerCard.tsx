@@ -50,7 +50,7 @@ export function LinkedPartnerCard({
   return (
     <div className="space-y-3 rounded-lg border border-border p-4">
       <div className="flex items-center gap-2">
-        <Heart className="h-4 w-4 fill-pink-500 text-pink-500" aria-hidden />
+        <Heart className="h-4 w-4 fill-pink-500 text-pink-500" aria-hidden strokeWidth={1.8} />
         <div className="flex-1">
           <p className="text-sm">
             <span className="font-medium">{name}</span> 와 부부 연결됨

@@ -96,7 +96,7 @@ export function ExpenseDayDetailPopup({
           variant="outline"
           onClick={() => setCreating(true)}
         >
-          <Plus className="h-3.5 w-3.5 mr-1" />
+          <Plus className="h-3.5 w-3.5 mr-1" strokeWidth={1.8} />
           거래 추가
         </Button>
       </div>
@@ -178,7 +178,7 @@ export function ExpenseDayDetailPopup({
                   aria-label="삭제"
                   disabled={pending}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
                 </button>
               </div>
             ))}

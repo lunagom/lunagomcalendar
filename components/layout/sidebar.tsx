@@ -56,7 +56,7 @@ export function SidebarBody({
         aria-label="새 일정 추가"
         onClick={() => setCreateOpen(true)}
       >
-        <Plus className="h-4 w-4" />새 일정
+        <Plus className="h-4 w-4" strokeWidth={1.8} />새 일정
       </Button>
 
       {/* 메뉴 */}
@@ -86,6 +86,7 @@ export function SidebarBody({
                   "h-[18px] w-[18px] shrink-0",
                   active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                 )}
+                strokeWidth={1.8}
               />
               <span>{item.label}</span>
               {showBadge && (

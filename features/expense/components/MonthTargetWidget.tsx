@@ -115,7 +115,7 @@ export function MonthTargetWidget({ month, target, actual }: Props) {
           className="text-muted-foreground hover:text-foreground"
           aria-label="월 목표 수정"
         >
-          <Pencil className="h-3.5 w-3.5" />
+          <Pencil className="h-3.5 w-3.5" strokeWidth={1.8} />
         </button>
       </div>
       <div className="flex items-center gap-2">

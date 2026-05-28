@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MessageSquare, Plus, Users } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PostCard } from "./PostCard";
 import { PostDetailDialog } from "./PostDetailDialog";
 import { NewPostDialog } from "./NewPostDialog";
@@ -38,15 +38,8 @@ export function BoardClient({
   // 캘린더 없음 — 빈 상태
   if (calendars.length === 0) {
     return (
-      <div className="container mx-auto max-w-3xl px-4 py-6 text-center">
-        <Users className="mx-auto h-12 w-12 text-muted-foreground opacity-25" />
-        <p className="mt-3 text-muted-foreground">
-          공유 캘린더가 없어요.{" "}
-          <Link href="/settings" className="text-primary hover:underline">
-            캘린더 설정
-          </Link>{" "}
-          에서 멤버를 초대하면 게시판이 열려요.
-        </p>
+      <div className="container mx-auto max-w-3xl px-4 py-6">
+        <EmptyState message="공유 캘린더가 없어요. 캘린더 설정에서 멤버를 초대하면 게시판이 열려요." />
       </div>
     );
   }
@@ -88,18 +81,17 @@ export function BoardClient({
             disabled={!currentCalendarId}
             className="ml-auto shrink-0 gap-1"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4" strokeWidth={1.8} />
             새 글
           </Button>
         </div>
 
         {/* 글 목록 */}
         {posts.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
-            <MessageSquare className="h-12 w-12 opacity-25" />
-            <p className="text-sm">아직 글이 없어요</p>
-            <p className="text-xs">새 글로 멤버와 대화를 시작해보세요</p>
-          </div>
+          <EmptyState
+            message="아직 글이 없어요. 새 글로 멤버와 대화를 시작해보세요."
+            action={{ label: "새 글 작성", onClick: () => setNewPostOpen(true) }}
+          />
         ) : (
           <ul className="space-y-3">
             {posts.map((p) => (

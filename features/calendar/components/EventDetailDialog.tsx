@@ -135,7 +135,7 @@ export function EventDetailDialog({ event, calendars, onClose }: Props) {
               disabled={pending}
               className="gap-1.5 mr-auto"
             >
-              <CheckSquare className="h-4 w-4" />
+              <CheckSquare className="h-4 w-4" strokeWidth={1.8} />
               할 일로 추가
             </Button>
             <Button variant="outline" onClick={() => setEditing(true)}>

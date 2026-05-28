@@ -48,6 +48,7 @@ export function LikeButton({ targetType, targetId, count, liked }: Props) {
       <Heart
         className="h-3.5 w-3.5"
         fill={optimistic.liked ? "currentColor" : "none"}
+        strokeWidth={1.8}
       />
       {optimistic.count > 0 && (
         <span className="tabular-nums">{optimistic.count}</span>

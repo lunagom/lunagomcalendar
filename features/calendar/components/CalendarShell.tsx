@@ -31,7 +31,7 @@ export function CalendarShell({ calendars, children }: Props) {
           }
           aria-label="셀 지출 표시 토글"
         >
-          <Wallet className="h-4 w-4" />
+          <Wallet className="h-4 w-4" strokeWidth={1.8} />
         </Button>
         <CalendarPickerDropdown calendars={calendars} />
       </header>

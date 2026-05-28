@@ -114,7 +114,7 @@ export function SubscriptionItem({ subscription, usedCategories }: Props) {
             onClick={() => setEditing(true)}
             aria-label="수정"
           >
-            <Pencil className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" strokeWidth={1.8} />
           </Button>
           <Button
             variant="ghost"
@@ -124,7 +124,7 @@ export function SubscriptionItem({ subscription, usedCategories }: Props) {
             disabled={pending}
             aria-label="삭제"
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
           </Button>
         </div>
       </div>

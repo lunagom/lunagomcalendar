@@ -50,7 +50,7 @@ export function BudgetTabContent({
           </p>
         </div>
         <Button size="sm" onClick={() => setCreating(true)}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-1" strokeWidth={1.8} />
           예산 추가
         </Button>
       </div>

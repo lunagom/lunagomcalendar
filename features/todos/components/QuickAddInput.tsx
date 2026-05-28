@@ -34,7 +34,7 @@ export function QuickAddInput({ date }: Props) {
       onSubmit={handleSubmit}
       className="flex items-center gap-1.5 px-2 py-1.5"
     >
-      <Plus className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+      <Plus className="h-3.5 w-3.5 text-muted-foreground shrink-0" strokeWidth={1.8} />
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}

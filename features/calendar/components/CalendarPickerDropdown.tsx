@@ -26,7 +26,7 @@ export function CalendarPickerDropdown({ calendars }: Props) {
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm">
-            📋 캘린더 <ChevronDown className="ml-1 h-3.5 w-3.5" />
+            📋 캘린더 <ChevronDown className="ml-1 h-3.5 w-3.5" strokeWidth={1.8} />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-64" align="end">
@@ -54,7 +54,7 @@ export function CalendarPickerDropdown({ calendars }: Props) {
                     className="text-muted-foreground hover:text-foreground"
                     aria-label={isHidden ? "보이기" : "숨기기"}
                   >
-                    {isHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    {isHidden ? <EyeOff className="h-3.5 w-3.5" strokeWidth={1.8} /> : <Eye className="h-3.5 w-3.5" strokeWidth={1.8} />}
                   </button>
                   <button
                     type="button"
@@ -62,7 +62,7 @@ export function CalendarPickerDropdown({ calendars }: Props) {
                     className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100"
                     aria-label="설정"
                   >
-                    <SettingsIcon className="h-3.5 w-3.5" />
+                    <SettingsIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
                   </button>
                 </div>
               );
@@ -74,7 +74,7 @@ export function CalendarPickerDropdown({ calendars }: Props) {
             onClick={() => setOpenNew(true)}
             className="mt-2 w-full text-left px-2 py-1.5 rounded text-sm text-muted-foreground hover:bg-accent flex items-center gap-2"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3.5 w-3.5" strokeWidth={1.8} />
             새 캘린더
           </button>
         </PopoverContent>

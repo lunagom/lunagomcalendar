@@ -39,7 +39,7 @@ export function PostCard({ post, onClick }: Props) {
         <div className="ml-auto flex items-center gap-3">
           {post.comment_count > 0 && (
             <span className="inline-flex items-center gap-1">
-              <MessageSquare className="h-3.5 w-3.5" />
+              <MessageSquare className="h-3.5 w-3.5" strokeWidth={1.8} />
               {post.comment_count}
             </span>
           )}

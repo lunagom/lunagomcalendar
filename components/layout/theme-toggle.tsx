@@ -30,11 +30,11 @@ export function ThemeToggle() {
         >
           {mounted ? (
             theme === "dark" ? (
-              <Moon className="h-[18px] w-[18px]" />
+              <Moon className="h-[18px] w-[18px]" strokeWidth={1.8} />
             ) : theme === "light" ? (
-              <Sun className="h-[18px] w-[18px]" />
+              <Sun className="h-[18px] w-[18px]" strokeWidth={1.8} />
             ) : (
-              <Monitor className="h-[18px] w-[18px]" />
+              <Monitor className="h-[18px] w-[18px]" strokeWidth={1.8} />
             )
           ) : (
             <Sun className="h-[18px] w-[18px]" />
@@ -43,15 +43,15 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[148px]">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun className="mr-2 h-4 w-4" />
+          <Sun className="mr-2 h-4 w-4" strokeWidth={1.8} />
           라이트 모드
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon className="mr-2 h-4 w-4" />
+          <Moon className="mr-2 h-4 w-4" strokeWidth={1.8} />
           다크 모드
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor className="mr-2 h-4 w-4" />
+          <Monitor className="mr-2 h-4 w-4" strokeWidth={1.8} />
           시스템 설정
         </DropdownMenuItem>
       </DropdownMenuContent>

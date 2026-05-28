@@ -87,7 +87,7 @@ export function RecurringIncomeList({ items, usedCategories }: Props) {
                 onClick={() => setEditing(row)}
                 aria-label="수정"
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className="h-4 w-4" strokeWidth={1.8} />
               </Button>
               <Button
                 variant="ghost"
@@ -95,7 +95,7 @@ export function RecurringIncomeList({ items, usedCategories }: Props) {
                 onClick={() => setConfirming(row)}
                 aria-label="삭제"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" strokeWidth={1.8} />
               </Button>
             </div>
           );

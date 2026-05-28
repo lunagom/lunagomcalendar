@@ -84,7 +84,7 @@ export function TodoItem({ todo, todayIso }: Props) {
       )}
       <DropdownMenu>
         <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100">
-          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+          <MoreHorizontal className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {daysOverdue > 0 && (

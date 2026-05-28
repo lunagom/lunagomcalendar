@@ -140,7 +140,7 @@ export function SettingsClient({
               disabled={pending}
               className="gap-2"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4" strokeWidth={1.8} />
               로그아웃
             </Button>
           </div>
@@ -168,7 +168,7 @@ export function SettingsClient({
                     : "hover:bg-muted/60"
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-5 w-5" strokeWidth={1.8} />
                 {opt.label}
               </button>
             );
@@ -195,7 +195,7 @@ export function SettingsClient({
                   }
                   disabled={pending}
                 />
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
                 <span className="text-sm">{w.label}</span>
               </label>
             );
@@ -214,7 +214,7 @@ export function SettingsClient({
             disabled={pending}
             className="gap-1.5"
           >
-            <Plus className="h-4 w-4" />새 캘린더
+            <Plus className="h-4 w-4" strokeWidth={1.8} />새 캘린더
           </Button>
         </div>
         {calendars.length === 0 ? (
@@ -247,7 +247,7 @@ export function SettingsClient({
                   onClick={() => setEditingCal(cal)}
                   aria-label="캘린더 설정"
                 >
-                  <SettingsIcon className="h-4 w-4" />
+                  <SettingsIcon className="h-4 w-4" strokeWidth={1.8} />
                 </Button>
               </li>
             ))}

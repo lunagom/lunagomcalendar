@@ -94,7 +94,7 @@ export function CommentList({ postId, comments, currentUserId, onMutate }: Props
                       className="text-muted-foreground hover:text-destructive"
                       aria-label="댓글 삭제"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
                     </button>
                   )}
                 </div>

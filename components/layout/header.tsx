@@ -57,7 +57,7 @@ export function Header({
           aria-label="메뉴 열기"
           onClick={() => setDrawerOpen(true)}
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-5 w-5" strokeWidth={1.8} />
         </Button>
         <SheetContent className="px-4 py-5">
           <SheetTitle className="sr-only">메뉴</SheetTitle>
@@ -79,7 +79,7 @@ export function Header({
 
       <div className="ml-auto md:ml-0 md:flex-1 md:max-w-md">
         <label className="relative flex items-center">
-          <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" strokeWidth={1.8} />
           <Input
             type="search"
             disabled

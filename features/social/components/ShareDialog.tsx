@@ -134,7 +134,7 @@ export function ShareDialog({
               <option value="edit">편집</option>
             </select>
             <Button onClick={handleInvite} disabled={pending}>
-              <UserPlus className="mr-1 h-4 w-4" /> 초대
+              <UserPlus className="mr-1 h-4 w-4" strokeWidth={1.8} /> 초대
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -186,7 +186,7 @@ export function ShareDialog({
                     }
                     aria-label="제거"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
                   </Button>
                 </li>
               ))}

@@ -30,7 +30,7 @@ export function WidgetCard({
   const card = (
     <section className={cardClass}>
       <header className="mb-3 flex items-center gap-2">
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
         <h3 className="text-sm font-semibold">{title}</h3>
         {trailing && (
           <span className="ml-auto text-xs text-muted-foreground">
@@ -62,7 +62,7 @@ export function WidgetEmpty({
 }) {
   return (
     <div className="flex flex-col items-center gap-2 py-4 text-muted-foreground">
-      <Icon className="h-10 w-10 opacity-25" />
+      <Icon className="h-10 w-10 opacity-25" strokeWidth={1.8} />
       <p className="text-sm">{text}</p>
     </div>
   );

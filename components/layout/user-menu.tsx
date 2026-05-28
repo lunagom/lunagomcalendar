@@ -53,13 +53,13 @@ export function UserMenu({ user }: { user: AppShellUser }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/settings">
-            <UserRound className="mr-2 h-4 w-4" />
+            <UserRound className="mr-2 h-4 w-4" strokeWidth={1.8} />
             프로필
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings">
-            <Settings className="mr-2 h-4 w-4" />
+            <Settings className="mr-2 h-4 w-4" strokeWidth={1.8} />
             계정 설정
           </Link>
         </DropdownMenuItem>
@@ -69,7 +69,7 @@ export function UserMenu({ user }: { user: AppShellUser }) {
             type="submit"
             className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className="mr-2 h-4 w-4" strokeWidth={1.8} />
             로그아웃
           </button>
         </form>

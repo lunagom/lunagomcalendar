@@ -69,9 +69,9 @@ export function SubscriptionList({ subscriptions, usedCategories }: Props) {
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
             {showInactive ? (
-              <ChevronDown className="h-3.5 w-3.5" />
+              <ChevronDown className="h-3.5 w-3.5" strokeWidth={1.8} />
             ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
+              <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.8} />
             )}
             비활성 구독 {inactive.length}개
           </button>
