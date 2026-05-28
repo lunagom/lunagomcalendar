@@ -22,10 +22,12 @@ import {
 } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
 import { DayCell, type DayCellEvent } from "./DayCell";
 import { MonthNavigation } from "./MonthNavigation";
-import { CalendarHeaderBar } from "./CalendarHeaderBar";
+import { CalendarMonthHeader } from "./CalendarMonthHeader";
+import { FloatingActionButton } from "./FloatingActionButton";
 import { EventDetailDialog } from "./EventDetailDialog";
 import { DayDetailPopup } from "./DayDetailPopup";
 import { WeekMultiDayLayer } from "./WeekMultiDayLayer";
@@ -33,12 +35,14 @@ import { buildWeekSegments, weekKeyOfDate } from "../lib/multi-day";
 import { moveEvent } from "../server/actions";
 import { isoToLocalDateKey } from "@/lib/datetime";
 import { useCalendarUIStore } from "../store/calendar-ui";
+import { EventHoverProvider } from "../lib/event-hover-context";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
 import type {
   ExpenseRow,
   IncomeRow,
 } from "@/features/expense/server/queries";
+import type { MonthlyStats } from "../lib/monthly-stats";
 
 type Props = {
   calendars: CalendarRow[];
@@ -47,6 +51,7 @@ type Props = {
   expenses: ExpenseRow[];
   incomes: IncomeRow[];
   initialMonth: string; // YYYY-MM
+  stats: MonthlyStats;
 };
 
 function isoOf(d: Date): string {
@@ -60,6 +65,7 @@ export function MonthGrid({
   expenses,
   incomes,
   initialMonth,
+  stats,
 }: Props) {
   const router = useRouter();
   const fcRef = useRef<FullCalendarInst | null>(null);
@@ -76,6 +82,7 @@ export function MonthGrid({
   const [, startTransition] = useTransition();
   const viewedMonth = viewedDate.getMonth();
   const initialDatesSetRef = useRef(true);
+  const todayLocalIso = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
 
   // 드롭 직후 서버 revalidate 완료 전에 일정이 원래 위치로 돌아갔다 새 위치로
   // 점프하는 깜박임 방지 — 드롭 즉시 로컬에서 새 날짜로 덮어쓰고, props 가
@@ -367,6 +374,7 @@ export function MonthGrid({
   const monthLabel = `${viewedDate.getFullYear()}년 ${viewedDate.getMonth() + 1}월`;
 
   return (
+    <EventHoverProvider>
     <DndContext
       sensors={sensors}
       collisionDetection={pointerWithin}
@@ -379,12 +387,20 @@ export function MonthGrid({
           onToday={() => navigate(0)}
           targetRef={containerRef}
         />
-        <CalendarHeaderBar
-          label={monthLabel}
+        <CalendarMonthHeader
+          monthLabel={monthLabel}
+          stats={stats}
+          calendars={calendars}
           onPrev={() => navigate(-1)}
           onNext={() => navigate(1)}
           onToday={() => navigate(0)}
         />
+        <motion.div
+          key={viewedDate.getMonth()}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+        >
         <FullCalendar
           ref={fcRef}
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -397,6 +413,7 @@ export function MonthGrid({
           headerToolbar={false}
           {...FC_COMMON}
         />
+        </motion.div>
 
         {/* 셀별 React portal — DndContext 컨텍스트 전파됨 */}
         {Array.from(cellContainers.entries()).map(([isoDate, container]) => {
@@ -406,6 +423,7 @@ export function MonthGrid({
             <DayCell
               date={date}
               isCurrentMonth={viewedMonth === date.getMonth()}
+              isToday={isoDate === todayLocalIso}
               events={eventsByDate.get(isoDate) ?? []}
               todos={todosByDate.get(isoDate) ?? []}
               calendars={calendars}
@@ -450,7 +468,9 @@ export function MonthGrid({
             onClose={() => setDetailEvent(null)}
           />
         )}
+        <FloatingActionButton calendars={calendars} />
       </div>
     </DndContext>
+    </EventHoverProvider>
   );
 }
