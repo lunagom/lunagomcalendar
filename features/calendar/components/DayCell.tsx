@@ -1,6 +1,7 @@
 // features/calendar/components/DayCell.tsx
 "use client";
 import { useDroppable } from "@dnd-kit/core";
+import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DraggableEventBar } from "./DraggableEventBar";
 import { type SpanRole } from "./EventBar";
@@ -17,6 +18,7 @@ export type DayCellEvent = { event: EventRow; spanRole: SpanRole };
 type Props = {
   date: Date;
   isCurrentMonth: boolean;
+  isToday?: boolean;
   events: DayCellEvent[];
   todos: TaskRow[];
   calendars: CalendarRow[];
@@ -42,6 +44,7 @@ function isoOf(d: Date): string {
 export function DayCell({
   date,
   isCurrentMonth,
+  isToday = false,
   events,
   todos,
   calendars,
@@ -77,16 +80,27 @@ export function DayCell({
   return (
     <div
       ref={setNodeRef}
-      className={`h-full flex flex-col p-1.5 cursor-pointer transition-colors ${
+      className={`relative h-full flex flex-col p-1.5 cursor-pointer transition-colors ${
         isOver ? "bg-primary/10 ring-1 ring-primary/40 rounded" : ""
-      }`}
+      } ${isToday ? "ring-2 ring-primary/40 rounded-lg" : ""}`}
       onClick={onDayClick}
     >
+      {isToday && (
+        <motion.div
+          initial={{ opacity: 1, scale: 0.95 }}
+          animate={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="absolute inset-0 rounded-lg ring-2 ring-primary pointer-events-none"
+        />
+      )}
       {/* 날짜 + 음력 + 지출 합계 */}
       <div className="flex items-baseline gap-1">
         <span className={`text-sm font-semibold ${dayNumberColor}`}>
           {date.getDate()}
         </span>
+        {isToday && (
+          <span className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-primary align-middle" />
+        )}
         {lunar && (
           <span className="text-[10px] text-muted-foreground whitespace-nowrap">
             ·음 {lunar.month}/1
