@@ -1,4 +1,7 @@
 // features/todos/components/WeekProgressBar.tsx
+"use client";
+
+import { AnimatedNumber } from "@/features/widgets/components/AnimatedNumber";
 import type { TaskRow } from "../server/queries";
 
 type Props = {
@@ -15,7 +18,8 @@ export function WeekProgressBar({ weekTodos }: Props) {
       <div className="flex items-center justify-between text-xs text-muted-foreground tabular-nums">
         <span>주간 진행률</span>
         <span>
-          {done} / {total} 완료 · {pct}%
+          <AnimatedNumber value={done} /> / <AnimatedNumber value={total} /> 완료 ·{" "}
+          <AnimatedNumber value={pct} unit="%" />
         </span>
       </div>
       <div className="h-1.5 rounded-full bg-muted overflow-hidden">
