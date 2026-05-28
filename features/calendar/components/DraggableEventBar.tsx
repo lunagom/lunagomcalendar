@@ -4,6 +4,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { EventBar, type SpanRole } from "./EventBar";
+import { useEventHover } from "../lib/event-hover-context";
 import type { EventRow } from "../server/queries";
 
 type Props = {
@@ -33,6 +34,8 @@ export function DraggableEventBar({
       id,
       data: { event },
     });
+  const { hoveredId, setHoveredId } = useEventHover();
+  const isHovered = hoveredId === event.id;
 
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
@@ -45,7 +48,11 @@ export function DraggableEventBar({
       style={style}
       {...attributes}
       {...listeners}
-      className={isDragging ? "cursor-grabbing" : "cursor-grab"}
+      onMouseEnter={() => setHoveredId(event.id)}
+      onMouseLeave={() => setHoveredId(null)}
+      className={`transition-all duration-150 ${
+        isDragging ? "cursor-grabbing" : "cursor-grab"
+      } ${isHovered && !isDragging ? "-translate-y-0.5" : ""}`}
     >
       <EventBar
         title={event.title}

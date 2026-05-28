@@ -3,6 +3,7 @@
 import { useDndContext, useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { getTextColor } from "@/lib/colors";
+import { useEventHover } from "../lib/event-hover-context";
 import type { CalendarRow, EventRow } from "../server/queries";
 import type { WeekSegment } from "../lib/multi-day";
 
@@ -98,6 +99,9 @@ function DraggableSegment({
 
   const opacity = isDragging ? 0.4 : isSiblingOfDragging ? 0 : 1;
 
+  const { hoveredId, setHoveredId } = useEventHover();
+  const isHovered = hoveredId === event.id && !isDragging;
+
   return (
     <button
       ref={setNodeRef}
@@ -108,6 +112,8 @@ function DraggableSegment({
       }}
       {...attributes}
       {...listeners}
+      onMouseEnter={() => setHoveredId(event.id)}
+      onMouseLeave={() => setHoveredId(null)}
       className={`absolute px-1.5 sm:px-2 rounded text-[10px] sm:text-[11px] truncate pointer-events-auto hover:opacity-80 text-left transition ${
         isDragging ? "cursor-grabbing" : "cursor-grab"
       }`}
@@ -120,7 +126,7 @@ function DraggableSegment({
         backgroundColor: color,
         color: textColor,
         opacity,
-        transform: dragStyle,
+        transform: `${dragStyle ?? ""} ${isHovered ? "translateY(-2px)" : ""}`.trim() || undefined,
       }}
     >
       {event.emoji ? `${event.emoji} ` : ""}
