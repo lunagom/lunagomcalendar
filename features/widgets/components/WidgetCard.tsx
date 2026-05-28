@@ -22,8 +22,10 @@ export function WidgetCard({
   spanTwo,
   children,
 }: Props) {
-  const cardClass = `rounded-lg border bg-card p-4 transition ${
-    href ? "hover:border-primary/60" : ""
+  const cardClass = `rounded-lg border bg-card p-4 transition-all duration-200 ${
+    href
+      ? "hover:border-primary/60 hover:-translate-y-0.5 hover:shadow-md"
+      : ""
   } h-full`;
   const spanClass = spanTwo ? "sm:col-span-2" : "";
 
