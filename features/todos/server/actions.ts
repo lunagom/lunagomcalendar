@@ -176,6 +176,42 @@ export async function materializeRecurringTodo(
   return { ok: true, data: { id: data.id } };
 }
 
+/**
+ * 한 날(컬럼) 내의 할 일들을 주어진 순서대로 sort_order 재할당.
+ * orderedIds: 컬럼 최종 순서 (위 → 아래). 100, 200, 300, ... 으로 균등 spacing.
+ */
+export async function reorderTodosInDay(
+  date: string,
+  orderedIds: string[],
+): Promise<ActionResult> {
+  const dateParsed = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).safeParse(date);
+  if (!dateParsed.success) return { ok: false, error: "유효하지 않은 날짜" };
+  const idsParsed = z.array(z.string().uuid()).min(1).safeParse(orderedIds);
+  if (!idsParsed.success) return { ok: false, error: "잘못된 입력" };
+
+  await getUserId();
+  const supabase = createClient();
+
+  // 개별 update 를 Promise.all — Supabase JS 는 batch update 지원 안 함.
+  const results = await Promise.all(
+    idsParsed.data.map((id, idx) =>
+      supabase
+        .from("tasks")
+        .update({
+          sort_order: (idx + 1) * 100,
+          scheduled_date: dateParsed.data,
+        })
+        .eq("id", id),
+    ),
+  );
+  const firstError = results.find((r) => r.error)?.error;
+  if (firstError) return { ok: false, error: firstError.message };
+
+  revalidatePath("/calendar");
+  revalidatePath("/todos");
+  return { ok: true, data: undefined };
+}
+
 /** 드래그앤드롭으로 같은 주 내에서 다른 요일로 이동. sort_order 도 같이 갱신 가능. */
 export async function reorderTodo(
   id: string,

@@ -1,6 +1,6 @@
 // features/todos/components/TodoItem.tsx
 "use client";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { CalendarClock, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -21,13 +21,27 @@ type Props = {
 
 export function TodoItem({ todo, todayIso }: Props) {
   const [pending, startTransition] = useTransition();
-  const done = !!todo.completed_at;
+  const serverDone = !!todo.completed_at;
+  // 체크박스 즉시 반응 — 서버 응답 기다리지 않고 로컬 state 로 먼저 반영.
+  // 서버 props 가 따라오면 override 해제.
+  const [optimisticDone, setOptimisticDone] = useState<boolean | null>(null);
+  const done = optimisticDone ?? serverDone;
+  useEffect(() => {
+    if (optimisticDone !== null && optimisticDone === serverDone) {
+      setOptimisticDone(null);
+    }
+  }, [serverDone, optimisticDone]);
+
   const daysOverdue = daysBetween(todo.scheduled_date, todayIso);
 
   const handleToggle = (v: boolean) => {
+    setOptimisticDone(v);
     startTransition(async () => {
       const r = await toggleTodo(todo.id, v);
-      if (!r.ok) toast.error(r.error);
+      if (!r.ok) {
+        toast.error(r.error);
+        setOptimisticDone(null); // 실패 시 서버 값으로 복귀
+      }
     });
   };
 

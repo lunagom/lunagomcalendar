@@ -4,6 +4,10 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { DraggableTodoItem } from "./DraggableTodoItem";
 import { VirtualTodoItem } from "./VirtualTodoItem";
 import { QuickAddInput } from "./QuickAddInput";
@@ -102,14 +106,19 @@ export function DayColumn({
           {total === 0 ? (
             <p className="text-xs text-muted-foreground px-2 py-2">할 일 없음</p>
           ) : (
-            <div className="flex flex-col">
-              {todos.map((t) => (
-                <DraggableTodoItem key={t.id} todo={t} todayIso={todayIso} />
-              ))}
-              {virtualTodos.map((v) => (
-                <VirtualTodoItem key={v.id} virtual={v} />
-              ))}
-            </div>
+            <SortableContext
+              items={todos.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="flex flex-col">
+                {todos.map((t) => (
+                  <DraggableTodoItem key={t.id} todo={t} todayIso={todayIso} />
+                ))}
+                {virtualTodos.map((v) => (
+                  <VirtualTodoItem key={v.id} virtual={v} />
+                ))}
+              </div>
+            </SortableContext>
           )}
           <QuickAddInput date={dateIso} />
         </div>

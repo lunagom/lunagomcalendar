@@ -14,6 +14,8 @@ export async function getTodosForDate(dateString: string): Promise<TaskRow[]> {
     .select("*")
     .eq("scheduled_date", dateString)
     .eq("is_recurring", false)
+    // 미완료 먼저(NULL), 완료된 항목은 맨 아래
+    .order("completed_at", { ascending: true, nullsFirst: true })
     .order("sort_order")
     .order("created_at");
   if (error) throw error;
@@ -57,6 +59,8 @@ export async function getTodosForWeek(weekStartIso: string): Promise<WeekTodos> 
       .lt("scheduled_date", endIso)
       .eq("is_recurring", false)
       .order("scheduled_date")
+      // 미완료 먼저(NULL), 완료된 항목은 컬럼 맨 아래
+      .order("completed_at", { ascending: true, nullsFirst: true })
       .order("sort_order")
       .order("created_at"),
     supabase
