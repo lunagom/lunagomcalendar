@@ -11,6 +11,7 @@ import {
 import { DraggableTodoItem } from "./DraggableTodoItem";
 import { VirtualTodoItem } from "./VirtualTodoItem";
 import { QuickAddInput } from "./QuickAddInput";
+import { motion } from "framer-motion";
 import { WEEKDAY_LABELS, isExpandedByDefault } from "../lib/week";
 import type { TaskRow } from "../server/queries";
 import type { VirtualTodo } from "../lib/recurrence";
@@ -54,14 +55,14 @@ export function DayColumn({
 
   const wrapperCls =
     variant === "card"
-      ? `rounded-lg border transition-colors ${
+      ? `rounded-lg border transition-colors ${isToday ? "relative" : ""} ${
           isOver
             ? "bg-primary/10 ring-1 ring-primary/40 border-transparent"
             : isToday
               ? "bg-primary/5 ring-1 ring-primary/20 border-transparent"
               : "border-border/60"
         }`
-      : `transition-colors ${
+      : `transition-colors ${isToday ? "relative" : ""} ${
           isOver
             ? "bg-primary/10 ring-1 ring-primary/40"
             : isToday
@@ -71,6 +72,14 @@ export function DayColumn({
 
   return (
     <section ref={setNodeRef} className={wrapperCls}>
+      {isToday && (
+        <motion.div
+          initial={{ opacity: 1, scale: 0.95 }}
+          animate={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="absolute inset-0 rounded-lg ring-2 ring-primary pointer-events-none"
+        />
+      )}
       <header
         className={`flex items-center gap-2 px-3 py-2 ${
           collapsible ? "cursor-pointer select-none" : ""
