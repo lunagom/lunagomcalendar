@@ -9,6 +9,7 @@ import {
   getExpensesForMonth,
   getIncomesForMonth,
 } from "@/features/expense/server/queries";
+import { computeMonthlyStats } from "@/features/calendar/lib/monthly-stats";
 
 export const metadata = { title: "캘린더" };
 
@@ -29,6 +30,8 @@ export default async function CalendarPage({ searchParams }: Props) {
     getIncomesForMonth(month),
   ]);
 
+  const stats = computeMonthlyStats(month, events, todos, expenses, incomes);
+
   return (
     <CalendarShell calendars={calendars}>
       <MonthGrid
@@ -38,6 +41,7 @@ export default async function CalendarPage({ searchParams }: Props) {
         expenses={expenses}
         incomes={incomes}
         initialMonth={month}
+        stats={stats}
       />
     </CalendarShell>
   );
