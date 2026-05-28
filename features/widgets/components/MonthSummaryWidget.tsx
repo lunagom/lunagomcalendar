@@ -1,7 +1,7 @@
 // features/widgets/components/MonthSummaryWidget.tsx
 import { TrendingUp } from "lucide-react";
 import { WidgetCard } from "./WidgetCard";
-import { formatDelta } from "@/lib/colors";
+import { AnimatedNumber } from "./AnimatedNumber";
 import { getMonthSummary } from "../server/queries";
 
 /**
@@ -33,20 +33,23 @@ export async function MonthSummaryWidget() {
       <div>
         <p className="text-xs text-muted-foreground">순수익</p>
         <p className={`text-3xl font-bold tabular-nums ${netClass}`}>
-          {formatDelta(net)}
+          {net !== 0 && (net > 0 ? "+" : "-")}
+          <AnimatedNumber value={Math.abs(net)} unit="원" />
         </p>
       </div>
       <div className="mt-3 flex gap-4 text-xs text-muted-foreground tabular-nums">
         <span>
           수입{" "}
           <span className="font-medium text-[#16A34A] dark:text-[#4ADE80]">
-            {formatDelta(s.totalIncome)}
+            {s.totalIncome > 0 && "+"}
+            <AnimatedNumber value={s.totalIncome} unit="원" />
           </span>
         </span>
         <span>
           지출{" "}
           <span className="font-medium text-[#DC2626] dark:text-[#F87171]">
-            {formatDelta(-s.totalExpense)}
+            {s.totalExpense > 0 && "-"}
+            <AnimatedNumber value={s.totalExpense} unit="원" />
           </span>
         </span>
       </div>
