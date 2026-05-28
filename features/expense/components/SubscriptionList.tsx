@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { SubscriptionItem } from "./SubscriptionItem";
 import { daysUntilNextBilling } from "@/lib/subscription";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { SubscriptionRow } from "../server/queries";
 
 type Props = {
@@ -34,11 +35,7 @@ export function SubscriptionList({ subscriptions, usedCategories }: Props) {
   }, [subscriptions]);
 
   if (subscriptions.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground py-8 text-center">
-        아직 등록된 구독이 없어요.
-      </p>
-    );
+    return <EmptyState message="아직 등록된 구독이 없어요." />;
   }
 
   return (

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Heart, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BudgetEditor } from "./BudgetEditor";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getCategoryColor } from "@/lib/colors";
 import type { BudgetRow } from "../server/queries";
 
@@ -56,9 +57,7 @@ export function BudgetTabContent({
       </div>
 
       {sorted.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-8 text-center">
-          [+ 예산 추가] 로 카테고리별 한도를 설정해보세요.
-        </p>
+        <EmptyState message="[+ 예산 추가] 로 카테고리별 한도를 설정해보세요." />
       ) : (
         <div className="flex flex-col divide-y">
           {sorted.map((b) => {

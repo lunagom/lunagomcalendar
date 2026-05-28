@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { getIncomeCategoryColor, getTextColor, formatDelta } from "@/lib/colors";
+import { EmptyState } from "@/components/ui/empty-state";
 import { RecurringIncomeModal } from "./RecurringIncomeModal";
 import { DeleteConfirmDialog } from "@/features/calendar/components/DeleteConfirmDialog";
 import {
@@ -25,11 +26,7 @@ export function RecurringIncomeList({ items, usedCategories }: Props) {
   const [confirming, setConfirming] = useState<RecurringIncomeRow | null>(null);
 
   if (items.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground py-6 text-center">
-        등록된 정기 수입이 없어요.
-      </p>
-    );
+    return <EmptyState message="등록된 정기 수입이 없어요." />;
   }
 
   const handleToggle = async (row: RecurringIncomeRow, v: boolean) => {
