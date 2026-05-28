@@ -26,7 +26,7 @@ export function PostCard({ post, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-lg border bg-card p-4 text-left transition hover:border-primary/60 hover:shadow-sm"
+      className="w-full rounded-lg border bg-card p-4 text-left transition hover:border-primary/60"
     >
       <h3 className="mb-1 font-semibold">{post.title}</h3>
       <p className="line-clamp-2 text-sm text-muted-foreground whitespace-pre-wrap">

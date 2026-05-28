@@ -72,7 +72,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
             {invites.map((inv) => (
               <li
                 key={inv.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
+                className="flex items-center gap-3 rounded-lg border border-border/40 p-3"
               >
                 <span
                   className="h-8 w-8 shrink-0 rounded-full"
@@ -121,7 +121,7 @@ export function SocialClient({ invites, accepted, owned }: Props) {
             {accepted.map((s) => (
               <li
                 key={s.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
+                className="flex items-center gap-3 rounded-lg border border-border/40 p-3"
               >
                 <span
                   className="h-8 w-8 shrink-0 rounded-full"

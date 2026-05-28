@@ -35,7 +35,7 @@ export function CategoryTotalsBar({ expenseTotals, incomeTotals }: Props) {
           {incomeEntries.map(([category, amount]) => (
             <div
               key={"i-" + category}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/40 text-xs"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border/40 text-xs"
             >
               <span
                 className="w-2 h-2 rounded-full shrink-0"
@@ -54,7 +54,7 @@ export function CategoryTotalsBar({ expenseTotals, incomeTotals }: Props) {
           {expenseEntries.map(([category, amount]) => (
             <div
               key={"e-" + category}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/40 text-xs"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border/40 text-xs"
             >
               <span
                 className="w-2 h-2 rounded-full shrink-0"

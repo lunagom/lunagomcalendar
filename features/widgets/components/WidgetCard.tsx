@@ -23,7 +23,7 @@ export function WidgetCard({
   children,
 }: Props) {
   const cardClass = `rounded-lg border bg-card p-4 transition ${
-    href ? "hover:border-primary/60 hover:shadow-sm" : ""
+    href ? "hover:border-primary/60" : ""
   } h-full`;
   const spanClass = spanTwo ? "sm:col-span-2" : "";
 

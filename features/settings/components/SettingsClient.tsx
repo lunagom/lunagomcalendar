@@ -179,7 +179,7 @@ export function SettingsClient({
       {/* 3. 메인 위젯 */}
       <section className="space-y-3">
         <h2 className="text-base font-semibold">메인 위젯</h2>
-        <div className="rounded-lg border p-4 space-y-1">
+        <div className="rounded-lg border border-border/40 p-4 space-y-1">
           {WIDGET_ITEMS.map((w) => {
             const visible = !hiddenWidgets.includes(w.key);
             const Icon = w.icon;
@@ -226,7 +226,7 @@ export function SettingsClient({
             {calendars.map((cal) => (
               <li
                 key={cal.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
+                className="flex items-center gap-3 rounded-lg border border-border/40 p-3"
               >
                 <span
                   className="h-5 w-5 shrink-0 rounded-full"

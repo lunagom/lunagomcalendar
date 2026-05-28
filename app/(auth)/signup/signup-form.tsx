@@ -16,7 +16,7 @@ export function SignupForm() {
 
   if (state.status === "sent") {
     return (
-      <div className="rounded-xl border border-border bg-accent/40 p-5 text-center">
+      <div className="rounded-xl border border-border bg-muted/20 p-5 text-center">
         <MailCheck className="mx-auto h-8 w-8 text-primary" />
         <p className="mt-3 text-sm font-semibold">이메일을 확인해주세요</p>
         <p className="mt-1.5 text-sm text-muted-foreground">
