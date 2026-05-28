@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import { LikeButton } from "./LikeButton";
 import { CommentList } from "./CommentList";
 import { NewPostDialog } from "./NewPostDialog";
 import { deletePost, fetchPostDetail } from "../server/actions";
+import { usePostDetailRealtime } from "../hooks/use-post-detail-realtime";
 import type { CommentItem, PostListItem } from "../server/queries";
 
 type Props = {
@@ -48,7 +49,7 @@ export function PostDetailDialog({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const load = async (id: string) => {
+  const load = useCallback(async (id: string) => {
     setLoading(true);
     const r = await fetchPostDetail(id);
     setLoading(false);
@@ -58,7 +59,7 @@ export function PostDetailDialog({
     } else {
       toast.error(r.error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (postId) void load(postId);
@@ -66,8 +67,13 @@ export function PostDetailDialog({
       setPost(null);
       setComments([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId]);
+  }, [postId, load]);
+
+  const handleRealtimeChange = useCallback(() => {
+    if (postId) void load(postId);
+  }, [postId, load]);
+
+  usePostDetailRealtime({ postId, onChange: handleRealtimeChange });
 
   const handleDelete = () => {
     if (!post) return;
