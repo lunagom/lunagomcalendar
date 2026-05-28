@@ -11,7 +11,9 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { TodoFloatingActionButton } from "./TodoFloatingActionButton";
 import { WeekNavigation } from "./WeekNavigation";
 import { WeekBoardMobile } from "./WeekBoardMobile";
 import { WeekBoardDesktop } from "./WeekBoardDesktop";
@@ -49,6 +51,12 @@ export function WeekBoard({
       activationConstraint: { delay: 500, tolerance: 5 },
     }),
   );
+
+  const stagger = (idx: number) => ({
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3, delay: idx * 0.06, ease: "easeOut" as const },
+  });
 
   const allDraggableTodos = [...weekTodos, ...overdueTodos];
 
@@ -114,32 +122,40 @@ export function WeekBoard({
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="px-4 py-6 md:px-6 md:py-8 space-y-6">
-        <WeekNavigation
-          weekStartIso={weekStartIso}
-          isCurrentWeek={isCurrentWeek}
-          onOpenRecurring={() => setRecurringOpen(true)}
-        />
-        <WeekProgressBar weekTodos={weekTodos} />
-        {/* 모바일: 세로 스택 */}
-        <div className="md:hidden">
-          <WeekBoardMobile
+        <motion.div {...stagger(0)}>
+          <WeekNavigation
             weekStartIso={weekStartIso}
-            todayIso={todayIso}
-            weekTodos={weekTodos}
-            virtualTodos={virtualTodos}
-            overdueTodos={overdueTodos}
+            isCurrentWeek={isCurrentWeek}
+            onOpenRecurring={() => setRecurringOpen(true)}
           />
-        </div>
-        {/* 데스크탑: 7컬럼 */}
-        <div className="hidden md:block">
-          <WeekBoardDesktop
-            weekStartIso={weekStartIso}
-            todayIso={todayIso}
-            weekTodos={weekTodos}
-            virtualTodos={virtualTodos}
-            overdueTodos={overdueTodos}
-          />
-        </div>
+        </motion.div>
+        <motion.div {...stagger(1)}>
+          <WeekProgressBar weekTodos={weekTodos} />
+        </motion.div>
+        <motion.div {...stagger(2)}>
+          {/* 모바일: 세로 스택 */}
+          <div className="md:hidden">
+            <WeekBoardMobile
+              weekStartIso={weekStartIso}
+              todayIso={todayIso}
+              weekTodos={weekTodos}
+              virtualTodos={virtualTodos}
+              overdueTodos={overdueTodos}
+            />
+          </div>
+          {/* 데스크탑: 7컬럼 */}
+          <div className="hidden md:block">
+            <WeekBoardDesktop
+              weekStartIso={weekStartIso}
+              todayIso={todayIso}
+              weekTodos={weekTodos}
+              virtualTodos={virtualTodos}
+              overdueTodos={overdueTodos}
+            />
+          </div>
+        </motion.div>
+
+        <TodoFloatingActionButton todayIso={todayIso} />
 
         <RecurringTodoModal
           open={recurringOpen}
