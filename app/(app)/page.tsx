@@ -19,12 +19,14 @@ import { IncomingInvitesWidget } from "@/features/widgets/components/IncomingInv
 
 export const metadata = { title: "홈" };
 
-const WIDGET_COMPONENTS: Record<WidgetKey, React.ComponentType> = {
+/**
+ * 그리드 안에 들어가는 위젯들. invites 는 슬림 배너 형식으로 그리드 밖에 별도 배치.
+ */
+const GRID_WIDGET_COMPONENTS: Partial<Record<WidgetKey, React.ComponentType>> = {
   today_events: TodayEventsWidget,
   upcoming: UpcomingEventsWidget,
   month_summary: MonthSummaryWidget,
   today_todos: TodayTodosWidget,
-  invites: IncomingInvitesWidget,
 };
 
 export default async function HomePage() {
@@ -54,7 +56,10 @@ export default async function HomePage() {
     })(),
   ]);
 
-  const visible = WIDGET_ITEMS.filter((w) => !hidden.includes(w.key));
+  const showInvites = !hidden.includes("invites");
+  const gridVisible = WIDGET_ITEMS.filter(
+    (w) => !hidden.includes(w.key) && w.key !== "invites",
+  );
 
   return (
     <div className="container mx-auto max-w-5xl p-4 md:p-6 space-y-6">
@@ -64,8 +69,9 @@ export default async function HomePage() {
       />
       <QuickActions calendars={calendars} />
       <MiniWeekStrip />
+      {showInvites && <IncomingInvitesWidget />}
 
-      {visible.length === 0 ? (
+      {gridVisible.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">
           메인 위젯이 모두 꺼져있어요.{" "}
           <Link href="/settings" className="text-primary hover:underline">
@@ -74,8 +80,9 @@ export default async function HomePage() {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {visible.map((w, i) => {
-            const C = WIDGET_COMPONENTS[w.key];
+          {gridVisible.map((w, i) => {
+            const C = GRID_WIDGET_COMPONENTS[w.key];
+            if (!C) return null;
             return (
               <AnimatedWidgetCard key={w.key} index={i}>
                 <C />
