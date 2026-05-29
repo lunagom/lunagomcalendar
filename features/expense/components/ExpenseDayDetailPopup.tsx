@@ -37,6 +37,7 @@ type Props = {
   usedCategories: string[];
   onClose: () => void;
   assets?: AssetRow[];
+  recentMemos?: string[];
 };
 
 const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
@@ -48,6 +49,7 @@ export function ExpenseDayDetailPopup({
   usedCategories,
   onClose,
   assets = [],
+  recentMemos = [],
 }: Props) {
   const isMobile = useMediaQuery("(max-width: 639px)");
   const [creating, setCreating] = useState(false);
@@ -243,6 +245,7 @@ export function ExpenseDayDetailPopup({
           defaultDate={isoDate}
           usedCategories={usedCategories}
           assets={assets}
+          recentMemos={recentMemos}
         />
       )}
 
@@ -255,6 +258,7 @@ export function ExpenseDayDetailPopup({
           initial={editing}
           usedCategories={usedCategories}
           assets={assets}
+          recentMemos={recentMemos}
         />
       )}
 

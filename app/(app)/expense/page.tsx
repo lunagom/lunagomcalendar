@@ -12,6 +12,7 @@ import {
 import {
   getActiveAssets,
   getCreditCardsAwaitingSettlement,
+  getRecentMemos,
 } from "@/features/expense/server/asset-queries";
 
 export const metadata = { title: "가계부" };
@@ -43,6 +44,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     totalsByIncomeCategory,
     assets,
     settlementCards,
+    recentMemos,
   ] = await Promise.all([
     getExpensesForMonth(month),
     getIncomesForMonth(month),
@@ -54,6 +56,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     getMonthlyTotalsByIncomeCategory(month),
     getActiveAssets(),
     getCreditCardsAwaitingSettlement(),
+    getRecentMemos(),
   ]);
   const settlementCardIds = settlementCards.map((c) => c.id);
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
@@ -96,6 +99,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       budgets={budgets}
       assets={assets}
       settlementCardIds={settlementCardIds}
+      recentMemos={recentMemos}
     />
   );
 }

@@ -36,6 +36,9 @@ import type { ExpenseRow, IncomeRow } from "../server/queries";
 import type { AssetRow } from "../server/asset-queries";
 import { canReceiveIncome, type AssetType } from "../lib/asset-types";
 import { AssetChipPicker } from "./transaction-extras/AssetChipPicker";
+import { QuickAmountChips } from "./transaction-extras/QuickAmountChips";
+import { CalculatorPopover } from "./transaction-extras/CalculatorPopover";
+import { MemoAutocomplete } from "./transaction-extras/MemoAutocomplete";
 
 type TxnType = "income" | "expense";
 
@@ -49,6 +52,7 @@ type CreateProps = {
   defaultDate?: string;
   usedCategories?: string[];
   assets?: AssetRow[];
+  recentMemos?: string[];
 };
 
 type EditProps = {
@@ -60,6 +64,7 @@ type EditProps = {
   initial: ExpenseRow | IncomeRow;
   usedCategories?: string[];
   assets?: AssetRow[];
+  recentMemos?: string[];
 };
 
 type Props = CreateProps | EditProps;
@@ -77,7 +82,7 @@ function formatThousands(n: string): string {
 }
 
 export function TransactionModal(props: Props) {
-  const { open, onOpenChange, usedCategories = [], assets = [] } = props;
+  const { open, onOpenChange, usedCategories = [], assets = [], recentMemos = [] } = props;
   const isEdit = props.mode === "edit";
 
   const [type, setType] = useState<TxnType>(
@@ -294,18 +299,23 @@ export function TransactionModal(props: Props) {
           )}
 
           {/* 금액 */}
-          <div>
+          <div className="space-y-1.5">
             <Label htmlFor="amount">금액 *</Label>
-            <Input
-              id="amount"
-              inputMode="numeric"
-              value={formatThousands(amount)}
-              onChange={(e) =>
-                setAmount(e.target.value.replace(/\D/g, ""))
-              }
-              placeholder="0"
-              style={{ color: deltaColor }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                id="amount"
+                inputMode="numeric"
+                value={formatThousands(amount)}
+                onChange={(e) =>
+                  setAmount(e.target.value.replace(/\D/g, ""))
+                }
+                placeholder="0"
+                style={{ color: deltaColor }}
+                className="flex-1"
+              />
+              <CalculatorPopover onResult={(n) => setAmount(String(n))} />
+            </div>
+            <QuickAmountChips onPick={(n) => setAmount(String(n))} />
           </div>
 
           {/* 카테고리 칩 */}
@@ -390,10 +400,11 @@ export function TransactionModal(props: Props) {
           {/* 메모 */}
           <div>
             <Label htmlFor="memo">메모</Label>
-            <Input
+            <MemoAutocomplete
               id="memo"
               value={memo}
-              onChange={(e) => setMemo(e.target.value)}
+              onChange={setMemo}
+              recentMemos={recentMemos}
               placeholder="선택사항"
             />
           </div>

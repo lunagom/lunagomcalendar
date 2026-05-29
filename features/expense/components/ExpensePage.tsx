@@ -43,6 +43,7 @@ type Props = {
   budgets: BudgetRow[];
   assets: AssetRow[];
   settlementCardIds: string[];
+  recentMemos: string[];
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -82,6 +83,7 @@ export function ExpensePage({
   budgets,
   assets,
   settlementCardIds,
+  recentMemos,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -119,6 +121,7 @@ export function ExpensePage({
           onToday={goToday}
           isThisMonth={isThisMonth}
           assets={assets}
+          recentMemos={recentMemos}
         />
       </motion.div>
 
@@ -159,6 +162,7 @@ export function ExpensePage({
                 incomes={incomes}
                 usedCategories={usedCategories}
                 assets={assets}
+                recentMemos={recentMemos}
               />
             </motion.div>
           </TabsContent>
@@ -200,7 +204,11 @@ export function ExpensePage({
         </Tabs>
       </motion.div>
 
-      <ExpenseFloatingActionButton usedCategories={usedCategories} assets={assets} />
+      <ExpenseFloatingActionButton
+        usedCategories={usedCategories}
+        assets={assets}
+        recentMemos={recentMemos}
+      />
     </div>
   );
 }
