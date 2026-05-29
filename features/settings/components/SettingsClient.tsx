@@ -12,6 +12,7 @@ import {
   Sun,
 } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,11 +27,17 @@ import {
 import { updateWidgetVisibility } from "@/features/widgets/server/actions";
 import { signOut, updateNickname } from "../server/actions";
 import type { CalendarRow } from "@/features/calendar/server/queries";
+import { SettingsPageHeader } from "./SettingsPageHeader";
+import { NotificationPrefsSection } from "./NotificationPrefsSection";
+import { DataExportSection } from "./DataExportSection";
+import { AccountDeleteSection } from "./AccountDeleteSection";
+import type { NotificationPrefs } from "../server/actions";
 
 type Props = {
   email: string;
   initialNickname: string;
   initialHiddenWidgets: WidgetKey[];
+  initialNotificationPrefs: NotificationPrefs;
   calendars: CalendarRow[];
   partnerSlot?: React.ReactNode;
 };
@@ -41,10 +48,17 @@ const THEME_OPTIONS = [
   { value: "system", label: "시스템", icon: Monitor },
 ] as const;
 
+const stagger = (idx: number) => ({
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3, delay: idx * 0.06, ease: "easeOut" as const },
+});
+
 export function SettingsClient({
   email,
   initialNickname,
   initialHiddenWidgets,
+  initialNotificationPrefs,
   calendars,
   partnerSlot,
 }: Props) {
@@ -105,155 +119,184 @@ export function SettingsClient({
   };
 
   return (
-    <div className="container mx-auto max-w-3xl space-y-8 px-4 py-6">
+    <div className="container mx-auto max-w-3xl space-y-8 px-4 py-6 md:px-6 md:py-8">
+      <motion.div {...stagger(0)}>
+        <SettingsPageHeader />
+      </motion.div>
+
       {/* 1. 계정 */}
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold">계정</h2>
-        <div className="rounded-lg border p-4 space-y-3">
-          <div className="space-y-1">
-            <Label htmlFor="email">이메일</Label>
-            <Input id="email" value={email} readOnly disabled />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="nickname">닉네임</Label>
-            <div className="flex gap-2">
-              <Input
-                id="nickname"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                maxLength={40}
-                disabled={pending}
-              />
+      <motion.div {...stagger(1)}>
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">계정</h2>
+          <div className="rounded-lg border p-4 space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="email">이메일</Label>
+              <Input id="email" value={email} readOnly disabled />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="nickname">닉네임</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="nickname"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  maxLength={40}
+                  disabled={pending}
+                />
+                <Button
+                  onClick={handleSaveNickname}
+                  disabled={pending || !nicknameDirty}
+                >
+                  저장
+                </Button>
+              </div>
+            </div>
+            <div className="pt-2">
               <Button
-                onClick={handleSaveNickname}
-                disabled={pending || !nicknameDirty}
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                disabled={pending}
+                className="gap-2"
               >
-                저장
+                <LogOut className="h-4 w-4" strokeWidth={1.8} />
+                로그아웃
               </Button>
             </div>
           </div>
-          <div className="pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              disabled={pending}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" strokeWidth={1.8} />
-              로그아웃
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      </motion.div>
 
       {/* 1.5 부부 연결 — server component 로 외부에서 주입 */}
-      {partnerSlot}
+      <motion.div {...stagger(2)}>
+        {partnerSlot}
+      </motion.div>
 
       {/* 2. 테마 */}
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold">테마</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {THEME_OPTIONS.map((opt) => {
-            const Icon = opt.icon;
-            const active = theme === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setTheme(opt.value)}
-                className={`flex flex-col items-center gap-1.5 rounded-lg border p-4 text-sm transition ${
-                  active
-                    ? "border-primary bg-primary/5 font-medium"
-                    : "hover:bg-muted/60"
-                }`}
-              >
-                <Icon className="h-5 w-5" strokeWidth={1.8} />
-                {opt.label}
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <motion.div {...stagger(3)}>
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">테마</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {THEME_OPTIONS.map((opt) => {
+              const Icon = opt.icon;
+              const active = theme === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setTheme(opt.value)}
+                  className={`flex flex-col items-center gap-1.5 rounded-lg border p-4 text-sm transition-all duration-200 active:scale-[0.97] ${
+                    active
+                      ? "border-primary bg-primary/5 font-medium"
+                      : "hover:bg-muted/60"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={1.8} />
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      </motion.div>
 
       {/* 3. 메인 위젯 */}
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold">메인 위젯</h2>
-        <div className="rounded-lg border border-border/40 p-4 space-y-1">
-          {WIDGET_ITEMS.map((w) => {
-            const visible = !hiddenWidgets.includes(w.key);
-            const Icon = w.icon;
-            return (
-              <label
-                key={w.key}
-                className="flex items-center gap-3 py-1.5 cursor-pointer"
-              >
-                <Checkbox
-                  checked={visible}
-                  onCheckedChange={(v) =>
-                    handleWidgetToggle(w.key, Boolean(v))
-                  }
-                  disabled={pending}
-                />
-                <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
-                <span className="text-sm">{w.label}</span>
-              </label>
-            );
-          })}
-        </div>
-      </section>
+      <motion.div {...stagger(4)}>
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">메인 위젯</h2>
+          <div className="rounded-lg border border-border/40 p-4 space-y-1">
+            {WIDGET_ITEMS.map((w) => {
+              const visible = !hiddenWidgets.includes(w.key);
+              const Icon = w.icon;
+              return (
+                <label
+                  key={w.key}
+                  className="flex items-center gap-3 py-1.5 cursor-pointer -mx-2 px-2 rounded transition-colors hover:bg-accent/30"
+                >
+                  <Checkbox
+                    checked={visible}
+                    onCheckedChange={(v) =>
+                      handleWidgetToggle(w.key, Boolean(v))
+                    }
+                    disabled={pending}
+                  />
+                  <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
+                  <span className="text-sm">{w.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
+      </motion.div>
 
       {/* 4. 연결된 캘린더 */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold">연결된 캘린더</h2>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setCreatingCal(true)}
-            disabled={pending}
-            className="gap-1.5"
-          >
-            <Plus className="h-4 w-4" strokeWidth={1.8} />새 캘린더
-          </Button>
-        </div>
-        {calendars.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            아직 캘린더가 없어요.
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {calendars.map((cal) => (
-              <li
-                key={cal.id}
-                className="flex items-center gap-3 rounded-lg border border-border/40 p-3"
-              >
-                <span
-                  className="h-5 w-5 shrink-0 rounded-full"
-                  style={{ backgroundColor: cal.color }}
-                  aria-hidden
-                />
-                <span className="min-w-0 flex-1 truncate text-sm">
-                  {cal.name}
-                  {cal.is_default && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      · 기본
-                    </span>
-                  )}
-                </span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => setEditingCal(cal)}
-                  aria-label="캘린더 설정"
+      <motion.div {...stagger(5)}>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">연결된 캘린더</h2>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setCreatingCal(true)}
+              disabled={pending}
+              className="gap-1.5"
+            >
+              <Plus className="h-4 w-4" strokeWidth={1.8} />새 캘린더
+            </Button>
+          </div>
+          {calendars.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              아직 캘린더가 없어요.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {calendars.map((cal) => (
+                <li
+                  key={cal.id}
+                  className="flex items-center gap-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-muted/30"
                 >
-                  <SettingsIcon className="h-4 w-4" strokeWidth={1.8} />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                  <span
+                    className="h-5 w-5 shrink-0 rounded-full"
+                    style={{ backgroundColor: cal.color }}
+                    aria-hidden
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm">
+                    {cal.name}
+                    {cal.is_default && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        · 기본
+                      </span>
+                    )}
+                  </span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setEditingCal(cal)}
+                    aria-label="캘린더 설정"
+                  >
+                    <SettingsIcon className="h-4 w-4" strokeWidth={1.8} />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </motion.div>
+
+      {/* 5. 알림 */}
+      <motion.div {...stagger(6)}>
+        <NotificationPrefsSection initial={initialNotificationPrefs} />
+      </motion.div>
+
+      {/* 6. 데이터 내보내기 */}
+      <motion.div {...stagger(7)}>
+        <DataExportSection />
+      </motion.div>
+
+      {/* 7. 위험 영역 */}
+      <motion.div {...stagger(8)}>
+        <AccountDeleteSection userEmail={email} />
+      </motion.div>
 
       <NewCalendarDialog
         open={creatingCal}
