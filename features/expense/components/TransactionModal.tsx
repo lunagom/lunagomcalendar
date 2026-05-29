@@ -116,6 +116,11 @@ export function TransactionModal(props: Props) {
     initialDateKey ?? defaultDate ?? todayIso(),
   );
   const [memo, setMemo] = useState<string>(initial?.memo ?? "");
+  const [paymentCard, setPaymentCard] = useState<string | null>(
+    initial && "payment_card" in initial
+      ? ((initial as ExpenseRow).payment_card ?? null)
+      : null,
+  );
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryInput, setNewCategoryInput] = useState("");
 
@@ -205,6 +210,7 @@ export function TransactionModal(props: Props) {
           category: category.trim(),
           paid_at: dateIso,
           memo: memo.trim() || null,
+          payment_card: paymentCard,
         };
         result = isEdit
           ? await updateExpense((initial as ExpenseRow).id, payload)
@@ -361,29 +367,22 @@ export function TransactionModal(props: Props) {
             </div>
           </div>
 
-          {/* 일자 */}
-          <div>
-            <Label htmlFor="txn-date">일자 *</Label>
-            <Input
-              id="txn-date"
-              type="date"
-              value={dateInput}
-              onChange={(e) => setDateInput(e.target.value)}
-            />
-          </div>
-
-          {/* 카드결제 카테고리일 때 카드 칩 선택 */}
-          {category === "카드결제" && cardNames.length > 0 && (
+          {/* 결제 카드 (지출 탭 + 카드 등록 시) */}
+          {type === "expense" && cardNames.length > 0 && (
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">카드 선택</Label>
+              <Label className="text-xs text-muted-foreground">
+                결제 카드 (선택)
+              </Label>
               <div className="flex gap-1.5 flex-wrap">
                 {cardNames.map((cn) => (
                   <button
                     key={cn}
                     type="button"
-                    onClick={() => setMemo(cn)}
+                    onClick={() =>
+                      setPaymentCard(paymentCard === cn ? null : cn)
+                    }
                     className={`px-2.5 py-1 text-xs rounded-full border transition-all ${
-                      memo === cn
+                      paymentCard === cn
                         ? "bg-muted border-foreground/30"
                         : "border-border/60 hover:bg-muted/40"
                     }`}
@@ -394,6 +393,17 @@ export function TransactionModal(props: Props) {
               </div>
             </div>
           )}
+
+          {/* 일자 */}
+          <div>
+            <Label htmlFor="txn-date">일자 *</Label>
+            <Input
+              id="txn-date"
+              type="date"
+              value={dateInput}
+              onChange={(e) => setDateInput(e.target.value)}
+            />
+          </div>
 
           {/* 메모 */}
           <div>

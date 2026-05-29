@@ -12,6 +12,7 @@ const expenseInputSchema = z.object({
   paid_at: z.string(), // ISO
   memo: z.string().nullable().optional(),
   event_id: z.string().uuid().nullable().optional(),
+  payment_card: z.string().min(1).max(30).nullable().optional(),
 });
 
 const subscriptionInputSchema = z.object({

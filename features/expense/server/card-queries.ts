@@ -22,8 +22,8 @@ export async function getCardNames(): Promise<string[]> {
 }
 
 /**
- * 카드별 이번 달 "카드결제" 카테고리 거래 합계.
- * memo 가 정확히 카드명일 때만 매칭.
+ * 카드별 이번 달 결제 합계.
+ * expenses.payment_card 가 카드명과 정확히 일치하는 거래의 amount 합.
  */
 export async function getCardPaymentTotalsForMonth(
   month: string,
@@ -39,9 +39,8 @@ export async function getCardPaymentTotalsForMonth(
 
   const { data, error } = await supabase
     .from("expenses")
-    .select("amount, memo")
-    .eq("category", "카드결제")
-    .in("memo", cardNames)
+    .select("amount, payment_card")
+    .in("payment_card", cardNames)
     .gte("paid_at", start)
     .lt("paid_at", end);
   if (error) throw error;
@@ -49,8 +48,8 @@ export async function getCardPaymentTotalsForMonth(
   const totals: Record<string, number> = {};
   for (const c of cardNames) totals[c] = 0;
   for (const row of data ?? []) {
-    if (row.memo && totals[row.memo] !== undefined) {
-      totals[row.memo] += row.amount;
+    if (row.payment_card && totals[row.payment_card] !== undefined) {
+      totals[row.payment_card] += row.amount;
     }
   }
   return totals;
