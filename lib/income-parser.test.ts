@@ -3,7 +3,7 @@ import { parseIncome } from "./income-parser";
 
 describe("parseIncome", () => {
   it("빈 입력 → null 셋", () => {
-    expect(parseIncome("")).toEqual({ amount: null, category: null, memo: null, asset_id: null });
+    expect(parseIncome("")).toEqual({ amount: null, category: null, memo: null });
   });
 
   it("'월급 3000000' → 월급 카테고리 + 금액", () => {
@@ -38,22 +38,5 @@ describe("parseIncome", () => {
   it("토큰 여러 개 중 큰 숫자 채택", () => {
     const r = parseIncome("월급 3000000 보너스 500000");
     expect(r.amount).toBe(3000000);
-  });
-
-  describe("자산 매칭", () => {
-    const assets = [
-      { id: "ast-shinhan", name: "신한은행" },
-      { id: "ast-kb", name: "KB증권" },
-    ];
-
-    it("'배당 50000 KB증권' → asset_id KB증권", () => {
-      const r = parseIncome("배당 50000 KB증권", assets);
-      expect(r.asset_id).toBe("ast-kb");
-    });
-
-    it("자산 후보 없으면 null", () => {
-      const r = parseIncome("월급 3000000", []);
-      expect(r.asset_id).toBeNull();
-    });
   });
 });

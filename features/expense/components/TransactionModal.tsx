@@ -33,9 +33,6 @@ import {
   updateIncome,
 } from "../server/actions";
 import type { ExpenseRow, IncomeRow } from "../server/queries";
-import type { AssetRow } from "../server/asset-queries";
-import { canReceiveIncome, type AssetType } from "../lib/asset-types";
-import { AssetChipPicker } from "./transaction-extras/AssetChipPicker";
 import { QuickAmountChips } from "./transaction-extras/QuickAmountChips";
 import { CalculatorPopover } from "./transaction-extras/CalculatorPopover";
 import { MemoAutocomplete } from "./transaction-extras/MemoAutocomplete";
@@ -51,7 +48,6 @@ type CreateProps = {
   /** 새 거래 기본 일자 (YYYY-MM-DD). */
   defaultDate?: string;
   usedCategories?: string[];
-  assets?: AssetRow[];
   recentMemos?: string[];
 };
 
@@ -63,7 +59,6 @@ type EditProps = {
   type: TxnType;
   initial: ExpenseRow | IncomeRow;
   usedCategories?: string[];
-  assets?: AssetRow[];
   recentMemos?: string[];
 };
 
@@ -82,7 +77,7 @@ function formatThousands(n: string): string {
 }
 
 export function TransactionModal(props: Props) {
-  const { open, onOpenChange, usedCategories = [], assets = [], recentMemos = [] } = props;
+  const { open, onOpenChange, usedCategories = [], recentMemos = [] } = props;
   const isEdit = props.mode === "edit";
 
   const [type, setType] = useState<TxnType>(
@@ -113,9 +108,6 @@ export function TransactionModal(props: Props) {
     initialDateKey ?? defaultDate ?? todayIso(),
   );
   const [memo, setMemo] = useState<string>(initial?.memo ?? "");
-  const [assetId, setAssetId] = useState<string | null>(
-    initial?.asset_id ?? null,
-  );
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryInput, setNewCategoryInput] = useState("");
 
@@ -147,32 +139,13 @@ export function TransactionModal(props: Props) {
   const chipColor = (cat: string): string =>
     type === "income" ? getIncomeCategoryColor(cat) : getCategoryColor(cat);
 
-  const handleTypeChange = (v: TxnType) => {
-    setType(v);
-    if (v === "income" && assetId) {
-      const a = assets.find((x) => x.id === assetId);
-      if (a && !canReceiveIncome(a.type as AssetType)) {
-        setAssetId(null);
-      }
-    }
-  };
-
-  const assetCandidates = useMemo(
-    () => assets.map((a) => ({ id: a.id, name: a.name })),
-    [assets],
-  );
-
   const handleNaturalInputChange = (v: string) => {
     setNaturalInput(v);
     if (!v.trim()) return;
-    const parsed =
-      type === "income"
-        ? parseIncome(v, assetCandidates)
-        : parseExpense(v, assetCandidates);
+    const parsed = type === "income" ? parseIncome(v) : parseExpense(v);
     if (parsed.amount !== null) setAmount(String(parsed.amount));
     if (parsed.category !== null) setCategory(parsed.category);
     if (parsed.memo !== null) setMemo(parsed.memo);
-    if (parsed.asset_id) setAssetId(parsed.asset_id);
   };
 
   const handleAddNewCategory = () => {
@@ -214,7 +187,6 @@ export function TransactionModal(props: Props) {
           category: category.trim(),
           received_at: dateIso,
           memo: memo.trim() || null,
-          asset_id: assetId,
         };
         result = isEdit
           ? await updateIncome((initial as IncomeRow).id, payload)
@@ -225,7 +197,6 @@ export function TransactionModal(props: Props) {
           category: category.trim(),
           paid_at: dateIso,
           memo: memo.trim() || null,
-          asset_id: assetId,
         };
         result = isEdit
           ? await updateExpense((initial as ExpenseRow).id, payload)
@@ -268,7 +239,7 @@ export function TransactionModal(props: Props) {
         {!isEdit && (
           <Tabs
             value={type}
-            onValueChange={(v) => handleTypeChange(v as TxnType)}
+            onValueChange={(v) => setType(v as TxnType)}
           >
             <TabsList className="w-full grid grid-cols-2">
               <TabsTrigger
@@ -381,19 +352,6 @@ export function TransactionModal(props: Props) {
               )}
             </div>
           </div>
-
-          {/* 자산 */}
-          {assets.length > 0 && (
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">자산</Label>
-              <AssetChipPicker
-                assets={assets}
-                value={assetId}
-                onChange={setAssetId}
-                kind={type}
-              />
-            </div>
-          )}
 
           {/* 일자 */}
           <div>

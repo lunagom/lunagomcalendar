@@ -37,6 +37,7 @@ export const EXPENSE_CATEGORY_PRESETS = [
   "쇼핑",
   "구독",
   "경조사",
+  "카드결제",
   "기타",
 ] as const;
 
@@ -53,6 +54,7 @@ export const CATEGORY_COLORS: Record<ExpenseCategoryPreset, CalendarColor> = {
   쇼핑: "#E8B8CB",
   구독: "#7E94A2",
   경조사: "#C49AA8",
+  카드결제: "#A8917F",
   기타: "#7A7A7A",
 };
 

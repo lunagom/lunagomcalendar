@@ -206,3 +206,31 @@ export async function getRecurringIncomes(): Promise<RecurringIncomeRow[]> {
   if (error) throw error;
   return data ?? [];
 }
+
+/** 최근 60일 distinct memo (지출 + 수입). 자동완성 datalist 용. */
+export async function getRecentMemos(): Promise<string[]> {
+  const supabase = createClient();
+  const since = new Date();
+  since.setDate(since.getDate() - 60);
+  const sinceIso = since.toISOString();
+
+  const [exp, inc] = await Promise.all([
+    supabase
+      .from("expenses")
+      .select("memo")
+      .gte("paid_at", sinceIso)
+      .not("memo", "is", null),
+    supabase
+      .from("incomes")
+      .select("memo")
+      .gte("received_at", sinceIso)
+      .not("memo", "is", null),
+  ]);
+  if (exp.error) throw exp.error;
+  if (inc.error) throw inc.error;
+
+  const set = new Set<string>();
+  exp.data?.forEach((r) => r.memo && set.add(r.memo));
+  inc.data?.forEach((r) => r.memo && set.add(r.memo));
+  return Array.from(set).sort();
+}

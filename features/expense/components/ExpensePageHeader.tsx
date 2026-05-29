@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TransactionModal } from "./TransactionModal";
-import type { AssetRow } from "../server/asset-queries";
 
 type Props = {
   monthLabel: string;
@@ -14,7 +13,6 @@ type Props = {
   onNext: () => void;
   onToday: () => void;
   isThisMonth: boolean;
-  assets?: AssetRow[];
   recentMemos?: string[];
 };
 
@@ -34,7 +32,6 @@ export function ExpensePageHeader({
   onNext,
   onToday,
   isThisMonth,
-  assets = [],
   recentMemos = [],
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -92,7 +89,6 @@ export function ExpensePageHeader({
         defaultType="expense"
         defaultDate={todayIso()}
         usedCategories={usedCategories}
-        assets={assets}
         recentMemos={recentMemos}
       />
     </>

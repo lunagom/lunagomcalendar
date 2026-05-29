@@ -3,11 +3,9 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { TransactionModal } from "./TransactionModal";
-import type { AssetRow } from "../server/asset-queries";
 
 type Props = {
   usedCategories: string[];
-  assets?: AssetRow[];
   recentMemos?: string[];
 };
 
@@ -20,7 +18,7 @@ function todayIso(): string {
  * 모바일 전용 + 거래 floating action button.
  * 캘린더 페이지의 FAB 와 동일 패턴 (h-14 w-14 rounded-full fixed bottom-20 right-4).
  */
-export function ExpenseFloatingActionButton({ usedCategories, assets = [], recentMemos = [] }: Props) {
+export function ExpenseFloatingActionButton({ usedCategories, recentMemos = [] }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -40,7 +38,6 @@ export function ExpenseFloatingActionButton({ usedCategories, assets = [], recen
         defaultType="expense"
         defaultDate={todayIso()}
         usedCategories={usedCategories}
-        assets={assets}
         recentMemos={recentMemos}
       />
     </>
