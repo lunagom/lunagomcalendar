@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      assets: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          type: "cash" | "bank" | "debit_card" | "credit_card" | "savings_investment"
+          balance: number
+          linked_asset_id: string | null
+          payment_day: number | null
+          color: string
+          sort_order: number
+          is_archived: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          type: "cash" | "bank" | "debit_card" | "credit_card" | "savings_investment"
+          balance?: number
+          linked_asset_id?: string | null
+          payment_day?: number | null
+          color?: string
+          sort_order?: number
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          type?: "cash" | "bank" | "debit_card" | "credit_card" | "savings_investment"
+          balance?: number
+          linked_asset_id?: string | null
+          payment_day?: number | null
+          color?: string
+          sort_order?: number
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       board_comments: {
         Row: {
           author_id: string
@@ -274,6 +319,7 @@ export type Database = {
           partner_id: string | null
           receipt_url: string | null
           user_id: string
+          asset_id: string | null
         }
         Insert: {
           amount: number
@@ -286,6 +332,7 @@ export type Database = {
           partner_id?: string | null
           receipt_url?: string | null
           user_id: string
+          asset_id?: string | null
         }
         Update: {
           amount?: number
@@ -298,6 +345,7 @@ export type Database = {
           partner_id?: string | null
           receipt_url?: string | null
           user_id?: string
+          asset_id?: string | null
         }
         Relationships: [
           {
@@ -319,6 +367,7 @@ export type Database = {
           partner_id: string | null
           received_at: string
           user_id: string
+          asset_id: string | null
         }
         Insert: {
           amount: number
@@ -329,6 +378,7 @@ export type Database = {
           partner_id?: string | null
           received_at: string
           user_id: string
+          asset_id?: string | null
         }
         Update: {
           amount?: number
@@ -339,6 +389,7 @@ export type Database = {
           partner_id?: string | null
           received_at?: string
           user_id?: string
+          asset_id?: string | null
         }
         Relationships: []
       }
@@ -353,6 +404,7 @@ export type Database = {
           partner_id: string | null
           receive_day: number
           user_id: string
+          asset_id: string | null
         }
         Insert: {
           amount: number
@@ -364,6 +416,7 @@ export type Database = {
           partner_id?: string | null
           receive_day: number
           user_id: string
+          asset_id?: string | null
         }
         Update: {
           amount?: number
@@ -375,6 +428,7 @@ export type Database = {
           partner_id?: string | null
           receive_day?: number
           user_id?: string
+          asset_id?: string | null
         }
         Relationships: []
       }
@@ -556,6 +610,7 @@ export type Database = {
           name: string
           partner_id: string | null
           user_id: string
+          asset_id: string | null
         }
         Insert: {
           amount: number
@@ -567,6 +622,7 @@ export type Database = {
           name: string
           partner_id?: string | null
           user_id: string
+          asset_id?: string | null
         }
         Update: {
           amount?: number
@@ -578,6 +634,7 @@ export type Database = {
           name?: string
           partner_id?: string | null
           user_id?: string
+          asset_id?: string | null
         }
         Relationships: []
       }
