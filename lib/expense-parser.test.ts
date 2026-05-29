@@ -108,4 +108,32 @@ describe("parseExpense", () => {
       expect(r.memo).toBe("커피");
     });
   });
+
+  describe("자산 매칭", () => {
+    const assets = [
+      { id: "ast-cash", name: "현금" },
+      { id: "ast-shinhan", name: "신한은행" },
+      { id: "ast-shinhan-check", name: "신한체크" },
+    ];
+
+    it("이름이 입력에 포함되면 asset_id 매칭", () => {
+      const r = parseExpense("스벅 5500 신한체크", assets);
+      expect(r.asset_id).toBe("ast-shinhan-check");
+    });
+
+    it("긴 이름 우선 — '신한체크' 가 '신한은행' 보다 우선", () => {
+      const r = parseExpense("커피 3000 신한체크", assets);
+      expect(r.asset_id).toBe("ast-shinhan-check");
+    });
+
+    it("자산 후보 없으면 null", () => {
+      const r = parseExpense("커피 3000", []);
+      expect(r.asset_id).toBeNull();
+    });
+
+    it("매칭 안 되면 null", () => {
+      const r = parseExpense("커피 3000 카카오뱅크", assets);
+      expect(r.asset_id).toBeNull();
+    });
+  });
 });

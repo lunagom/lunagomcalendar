@@ -8,6 +8,13 @@ export type ParsedExpense = {
   amount: number | null;
   category: ExpenseCategoryPreset | null;
   memo: string | null;
+  asset_id: string | null;
+};
+
+/** 자산 후보 — parseExpense 가 받아서 이름 substring match. */
+export type AssetCandidate = {
+  id: string;
+  name: string;
 };
 
 /**
@@ -60,16 +67,40 @@ function matchCategory(token: string): ExpenseCategoryPreset | null {
 }
 
 /**
- * 자연어 한 줄 입력에서 금액 / 카테고리 / 메모를 추출.
+ * 입력 텍스트에서 자산 이름 substring 매칭.
+ * 긴 이름 우선 (예: "신한체크" 가 "신한" 보다 먼저 매칭).
+ */
+function matchAsset(
+  input: string,
+  candidates: AssetCandidate[],
+): string | null {
+  if (candidates.length === 0) return null;
+  const lower = input.toLowerCase();
+  const sorted = [...candidates].sort((a, b) => b.name.length - a.name.length);
+  for (const c of sorted) {
+    if (c.name.length === 0) continue;
+    if (lower.includes(c.name.toLowerCase())) return c.id;
+  }
+  return null;
+}
+
+/**
+ * 자연어 한 줄 입력에서 금액 / 카테고리 / 메모 / 자산 ID 추출.
  *
  * 규칙:
  * - 콤마 포함 숫자 토큰은 금액. 여러 개면 가장 큰 값.
  * - 카테고리 키워드 사전에 부분 일치하는 첫 토큰의 카테고리 채택.
- * - 숫자가 아닌 토큰들은 공백으로 합쳐 memo. (카테고리 키워드 토큰도 memo 에 남김 — 사용자가 수동 수정 가능)
+ * - 자산 후보의 이름이 입력에 substring 으로 나타나면 그 자산 ID 채택 (긴 이름 우선).
+ * - 숫자가 아닌 토큰들은 공백으로 합쳐 memo.
  */
-export function parseExpense(input: string): ParsedExpense {
+export function parseExpense(
+  input: string,
+  assetCandidates: AssetCandidate[] = [],
+): ParsedExpense {
   const trimmed = input.trim();
-  if (!trimmed) return { amount: null, category: null, memo: null };
+  if (!trimmed) {
+    return { amount: null, category: null, memo: null, asset_id: null };
+  }
 
   const tokens = trimmed.split(/\s+/);
   let amount: number | null = null;
@@ -89,9 +120,12 @@ export function parseExpense(input: string): ParsedExpense {
     memoTokens.push(token);
   }
 
+  const asset_id = matchAsset(trimmed, assetCandidates);
+
   return {
     amount,
     category,
     memo: memoTokens.length > 0 ? memoTokens.join(" ") : null,
+    asset_id,
   };
 }

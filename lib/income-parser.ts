@@ -5,6 +5,13 @@ export type ParsedIncome = {
   amount: number | null;
   category: IncomeCategoryPreset | null;
   memo: string | null;
+  asset_id: string | null;
+};
+
+/** 자산 후보 — parseIncome 가 받아서 이름 substring match. */
+export type AssetCandidate = {
+  id: string;
+  name: string;
 };
 
 const INCOME_CATEGORY_KEYWORDS: Record<IncomeCategoryPreset, string[]> = {
@@ -43,12 +50,33 @@ function matchCategory(token: string): IncomeCategoryPreset | null {
 }
 
 /**
- * 자연어 한 줄에서 금액 / 수입 카테고리 / 메모 추출.
- * parseExpense 와 동일한 토큰 분리 + 가장 큰 금액 채택 방식.
+ * 입력 텍스트에서 자산 이름 substring 매칭. 긴 이름 우선.
  */
-export function parseIncome(input: string): ParsedIncome {
+function matchAsset(
+  input: string,
+  candidates: AssetCandidate[],
+): string | null {
+  if (candidates.length === 0) return null;
+  const lower = input.toLowerCase();
+  const sorted = [...candidates].sort((a, b) => b.name.length - a.name.length);
+  for (const c of sorted) {
+    if (c.name.length === 0) continue;
+    if (lower.includes(c.name.toLowerCase())) return c.id;
+  }
+  return null;
+}
+
+/**
+ * 자연어 한 줄에서 금액 / 수입 카테고리 / 메모 / 자산 ID 추출.
+ */
+export function parseIncome(
+  input: string,
+  assetCandidates: AssetCandidate[] = [],
+): ParsedIncome {
   const trimmed = input.trim();
-  if (!trimmed) return { amount: null, category: null, memo: null };
+  if (!trimmed) {
+    return { amount: null, category: null, memo: null, asset_id: null };
+  }
 
   const tokens = trimmed.split(/\s+/);
   let amount: number | null = null;
@@ -68,9 +96,12 @@ export function parseIncome(input: string): ParsedIncome {
     memoTokens.push(token);
   }
 
+  const asset_id = matchAsset(trimmed, assetCandidates);
+
   return {
     amount,
     category,
     memo: memoTokens.length > 0 ? memoTokens.join(" ") : null,
+    asset_id,
   };
 }

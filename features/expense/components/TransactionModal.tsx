@@ -157,13 +157,22 @@ export function TransactionModal(props: Props) {
     }
   };
 
+  const assetCandidates = useMemo(
+    () => assets.map((a) => ({ id: a.id, name: a.name })),
+    [assets],
+  );
+
   const handleNaturalInputChange = (v: string) => {
     setNaturalInput(v);
     if (!v.trim()) return;
-    const parsed = type === "income" ? parseIncome(v) : parseExpense(v);
+    const parsed =
+      type === "income"
+        ? parseIncome(v, assetCandidates)
+        : parseExpense(v, assetCandidates);
     if (parsed.amount !== null) setAmount(String(parsed.amount));
     if (parsed.category !== null) setCategory(parsed.category);
     if (parsed.memo !== null) setMemo(parsed.memo);
+    if (parsed.asset_id) setAssetId(parsed.asset_id);
   };
 
   const handleAddNewCategory = () => {
