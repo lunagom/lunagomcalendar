@@ -99,10 +99,13 @@ export function ExpensePage({
     if (initialAction === "add-expense") {
       setQuickModalType("expense");
       setQuickModalOpen(true);
+      router.replace("/expense", { scroll: false });
     } else if (initialAction === "add-income") {
       setQuickModalType("income");
       setQuickModalOpen(true);
+      router.replace("/expense", { scroll: false });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialAction]);
   const [year, monthNum] = currentMonth.split("-");
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
