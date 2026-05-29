@@ -480,6 +480,7 @@ export type Database = {
           created_at: string
           id: string
           nickname: string | null
+          notification_prefs: Json | null
           theme_preference: string
           updated_at: string
           widget_visibility: Json | null
@@ -489,6 +490,7 @@ export type Database = {
           created_at?: string
           id: string
           nickname?: string | null
+          notification_prefs?: Json | null
           theme_preference?: string
           updated_at?: string
           widget_visibility?: Json | null
@@ -498,6 +500,7 @@ export type Database = {
           created_at?: string
           id?: string
           nickname?: string | null
+          notification_prefs?: Json | null
           theme_preference?: string
           updated_at?: string
           widget_visibility?: Json | null
