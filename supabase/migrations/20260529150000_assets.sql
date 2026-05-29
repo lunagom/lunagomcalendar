@@ -48,6 +48,7 @@ create or replace function public.create_default_asset_for_new_user()
 returns trigger
 language plpgsql
 security definer
+set search_path = public
 as $$
 begin
   insert into public.assets (user_id, name, type, balance, color, sort_order)
@@ -61,3 +62,10 @@ create trigger on_auth_user_created_default_asset
   after insert on auth.users
   for each row
   execute function public.create_default_asset_for_new_user();
+
+-- ─── assets.updated_at 자동 갱신 트리거 ───────────────────────────────────
+drop trigger if exists assets_set_updated_at on public.assets;
+create trigger assets_set_updated_at
+  before update on public.assets
+  for each row
+  execute function public.set_updated_at();
