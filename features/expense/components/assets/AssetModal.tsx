@@ -73,8 +73,8 @@ export function AssetModal(props: Props) {
   const [balance, setBalance] = useState<string>(
     initial?.balance != null ? String(initial.balance) : "0",
   );
-  const [linkedAssetId, setLinkedAssetId] = useState<string>(
-    initial?.linked_asset_id ?? "",
+  const [linkedAssetId, setLinkedAssetId] = useState<string | undefined>(
+    initial?.linked_asset_id ?? undefined,
   );
   const [paymentDay, setPaymentDay] = useState<string>(
     initial?.payment_day != null ? String(initial.payment_day) : "",
@@ -121,10 +121,10 @@ export function AssetModal(props: Props) {
 
     startTransition(async () => {
       let result: { ok: true; data: unknown } | { ok: false; error: string };
-      if (isEdit) {
-        result = await updateAsset(initial!.id, {
+      if (props.mode === "edit") {
+        result = await updateAsset(props.initial.id, {
           name: name.trim(),
-          linked_asset_id: showLinkedBank ? (linkedAssetId || null) : null,
+          linked_asset_id: showLinkedBank ? (linkedAssetId ?? null) : null,
           payment_day: showPaymentDay ? parseInt(paymentDay, 10) : null,
           color,
         });
@@ -133,7 +133,7 @@ export function AssetModal(props: Props) {
           name: name.trim(),
           type,
           balance: showBalance ? balanceNum : 0,
-          linked_asset_id: showLinkedBank ? (linkedAssetId || null) : null,
+          linked_asset_id: showLinkedBank ? (linkedAssetId ?? null) : null,
           payment_day: showPaymentDay ? parseInt(paymentDay, 10) : null,
           color,
         });
