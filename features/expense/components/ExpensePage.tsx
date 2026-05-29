@@ -11,11 +11,9 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { ExpensePageHeader } from "./ExpensePageHeader";
-import { ExpenseSummary } from "./ExpenseSummary";
+import { CompactExpenseSummary } from "./CompactExpenseSummary";
 import { ExpenseFloatingActionButton } from "./ExpenseFloatingActionButton";
 import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
-import { MonthTargetWidget } from "./MonthTargetWidget";
-import { CardSummaryWidget } from "./CardSummaryWidget";
 import { CategoryTotalsBar } from "./CategoryTotalsBar";
 import { SubscriptionTabContent } from "./SubscriptionTabContent";
 import { RecurringIncomeTabContent } from "./RecurringIncomeTabContent";
@@ -146,25 +144,17 @@ export function ExpensePage({
       </motion.div>
 
       <motion.div {...stagger(1)}>
-        <ExpenseSummary
+        <CompactExpenseSummary
           totalIncome={totalIncome}
           totalExpense={totalExpense}
+          target={target}
+          actual={actual}
+          cardNames={cardNames}
+          cardTotals={cardTotals}
         />
       </motion.div>
 
       <motion.div {...stagger(2)}>
-        <CardSummaryWidget cardNames={cardNames} totals={cardTotals} />
-      </motion.div>
-
-      <motion.div {...stagger(3)}>
-        <MonthTargetWidget
-          month={currentMonth}
-          target={target}
-          actual={actual}
-        />
-      </motion.div>
-
-      <motion.div {...stagger(4)}>
         <Tabs defaultValue="monthly" className="w-full">
           <TabsList className="overflow-x-auto">
             <TabsTrigger value="monthly">월간</TabsTrigger>

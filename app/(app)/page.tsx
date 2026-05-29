@@ -1,14 +1,12 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { getCalendars } from "@/features/calendar/server/queries";
 import {
   WIDGET_ITEMS,
   normalizeHidden,
   type WidgetKey,
 } from "@/features/widgets/lib/items";
 import { PageGreeting } from "@/features/widgets/components/PageGreeting";
-import { QuickActions } from "@/features/widgets/components/QuickActions";
 import { MiniWeekStrip } from "@/features/widgets/components/MiniWeekStrip";
 import { AnimatedWidgetCard } from "@/features/widgets/components/AnimatedWidgetCard";
 import { TodayEventsWidget } from "@/features/widgets/components/TodayEventsWidget";
@@ -36,7 +34,7 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [hidden, calendars, profile] = await Promise.all([
+  const [hidden, profile] = await Promise.all([
     (async () => {
       const { data } = await supabase
         .from("profiles")
@@ -45,7 +43,6 @@ export default async function HomePage() {
         .maybeSingle();
       return normalizeHidden(data?.widget_visibility);
     })(),
-    getCalendars(),
     (async () => {
       const { data } = await supabase
         .from("profiles")
@@ -67,7 +64,6 @@ export default async function HomePage() {
         nickname={profile?.nickname ?? null}
         email={user.email ?? ""}
       />
-      <QuickActions calendars={calendars} />
       <MiniWeekStrip />
       {showInvites && <IncomingInvitesWidget />}
 
