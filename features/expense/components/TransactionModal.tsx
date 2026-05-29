@@ -49,6 +49,7 @@ type CreateProps = {
   defaultDate?: string;
   usedCategories?: string[];
   recentMemos?: string[];
+  cardNames?: string[];
 };
 
 type EditProps = {
@@ -60,6 +61,7 @@ type EditProps = {
   initial: ExpenseRow | IncomeRow;
   usedCategories?: string[];
   recentMemos?: string[];
+  cardNames?: string[];
 };
 
 type Props = CreateProps | EditProps;
@@ -77,7 +79,13 @@ function formatThousands(n: string): string {
 }
 
 export function TransactionModal(props: Props) {
-  const { open, onOpenChange, usedCategories = [], recentMemos = [] } = props;
+  const {
+    open,
+    onOpenChange,
+    usedCategories = [],
+    recentMemos = [],
+    cardNames = [],
+  } = props;
   const isEdit = props.mode === "edit";
 
   const [type, setType] = useState<TxnType>(
@@ -363,6 +371,29 @@ export function TransactionModal(props: Props) {
               onChange={(e) => setDateInput(e.target.value)}
             />
           </div>
+
+          {/* 카드결제 카테고리일 때 카드 칩 선택 */}
+          {category === "카드결제" && cardNames.length > 0 && (
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">카드 선택</Label>
+              <div className="flex gap-1.5 flex-wrap">
+                {cardNames.map((cn) => (
+                  <button
+                    key={cn}
+                    type="button"
+                    onClick={() => setMemo(cn)}
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-all ${
+                      memo === cn
+                        ? "bg-muted border-foreground/30"
+                        : "border-border/60 hover:bg-muted/40"
+                    }`}
+                  >
+                    {cn}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 메모 */}
           <div>

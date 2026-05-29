@@ -15,6 +15,7 @@ import { ExpenseSummary } from "./ExpenseSummary";
 import { ExpenseFloatingActionButton } from "./ExpenseFloatingActionButton";
 import { ExpenseMonthGrid } from "./ExpenseMonthGrid";
 import { MonthTargetWidget } from "./MonthTargetWidget";
+import { CardSummaryWidget } from "./CardSummaryWidget";
 import { CategoryTotalsBar } from "./CategoryTotalsBar";
 import { SubscriptionTabContent } from "./SubscriptionTabContent";
 import { RecurringIncomeTabContent } from "./RecurringIncomeTabContent";
@@ -42,6 +43,8 @@ type Props = {
   recurringIncomes: RecurringIncomeRow[];
   budgets: BudgetRow[];
   recentMemos: string[];
+  cardNames: string[];
+  cardTotals: Record<string, number>;
   initialAction?: string;
 };
 
@@ -81,6 +84,8 @@ export function ExpensePage({
   recurringIncomes,
   budgets,
   recentMemos,
+  cardNames,
+  cardTotals,
   initialAction,
 }: Props) {
   const router = useRouter();
@@ -136,6 +141,7 @@ export function ExpensePage({
           onToday={goToday}
           isThisMonth={isThisMonth}
           recentMemos={recentMemos}
+          cardNames={cardNames}
         />
       </motion.div>
 
@@ -147,6 +153,10 @@ export function ExpensePage({
       </motion.div>
 
       <motion.div {...stagger(2)}>
+        <CardSummaryWidget cardNames={cardNames} totals={cardTotals} />
+      </motion.div>
+
+      <motion.div {...stagger(3)}>
         <MonthTargetWidget
           month={currentMonth}
           target={target}
@@ -154,7 +164,7 @@ export function ExpensePage({
         />
       </motion.div>
 
-      <motion.div {...stagger(3)}>
+      <motion.div {...stagger(4)}>
         <Tabs defaultValue="monthly" className="w-full">
           <TabsList className="overflow-x-auto">
             <TabsTrigger value="monthly">월간</TabsTrigger>
@@ -175,6 +185,7 @@ export function ExpensePage({
                 incomes={incomes}
                 usedCategories={usedCategories}
                 recentMemos={recentMemos}
+                cardNames={cardNames}
               />
             </motion.div>
           </TabsContent>
@@ -213,6 +224,7 @@ export function ExpensePage({
       <ExpenseFloatingActionButton
         usedCategories={usedCategories}
         recentMemos={recentMemos}
+        cardNames={cardNames}
       />
 
       <TransactionModal
@@ -222,6 +234,7 @@ export function ExpensePage({
         defaultType={quickModalType}
         usedCategories={usedCategories}
         recentMemos={recentMemos}
+        cardNames={cardNames}
       />
     </div>
   );

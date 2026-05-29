@@ -14,6 +14,7 @@ type Props = {
   onToday: () => void;
   isThisMonth: boolean;
   recentMemos?: string[];
+  cardNames?: string[];
 };
 
 function todayIso(): string {
@@ -33,6 +34,7 @@ export function ExpensePageHeader({
   onToday,
   isThisMonth,
   recentMemos = [],
+  cardNames = [],
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -90,6 +92,7 @@ export function ExpensePageHeader({
         defaultDate={todayIso()}
         usedCategories={usedCategories}
         recentMemos={recentMemos}
+        cardNames={cardNames}
       />
     </>
   );

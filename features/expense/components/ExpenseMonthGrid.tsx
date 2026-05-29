@@ -13,6 +13,7 @@ type Props = {
   incomes: IncomeRow[];
   usedCategories: string[];
   recentMemos?: string[];
+  cardNames?: string[];
 };
 
 const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
@@ -27,6 +28,7 @@ export function ExpenseMonthGrid({
   incomes,
   usedCategories,
   recentMemos = [],
+  cardNames = [],
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -151,6 +153,7 @@ export function ExpenseMonthGrid({
           usedCategories={usedCategories}
           onClose={() => setSelectedDate(null)}
           recentMemos={recentMemos}
+          cardNames={cardNames}
         />
       )}
     </div>
