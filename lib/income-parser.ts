@@ -21,6 +21,7 @@ const INCOME_CATEGORY_KEYWORDS: Record<IncomeCategoryPreset, string[]> = {
     "매출",
     "bonus",
   ],
+  저축: ["저축", "출금", "적금"],
   기타: [],
 };
 

@@ -43,6 +43,7 @@ type Props = {
   recentMemos: string[];
   cardNames: string[];
   cardTotals: Record<string, number>;
+  savingsTotal: number;
   initialAction?: string;
 };
 
@@ -84,6 +85,7 @@ export function ExpensePage({
   recentMemos,
   cardNames,
   cardTotals,
+  savingsTotal,
   initialAction,
 }: Props) {
   const router = useRouter();
@@ -91,19 +93,30 @@ export function ExpensePage({
   const [quickModalType, setQuickModalType] = useState<"expense" | "income">(
     "expense",
   );
+  const [quickModalCategory, setQuickModalCategory] = useState<
+    string | undefined
+  >(undefined);
 
   useEffect(() => {
     if (initialAction === "add-expense") {
       setQuickModalType("expense");
+      setQuickModalCategory(undefined);
       setQuickModalOpen(true);
       router.replace("/expense", { scroll: false });
     } else if (initialAction === "add-income") {
       setQuickModalType("income");
+      setQuickModalCategory(undefined);
       setQuickModalOpen(true);
       router.replace("/expense", { scroll: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialAction]);
+
+  const handleWithdrawSavings = () => {
+    setQuickModalType("income");
+    setQuickModalCategory("저축");
+    setQuickModalOpen(true);
+  };
   const [year, monthNum] = currentMonth.split("-");
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
   const isThisMonth = currentMonth === thisMonthIso();
@@ -151,6 +164,8 @@ export function ExpensePage({
           actual={actual}
           cardNames={cardNames}
           cardTotals={cardTotals}
+          savingsTotal={savingsTotal}
+          onWithdrawSavings={handleWithdrawSavings}
         />
       </motion.div>
 
@@ -220,8 +235,12 @@ export function ExpensePage({
       <TransactionModal
         mode="create"
         open={quickModalOpen}
-        onOpenChange={setQuickModalOpen}
+        onOpenChange={(o) => {
+          setQuickModalOpen(o);
+          if (!o) setQuickModalCategory(undefined);
+        }}
         defaultType={quickModalType}
+        defaultCategory={quickModalCategory}
         usedCategories={usedCategories}
         recentMemos={recentMemos}
         cardNames={cardNames}

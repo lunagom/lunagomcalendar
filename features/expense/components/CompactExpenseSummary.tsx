@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus, CreditCard } from "lucide-react";
+import { Plus, CreditCard, PiggyBank } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,8 @@ type Props = {
   actual: number;
   cardNames: string[];
   cardTotals: Record<string, number>;
+  savingsTotal: number;
+  onWithdrawSavings: () => void;
 };
 
 export function CompactExpenseSummary({
@@ -34,6 +36,8 @@ export function CompactExpenseSummary({
   actual,
   cardNames,
   cardTotals,
+  savingsTotal,
+  onWithdrawSavings,
 }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -137,6 +141,22 @@ export function CompactExpenseSummary({
           aria-label="카드 추가"
         >
           <Plus size={14} strokeWidth={1.8} />
+        </button>
+      </div>
+
+      {/* Row 4: 저축 누적 */}
+      <div className="border-t border-border/30 pt-2 flex items-center gap-2 text-xs">
+        <PiggyBank size={14} strokeWidth={1.8} className="text-muted-foreground flex-shrink-0" />
+        <span className="text-muted-foreground">저축</span>
+        <span className="flex-1 tabular-nums font-medium">
+          {formatKrwCompact(savingsTotal)}
+        </span>
+        <button
+          type="button"
+          onClick={onWithdrawSavings}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-0.5 rounded hover:bg-muted/40 active:scale-95"
+        >
+          − 출금
         </button>
       </div>
 

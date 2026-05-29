@@ -38,6 +38,7 @@ const CATEGORY_KEYWORDS: Record<ExpenseCategoryPreset, string[]> = {
     "경조사", "결혼", "결혼식", "부조", "부조금", "축의금", "조의금",
     "부의금", "돌잔치", "환갑", "장례", "장례식", "축의", "조의",
   ],
+  저축: ["저축", "적금", "예금", "통장", "savings"],
   기타: [],
 };
 

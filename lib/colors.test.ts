@@ -36,9 +36,9 @@ describe("getTextColor", () => {
 });
 
 describe("INCOME_CATEGORY_PRESETS", () => {
-  it("5 개 카테고리: 월급/투자/코인/부수입/기타", () => {
+  it("6 개 카테고리: 월급/투자/코인/부수입/저축/기타", () => {
     expect([...INCOME_CATEGORY_PRESETS]).toEqual([
-      "월급", "투자", "코인", "부수입", "기타",
+      "월급", "투자", "코인", "부수입", "저축", "기타",
     ]);
   });
 });

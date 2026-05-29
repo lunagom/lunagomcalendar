@@ -234,3 +234,20 @@ export async function getRecentMemos(): Promise<string[]> {
   inc.data?.forEach((r) => r.memo && set.add(r.memo));
   return Array.from(set).sort();
 }
+
+/**
+ * 누적 저축액 = sum(expense.amount where category=저축) - sum(income.amount where category=저축).
+ * 입금(expense 저축) 양수, 출금(income 저축) 음수로 합산.
+ */
+export async function getSavingsTotal(): Promise<number> {
+  const supabase = createClient();
+  const [exp, inc] = await Promise.all([
+    supabase.from("expenses").select("amount").eq("category", "저축"),
+    supabase.from("incomes").select("amount").eq("category", "저축"),
+  ]);
+  if (exp.error) throw exp.error;
+  if (inc.error) throw inc.error;
+  const deposits = (exp.data ?? []).reduce((s, r) => s + r.amount, 0);
+  const withdrawals = (inc.data ?? []).reduce((s, r) => s + r.amount, 0);
+  return deposits - withdrawals;
+}

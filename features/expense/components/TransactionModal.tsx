@@ -45,6 +45,8 @@ type CreateProps = {
   onOpenChange: (v: boolean) => void;
   /** 생성 모드 초기 탭. 기본 "expense". */
   defaultType?: TxnType;
+  /** 생성 모드 초기 카테고리. 모달 첫 마운트 시 적용. */
+  defaultCategory?: string;
   /** 새 거래 기본 일자 (YYYY-MM-DD). */
   defaultDate?: string;
   usedCategories?: string[];
@@ -94,6 +96,7 @@ export function TransactionModal(props: Props) {
 
   const initial = isEdit ? props.initial : null;
   const defaultDate = !isEdit ? props.defaultDate : undefined;
+  const defaultCategory = !isEdit ? props.defaultCategory : undefined;
 
   const [pending, startTransition] = useTransition();
   const [naturalInput, setNaturalInput] = useState("");
@@ -101,7 +104,9 @@ export function TransactionModal(props: Props) {
   const [amount, setAmount] = useState<string>(
     initial?.amount != null ? String(initial.amount) : "",
   );
-  const [category, setCategory] = useState<string>(initial?.category ?? "");
+  const [category, setCategory] = useState<string>(
+    initial?.category ?? defaultCategory ?? "",
+  );
 
   // 수입은 received_at, 지출은 paid_at. 수정 모드면 해당 필드에서 추출.
   const initialDateKey = (() => {

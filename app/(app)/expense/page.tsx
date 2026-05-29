@@ -7,6 +7,7 @@ import {
   getMonthlyTotalsByIncomeCategory,
   getRecentMemos,
   getRecurringIncomes,
+  getSavingsTotal,
   getSubscriptions,
   getUsedCategories,
 } from "@/features/expense/server/queries";
@@ -44,6 +45,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     totalsByIncomeCategory,
     recentMemos,
     cardNames,
+    savingsTotal,
   ] = await Promise.all([
     getExpensesForMonth(month),
     getIncomesForMonth(month),
@@ -55,6 +57,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     getMonthlyTotalsByIncomeCategory(month),
     getRecentMemos(),
     getCardNames(),
+    getSavingsTotal(),
   ]);
   const cardTotals = await getCardPaymentTotalsForMonth(month, cardNames);
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
@@ -98,6 +101,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       recentMemos={recentMemos}
       cardNames={cardNames}
       cardTotals={cardTotals}
+      savingsTotal={savingsTotal}
       initialAction={searchParams.action}
     />
   );

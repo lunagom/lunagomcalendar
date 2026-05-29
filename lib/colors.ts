@@ -37,6 +37,7 @@ export const EXPENSE_CATEGORY_PRESETS = [
   "쇼핑",
   "구독",
   "경조사",
+  "저축",
   "기타",
 ] as const;
 
@@ -53,6 +54,7 @@ export const CATEGORY_COLORS: Record<ExpenseCategoryPreset, CalendarColor> = {
   쇼핑: "#E8B8CB",
   구독: "#7E94A2",
   경조사: "#C49AA8",
+  저축: "#A8917F",
   기타: "#7A7A7A",
 };
 
@@ -102,6 +104,7 @@ export const INCOME_CATEGORY_PRESETS = [
   "투자",
   "코인",
   "부수입",
+  "저축",
   "기타",
 ] as const;
 
@@ -112,6 +115,7 @@ export const INCOME_CATEGORY_COLOR: Record<IncomeCategoryPreset, string> = {
   투자: "#10B981",
   코인: "#F59E0B",
   부수입: "#84CC16",
+  저축: "#A8917F",
   기타: "#6B7280",
 };
 
