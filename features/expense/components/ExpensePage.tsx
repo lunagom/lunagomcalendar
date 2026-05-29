@@ -1,7 +1,7 @@
 // features/expense/components/ExpensePage.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -89,6 +89,7 @@ export function ExpensePage({
   initialAction,
 }: Props) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [quickModalOpen, setQuickModalOpen] = useState(false);
   const [quickModalType, setQuickModalType] = useState<"expense" | "income">(
     "expense",
@@ -112,11 +113,11 @@ export function ExpensePage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialAction]);
 
-  const handleWithdrawSavings = () => {
+  const handleWithdrawSavings = useCallback(() => {
     setQuickModalType("income");
     setQuickModalCategory("저축");
     setQuickModalOpen(true);
-  };
+  }, []);
   const [year, monthNum] = currentMonth.split("-");
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
   const isThisMonth = currentMonth === thisMonthIso();
@@ -134,10 +135,14 @@ export function ExpensePage({
   const totalExpense = oneOffExpense + recurringExpenseSum;
 
   const goMonth = (delta: -1 | 1) => {
-    router.push(`/expense?month=${shiftMonth(currentMonth, delta)}`);
+    startTransition(() => {
+      router.push(`/expense?month=${shiftMonth(currentMonth, delta)}`);
+    });
   };
   const goToday = () => {
-    router.push(`/expense?month=${thisMonthIso()}`);
+    startTransition(() => {
+      router.push(`/expense?month=${thisMonthIso()}`);
+    });
   };
 
   return (
@@ -156,7 +161,15 @@ export function ExpensePage({
         />
       </motion.div>
 
-      <motion.div {...stagger(1)}>
+      <motion.div
+        {...stagger(1)}
+        className={
+          isPending
+            ? "opacity-60 transition-opacity duration-200"
+            : "opacity-100 transition-opacity duration-200"
+        }
+        aria-busy={isPending}
+      >
         <CompactExpenseSummary
           totalIncome={totalIncome}
           totalExpense={totalExpense}

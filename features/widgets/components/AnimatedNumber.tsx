@@ -5,12 +5,17 @@ import { useEffect, useState } from "react";
 type Props = {
   /** 최종 표시할 값 (정수). */
   value: number;
-  /** 단위 (예: "원"). 기본 빈 문자열. */
+  /** 단위 (예: "원"). 기본 빈 문자열. format 사용 시 무시. */
   unit?: string;
   /** 애니메이션 길이 ms. 기본 600. */
   duration?: number;
   /** 클래스. */
   className?: string;
+  /**
+   * 표시 문자열로 변환하는 커스텀 포매터. 제공 시 unit 무시.
+   * 한국식 만원/억원 표기, 부호 prefix 등에 사용.
+   */
+  format?: (n: number) => string;
 };
 
 /**
@@ -22,6 +27,7 @@ export function AnimatedNumber({
   unit = "",
   duration = 600,
   className,
+  format,
 }: Props) {
   const [display, setDisplay] = useState(0);
 
@@ -49,8 +55,7 @@ export function AnimatedNumber({
 
   return (
     <span className={className}>
-      {display.toLocaleString("ko-KR")}
-      {unit}
+      {format ? format(display) : `${display.toLocaleString("ko-KR")}${unit}`}
     </span>
   );
 }

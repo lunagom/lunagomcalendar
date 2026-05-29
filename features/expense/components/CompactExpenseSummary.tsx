@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Plus, CreditCard, PiggyBank } from "lucide-react";
+import { memo, useMemo, useState, useTransition } from "react";
+import { motion } from "framer-motion";
+import { Plus, CreditCard, PiggyBank, Minus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AnimatedNumber } from "@/features/widgets/components/AnimatedNumber";
 import { addCardName } from "../server/card-actions";
 import { formatKrwCompact, formatKrwCompactWithSign } from "../lib/format-compact";
 import type { MonthlyTargetRow } from "../server/queries";
@@ -29,7 +31,7 @@ type Props = {
   onWithdrawSavings: () => void;
 };
 
-export function CompactExpenseSummary({
+function CompactExpenseSummaryInner({
   totalIncome,
   totalExpense,
   target,
@@ -44,16 +46,21 @@ export function CompactExpenseSummary({
   const [pending, startTransition] = useTransition();
 
   const net = totalIncome - totalExpense;
-  const netColor =
-    net > 0
-      ? "text-[#16A34A] dark:text-[#4ADE80]"
-      : net < 0
-        ? "text-[#DC2626] dark:text-[#F87171]"
-        : "";
+  const netColor = useMemo(
+    () =>
+      net > 0
+        ? "text-[#16A34A] dark:text-[#4ADE80]"
+        : net < 0
+          ? "text-[#DC2626] dark:text-[#F87171]"
+          : "",
+    [net],
+  );
 
   const targetAmt = target?.amount ?? 0;
-  const progress = targetAmt > 0 ? Math.min((actual / targetAmt) * 100, 999) : 0;
-  const overTarget = targetAmt > 0 && actual > targetAmt;
+  const { progress, overTarget } = useMemo(() => {
+    const p = targetAmt > 0 ? Math.min((actual / targetAmt) * 100, 999) : 0;
+    return { progress: p, overTarget: targetAmt > 0 && actual > targetAmt };
+  }, [actual, targetAmt]);
 
   const handleAdd = () => {
     const name = nameInput.trim();
@@ -78,12 +85,18 @@ export function CompactExpenseSummary({
       {/* Row 1: 순수익 + 수입/지출 */}
       <div className="space-y-0.5">
         <div className={`text-xl font-bold tabular-nums ${netColor}`}>
-          {formatKrwCompactWithSign(net)}
+          <AnimatedNumber value={net} format={formatKrwCompactWithSign} />
         </div>
         <div className="text-xs text-muted-foreground tabular-nums">
-          <span>수입 {formatKrwCompact(totalIncome)}</span>
+          <span>
+            수입{" "}
+            <AnimatedNumber value={totalIncome} format={formatKrwCompact} />
+          </span>
           <span className="mx-2">·</span>
-          <span>지출 {formatKrwCompact(totalExpense)}</span>
+          <span>
+            지출{" "}
+            <AnimatedNumber value={totalExpense} format={formatKrwCompact} />
+          </span>
         </div>
       </div>
 
@@ -92,44 +105,55 @@ export function CompactExpenseSummary({
         <div className="border-t border-border/30 pt-2 space-y-1">
           <div className="flex items-center justify-between text-xs">
             <span className="tabular-nums text-muted-foreground">
-              {formatKrwCompact(actual)} / {formatKrwCompact(targetAmt)}
+              <AnimatedNumber value={actual} format={formatKrwCompact} /> /{" "}
+              <AnimatedNumber value={targetAmt} format={formatKrwCompact} />
             </span>
             <span
               className={`tabular-nums font-medium ${
                 overTarget ? "text-[#DC2626] dark:text-[#F87171]" : "text-muted-foreground"
               }`}
             >
-              {Math.round(progress)}%
+              <AnimatedNumber value={Math.round(progress)} unit="%" />
             </span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-muted/40 overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(progress, 100)}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className={`h-full rounded-full ${
                 overTarget ? "bg-[#DC2626] dark:bg-[#F87171]" : "bg-primary"
               }`}
-              style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
         </div>
       )}
 
       {/* Row 3: 카드 결제 */}
-      <div className="border-t border-border/30 pt-2 flex items-center gap-2">
+      <div className="border-t border-border/30 pt-2 flex items-center gap-1.5">
         <CreditCard size={14} strokeWidth={1.8} className="text-muted-foreground flex-shrink-0" />
-        <div className="flex-1 flex gap-1.5 items-center overflow-x-auto text-xs">
+        <div className="flex-1 flex gap-1 items-center overflow-x-auto text-xs">
           {cardNames.length === 0 ? (
             <span className="text-muted-foreground">등록된 카드 없음</span>
           ) : (
-            cardNames.map((name, idx) => {
+            cardNames.map((name) => {
               const total = cardTotals[name] ?? 0;
               return (
-                <span key={name} className="flex items-center gap-1 whitespace-nowrap">
-                  {idx > 0 && <span className="text-muted-foreground/60">·</span>}
+                <motion.span
+                  key={name}
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1 whitespace-nowrap rounded-full border border-border/40 bg-muted/20 px-2 py-0.5 hover:bg-muted/50 transition-colors"
+                >
                   <span className="text-muted-foreground">{name}</span>
-                  <span className={`tabular-nums font-medium ${total > 0 ? "" : "text-muted-foreground/60"}`}>
-                    {formatKrwCompact(total)}
+                  <span
+                    className={`tabular-nums font-medium ${
+                      total > 0 ? "" : "text-muted-foreground/60"
+                    }`}
+                  >
+                    <AnimatedNumber value={total} format={formatKrwCompact} />
                   </span>
-                </span>
+                </motion.span>
               );
             })
           )}
@@ -137,7 +161,7 @@ export function CompactExpenseSummary({
         <button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="flex-shrink-0 p-1 rounded hover:bg-muted/60 active:scale-95 transition-transform text-muted-foreground"
+          className="flex-shrink-0 min-h-[32px] min-w-[32px] inline-flex items-center justify-center gap-1 rounded-full border border-border/40 bg-muted/20 px-2 py-1 text-muted-foreground hover:bg-muted/50 hover:text-foreground active:scale-95 transition-all"
           aria-label="카드 추가"
         >
           <Plus size={14} strokeWidth={1.8} />
@@ -145,20 +169,29 @@ export function CompactExpenseSummary({
       </div>
 
       {/* Row 4: 저축 누적 */}
-      <div className="border-t border-border/30 pt-2 flex items-center gap-2 text-xs">
-        <PiggyBank size={14} strokeWidth={1.8} className="text-muted-foreground flex-shrink-0" />
+      <motion.div
+        whileHover={{ scale: 1.005 }}
+        transition={{ duration: 0.2 }}
+        className="group border-t border-border/30 pt-2 flex items-center gap-2 text-xs"
+      >
+        <PiggyBank
+          size={14}
+          strokeWidth={1.8}
+          className="text-muted-foreground flex-shrink-0 transition-all group-hover:text-foreground group-hover:scale-110"
+        />
         <span className="text-muted-foreground">저축</span>
         <span className="flex-1 tabular-nums font-medium">
-          {formatKrwCompact(savingsTotal)}
+          <AnimatedNumber value={savingsTotal} format={formatKrwCompact} />
         </span>
         <button
           type="button"
           onClick={onWithdrawSavings}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-0.5 rounded hover:bg-muted/40 active:scale-95"
+          className="inline-flex items-center gap-1 min-h-[32px] px-3 py-1.5 rounded-full text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 active:scale-95 transition-all"
         >
-          − 출금
+          <Minus size={12} strokeWidth={2} />
+          <span>출금</span>
         </button>
-      </div>
+      </motion.div>
 
       {/* 카드 추가 다이얼로그 */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
@@ -196,3 +229,5 @@ export function CompactExpenseSummary({
     </section>
   );
 }
+
+export const CompactExpenseSummary = memo(CompactExpenseSummaryInner);
