@@ -28,6 +28,7 @@ import {
   formatDelta,
 } from "@/lib/colors";
 import type { ExpenseRow, IncomeRow } from "../server/queries";
+import type { AssetRow } from "../server/asset-queries";
 
 type Props = {
   date: Date;
@@ -35,6 +36,7 @@ type Props = {
   incomes: IncomeRow[];
   usedCategories: string[];
   onClose: () => void;
+  assets?: AssetRow[];
 };
 
 const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
@@ -45,6 +47,7 @@ export function ExpenseDayDetailPopup({
   incomes,
   usedCategories,
   onClose,
+  assets = [],
 }: Props) {
   const isMobile = useMediaQuery("(max-width: 639px)");
   const [creating, setCreating] = useState(false);
@@ -239,6 +242,7 @@ export function ExpenseDayDetailPopup({
           defaultType="expense"
           defaultDate={isoDate}
           usedCategories={usedCategories}
+          assets={assets}
         />
       )}
 
@@ -250,6 +254,7 @@ export function ExpenseDayDetailPopup({
           onOpenChange={(v) => !v && setEditing(null)}
           initial={editing}
           usedCategories={usedCategories}
+          assets={assets}
         />
       )}
 

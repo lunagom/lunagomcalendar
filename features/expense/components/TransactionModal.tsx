@@ -33,6 +33,8 @@ import {
   updateIncome,
 } from "../server/actions";
 import type { ExpenseRow, IncomeRow } from "../server/queries";
+import type { AssetRow } from "../server/asset-queries";
+import { AssetChipPicker } from "./transaction-extras/AssetChipPicker";
 
 type TxnType = "income" | "expense";
 
@@ -45,6 +47,7 @@ type CreateProps = {
   /** 새 거래 기본 일자 (YYYY-MM-DD). */
   defaultDate?: string;
   usedCategories?: string[];
+  assets?: AssetRow[];
 };
 
 type EditProps = {
@@ -55,6 +58,7 @@ type EditProps = {
   type: TxnType;
   initial: ExpenseRow | IncomeRow;
   usedCategories?: string[];
+  assets?: AssetRow[];
 };
 
 type Props = CreateProps | EditProps;
@@ -72,7 +76,7 @@ function formatThousands(n: string): string {
 }
 
 export function TransactionModal(props: Props) {
-  const { open, onOpenChange, usedCategories = [] } = props;
+  const { open, onOpenChange, usedCategories = [], assets = [] } = props;
   const isEdit = props.mode === "edit";
 
   const [type, setType] = useState<TxnType>(
@@ -103,6 +107,9 @@ export function TransactionModal(props: Props) {
     initialDateKey ?? defaultDate ?? todayIso(),
   );
   const [memo, setMemo] = useState<string>(initial?.memo ?? "");
+  const [assetId, setAssetId] = useState<string | null>(
+    (initial as { asset_id?: string | null } | null)?.asset_id ?? null,
+  );
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryInput, setNewCategoryInput] = useState("");
 
@@ -182,6 +189,7 @@ export function TransactionModal(props: Props) {
           category: category.trim(),
           received_at: dateIso,
           memo: memo.trim() || null,
+          asset_id: assetId,
         };
         result = isEdit
           ? await updateIncome((initial as IncomeRow).id, payload)
@@ -192,6 +200,7 @@ export function TransactionModal(props: Props) {
           category: category.trim(),
           paid_at: dateIso,
           memo: memo.trim() || null,
+          asset_id: assetId,
         };
         result = isEdit
           ? await updateExpense((initial as ExpenseRow).id, payload)
@@ -342,6 +351,19 @@ export function TransactionModal(props: Props) {
               )}
             </div>
           </div>
+
+          {/* 자산 */}
+          {assets.length > 0 && (
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">자산</Label>
+              <AssetChipPicker
+                assets={assets}
+                value={assetId}
+                onChange={setAssetId}
+                kind={type}
+              />
+            </div>
+          )}
 
           {/* 일자 */}
           <div>

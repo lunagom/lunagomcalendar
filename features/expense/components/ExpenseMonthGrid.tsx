@@ -6,12 +6,14 @@ import { ExpenseDayDetailPopup } from "./ExpenseDayDetailPopup";
 import { isoToLocalDateKey } from "@/lib/datetime";
 import { formatDelta } from "@/lib/colors";
 import type { ExpenseRow, IncomeRow } from "../server/queries";
+import type { AssetRow } from "../server/asset-queries";
 
 type Props = {
   month: string; // "YYYY-MM"
   expenses: ExpenseRow[];
   incomes: IncomeRow[];
   usedCategories: string[];
+  assets?: AssetRow[];
 };
 
 const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
@@ -25,6 +27,7 @@ export function ExpenseMonthGrid({
   expenses,
   incomes,
   usedCategories,
+  assets = [],
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -148,6 +151,7 @@ export function ExpenseMonthGrid({
           incomes={incomesByDate.get(isoOf(selectedDate)) ?? []}
           usedCategories={usedCategories}
           onClose={() => setSelectedDate(null)}
+          assets={assets}
         />
       )}
     </div>

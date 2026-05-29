@@ -118,6 +118,7 @@ export function ExpensePage({
           onNext={() => goMonth(1)}
           onToday={goToday}
           isThisMonth={isThisMonth}
+          assets={assets}
         />
       </motion.div>
 
@@ -157,6 +158,7 @@ export function ExpensePage({
                 expenses={expenses}
                 incomes={incomes}
                 usedCategories={usedCategories}
+                assets={assets}
               />
             </motion.div>
           </TabsContent>
@@ -198,7 +200,7 @@ export function ExpensePage({
         </Tabs>
       </motion.div>
 
-      <ExpenseFloatingActionButton usedCategories={usedCategories} />
+      <ExpenseFloatingActionButton usedCategories={usedCategories} assets={assets} />
     </div>
   );
 }
