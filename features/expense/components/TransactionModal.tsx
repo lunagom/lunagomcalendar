@@ -34,6 +34,7 @@ import {
 } from "../server/actions";
 import type { ExpenseRow, IncomeRow } from "../server/queries";
 import type { AssetRow } from "../server/asset-queries";
+import { canReceiveIncome, type AssetType } from "../lib/asset-types";
 import { AssetChipPicker } from "./transaction-extras/AssetChipPicker";
 
 type TxnType = "income" | "expense";
@@ -108,7 +109,7 @@ export function TransactionModal(props: Props) {
   );
   const [memo, setMemo] = useState<string>(initial?.memo ?? "");
   const [assetId, setAssetId] = useState<string | null>(
-    (initial as { asset_id?: string | null } | null)?.asset_id ?? null,
+    initial?.asset_id ?? null,
   );
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryInput, setNewCategoryInput] = useState("");
@@ -140,6 +141,16 @@ export function TransactionModal(props: Props) {
 
   const chipColor = (cat: string): string =>
     type === "income" ? getIncomeCategoryColor(cat) : getCategoryColor(cat);
+
+  const handleTypeChange = (v: TxnType) => {
+    setType(v);
+    if (v === "income" && assetId) {
+      const a = assets.find((x) => x.id === assetId);
+      if (a && !canReceiveIncome(a.type as AssetType)) {
+        setAssetId(null);
+      }
+    }
+  };
 
   const handleNaturalInputChange = (v: string) => {
     setNaturalInput(v);
@@ -243,7 +254,7 @@ export function TransactionModal(props: Props) {
         {!isEdit && (
           <Tabs
             value={type}
-            onValueChange={(v) => setType(v as TxnType)}
+            onValueChange={(v) => handleTypeChange(v as TxnType)}
           >
             <TabsList className="w-full grid grid-cols-2">
               <TabsTrigger
