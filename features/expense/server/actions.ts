@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { applyAssetDelta, reverseAssetDelta } from "./asset-balance";
 
 // === Schemas ===
 
@@ -12,6 +13,7 @@ const expenseInputSchema = z.object({
   paid_at: z.string(), // ISO
   memo: z.string().nullable().optional(),
   event_id: z.string().uuid().nullable().optional(),
+  asset_id: z.string().uuid().nullable().optional(),
 });
 
 const subscriptionInputSchema = z.object({
@@ -20,6 +22,7 @@ const subscriptionInputSchema = z.object({
   billing_day: z.number().int().min(1).max(31),
   category: z.string().min(1).max(50),
   is_active: z.boolean().optional().default(true),
+  asset_id: z.string().uuid().nullable().optional(),
 });
 
 const budgetInputSchema = z.object({
@@ -68,6 +71,11 @@ export async function createExpense(
     .single();
 
   if (error) return { ok: false, error: error.message };
+
+  if (parsed.data.asset_id) {
+    await applyAssetDelta(parsed.data.asset_id, parsed.data.amount, "expense");
+  }
+
   revalidateExpensePaths();
   return { ok: true, data: { id: data.id } };
 }
@@ -81,12 +89,33 @@ export async function updateExpense(
 
   await getUserId();
   const supabase = createClient();
+
+  const { data: prev } = await supabase
+    .from("expenses")
+    .select("amount, asset_id")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("expenses")
     .update(parsed.data)
     .eq("id", id);
 
   if (error) return { ok: false, error: error.message };
+
+  if (prev) {
+    if (prev.asset_id) {
+      await reverseAssetDelta(prev.asset_id, prev.amount, "expense");
+    }
+    const newAssetId =
+      parsed.data.asset_id !== undefined ? parsed.data.asset_id : prev.asset_id;
+    const newAmount =
+      parsed.data.amount !== undefined ? parsed.data.amount : prev.amount;
+    if (newAssetId) {
+      await applyAssetDelta(newAssetId, newAmount, "expense");
+    }
+  }
+
   revalidateExpensePaths();
   return { ok: true, data: undefined };
 }
@@ -94,8 +123,20 @@ export async function updateExpense(
 export async function deleteExpense(id: string): Promise<ActionResult> {
   await getUserId();
   const supabase = createClient();
+
+  const { data: prev } = await supabase
+    .from("expenses")
+    .select("amount, asset_id")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await supabase.from("expenses").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
+
+  if (prev?.asset_id) {
+    await reverseAssetDelta(prev.asset_id, prev.amount, "expense");
+  }
+
   revalidateExpensePaths();
   return { ok: true, data: undefined };
 }
@@ -222,6 +263,7 @@ const incomeInputSchema = z.object({
   category: z.string().min(1).max(50),
   memo: z.string().nullable().optional(),
   received_at: z.string(), // ISO
+  asset_id: z.string().uuid().nullable().optional(),
 });
 
 export async function createIncome(
@@ -239,6 +281,10 @@ export async function createIncome(
     .single();
   if (error) return { ok: false, error: error.message };
 
+  if (parsed.data.asset_id) {
+    await applyAssetDelta(parsed.data.asset_id, parsed.data.amount, "income");
+  }
+
   revalidatePath("/expense");
   revalidatePath("/calendar");
   return { ok: true, data: { id: data.id } };
@@ -253,11 +299,31 @@ export async function updateIncome(
 
   await getUserId();
   const supabase = createClient();
+
+  const { data: prev } = await supabase
+    .from("incomes")
+    .select("amount, asset_id")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("incomes")
     .update(parsed.data)
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
+
+  if (prev) {
+    if (prev.asset_id) {
+      await reverseAssetDelta(prev.asset_id, prev.amount, "income");
+    }
+    const newAssetId =
+      parsed.data.asset_id !== undefined ? parsed.data.asset_id : prev.asset_id;
+    const newAmount =
+      parsed.data.amount !== undefined ? parsed.data.amount : prev.amount;
+    if (newAssetId) {
+      await applyAssetDelta(newAssetId, newAmount, "income");
+    }
+  }
 
   revalidatePath("/expense");
   revalidatePath("/calendar");
@@ -267,8 +333,19 @@ export async function updateIncome(
 export async function deleteIncome(id: string): Promise<ActionResult> {
   await getUserId();
   const supabase = createClient();
+
+  const { data: prev } = await supabase
+    .from("incomes")
+    .select("amount, asset_id")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await supabase.from("incomes").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
+
+  if (prev?.asset_id) {
+    await reverseAssetDelta(prev.asset_id, prev.amount, "income");
+  }
 
   revalidatePath("/expense");
   revalidatePath("/calendar");
@@ -281,6 +358,7 @@ const recurringIncomeInputSchema = z.object({
   receive_day: z.number().int().min(1).max(31),
   category: z.string().min(1).max(50),
   is_active: z.boolean().optional().default(true),
+  asset_id: z.string().uuid().nullable().optional(),
 });
 
 export async function createRecurringIncome(
