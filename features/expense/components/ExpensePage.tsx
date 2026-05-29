@@ -1,6 +1,7 @@
 // features/expense/components/ExpensePage.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -19,6 +20,7 @@ import { SubscriptionTabContent } from "./SubscriptionTabContent";
 import { RecurringIncomeTabContent } from "./RecurringIncomeTabContent";
 import { BudgetTabContent } from "./BudgetTabContent";
 import { AssetsTab } from "./assets/AssetsTab";
+import { TransactionModal } from "./TransactionModal";
 import type {
   BudgetRow,
   ExpenseRow,
@@ -44,6 +46,7 @@ type Props = {
   assets: AssetRow[];
   settlementCardIds: string[];
   recentMemos: string[];
+  initialAction?: string;
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -84,8 +87,23 @@ export function ExpensePage({
   assets,
   settlementCardIds,
   recentMemos,
+  initialAction,
 }: Props) {
   const router = useRouter();
+  const [quickModalOpen, setQuickModalOpen] = useState(false);
+  const [quickModalType, setQuickModalType] = useState<"expense" | "income">(
+    "expense",
+  );
+
+  useEffect(() => {
+    if (initialAction === "add-expense") {
+      setQuickModalType("expense");
+      setQuickModalOpen(true);
+    } else if (initialAction === "add-income") {
+      setQuickModalType("income");
+      setQuickModalOpen(true);
+    }
+  }, [initialAction]);
   const [year, monthNum] = currentMonth.split("-");
   const monthLabel = `${year}년 ${Number(monthNum)}월`;
   const isThisMonth = currentMonth === thisMonthIso();
@@ -205,6 +223,16 @@ export function ExpensePage({
       </motion.div>
 
       <ExpenseFloatingActionButton
+        usedCategories={usedCategories}
+        assets={assets}
+        recentMemos={recentMemos}
+      />
+
+      <TransactionModal
+        mode="create"
+        open={quickModalOpen}
+        onOpenChange={setQuickModalOpen}
+        defaultType={quickModalType}
         usedCategories={usedCategories}
         assets={assets}
         recentMemos={recentMemos}

@@ -17,7 +17,7 @@ import {
 
 export const metadata = { title: "가계부" };
 
-type Props = { searchParams: { month?: string } };
+type Props = { searchParams: { month?: string; action?: string } };
 
 function thisMonthIso(): string {
   const d = new Date();
@@ -100,6 +100,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       assets={assets}
       settlementCardIds={settlementCardIds}
       recentMemos={recentMemos}
+      initialAction={searchParams.action}
     />
   );
 }

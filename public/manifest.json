@@ -1,0 +1,41 @@
+{
+  "name": "루나곰 캘린더",
+  "short_name": "루나곰",
+  "description": "내 일정, 내 돈, 내 사람들 — 한 화면에서.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#5B6CFF",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "지출 추가",
+      "short_name": "지출",
+      "description": "빠르게 지출 기록",
+      "url": "/expense?action=add-expense",
+      "icons": [
+        { "src": "/icons/shortcut-expense.png", "sizes": "96x96" }
+      ]
+    },
+    {
+      "name": "수입 추가",
+      "short_name": "수입",
+      "description": "빠르게 수입 기록",
+      "url": "/expense?action=add-income",
+      "icons": [
+        { "src": "/icons/shortcut-income.png", "sizes": "96x96" }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description:
     "한국인의 일정·돈·관계를 한 화면에서 관리하는 통합 캘린더 + 가계부.",
   applicationName: "루나곰 캘린더",
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
