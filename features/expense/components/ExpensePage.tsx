@@ -18,6 +18,7 @@ import { CategoryTotalsBar } from "./CategoryTotalsBar";
 import { SubscriptionTabContent } from "./SubscriptionTabContent";
 import { RecurringIncomeTabContent } from "./RecurringIncomeTabContent";
 import { BudgetTabContent } from "./BudgetTabContent";
+import { AssetsTab } from "./assets/AssetsTab";
 import type {
   BudgetRow,
   ExpenseRow,
@@ -26,6 +27,7 @@ import type {
   RecurringIncomeRow,
   SubscriptionRow,
 } from "../server/queries";
+import type { AssetRow } from "../server/asset-queries";
 
 type Props = {
   currentMonth: string; // "YYYY-MM"
@@ -39,6 +41,8 @@ type Props = {
   subscriptions: SubscriptionRow[];
   recurringIncomes: RecurringIncomeRow[];
   budgets: BudgetRow[];
+  assets: AssetRow[];
+  settlementCardIds: string[];
 };
 
 function shiftMonth(month: string, delta: number): string {
@@ -76,6 +80,8 @@ export function ExpensePage({
   subscriptions,
   recurringIncomes,
   budgets,
+  assets,
+  settlementCardIds,
 }: Props) {
   const router = useRouter();
   const [year, monthNum] = currentMonth.split("-");
@@ -134,6 +140,7 @@ export function ExpensePage({
         <Tabs defaultValue="monthly" className="w-full">
           <TabsList className="overflow-x-auto">
             <TabsTrigger value="monthly">월간</TabsTrigger>
+            <TabsTrigger value="assets">자산</TabsTrigger>
             <TabsTrigger value="subscriptions">정기 결제</TabsTrigger>
             <TabsTrigger value="recurring_incomes">정기 수입</TabsTrigger>
             <TabsTrigger value="budgets">예산</TabsTrigger>
@@ -151,6 +158,12 @@ export function ExpensePage({
                 incomes={incomes}
                 usedCategories={usedCategories}
               />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="assets" className="mt-4">
+            <motion.div {...tabContentMotion}>
+              <AssetsTab assets={assets} settlementCardIds={settlementCardIds} />
             </motion.div>
           </TabsContent>
 

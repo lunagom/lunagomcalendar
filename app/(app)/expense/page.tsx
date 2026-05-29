@@ -9,6 +9,10 @@ import {
   getSubscriptions,
   getUsedCategories,
 } from "@/features/expense/server/queries";
+import {
+  getActiveAssets,
+  getCreditCardsAwaitingSettlement,
+} from "@/features/expense/server/asset-queries";
 
 export const metadata = { title: "가계부" };
 
@@ -37,6 +41,8 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     recurringIncomes,
     budgets,
     totalsByIncomeCategory,
+    assets,
+    settlementCards,
   ] = await Promise.all([
     getExpensesForMonth(month),
     getIncomesForMonth(month),
@@ -46,7 +52,10 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     getRecurringIncomes(),
     getBudgetsForMonth(month),
     getMonthlyTotalsByIncomeCategory(month),
+    getActiveAssets(),
+    getCreditCardsAwaitingSettlement(),
   ]);
+  const settlementCardIds = settlementCards.map((c) => c.id);
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
   // 카테고리 칩도 같은 기준으로 — 각 구독의 category 에 amount 누적
   const expenseSum = expenses.reduce((s, e) => s + e.amount, 0);
@@ -85,6 +94,8 @@ export default async function ExpenseRoute({ searchParams }: Props) {
       subscriptions={subscriptions}
       recurringIncomes={recurringIncomes}
       budgets={budgets}
+      assets={assets}
+      settlementCardIds={settlementCardIds}
     />
   );
 }
