@@ -53,3 +53,8 @@ supabase/.branches/
 /partner-migration-bootstrap.sql
 /tasks-board-bootstrap.sql
 /notification-prefs-bootstrap.sql
+
+# Serwist 가 빌드 시 생성. dev 에서는 안 만들어짐, prod 빌드 산출물.
+/public/sw.js
+/public/sw.js.map
+/public/swe-worker-*.js

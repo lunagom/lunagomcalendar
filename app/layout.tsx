@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 
+import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -15,6 +16,18 @@ export const metadata: Metadata = {
     "한국인의 일정·돈·관계를 한 화면에서 관리하는 통합 캘린더 + 가계부.",
   applicationName: "루나곰 캘린더",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "루나곰",
+  },
 };
 
 export const viewport: Viewport = {
@@ -42,6 +55,7 @@ export default function RootLayout({
         </ThemeProvider>
         <Toaster richColors position="top-center" />
         <Analytics />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
