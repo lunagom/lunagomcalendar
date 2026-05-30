@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.lunagom.calendar",
+      "sha256_cert_fingerprints": [
+        "46:5B:66:E8:0F:3C:B3:E5:6A:A1:E6:7C:F5:02:70:AC:8C:84:E8:64:1E:15:09:3E:7C:2D:3F:6C:49:8B:80:43"
+      ]
+    }
+  }
+]
