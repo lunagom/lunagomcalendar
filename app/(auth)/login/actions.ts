@@ -50,9 +50,17 @@ export async function signInWithOAuth(provider: "kakao" | "google", next?: strin
   const redirectTo = new URL("/auth/callback", origin);
   if (next) redirectTo.searchParams.set("next", next);
 
+  // 카카오는 비즈앱 인증 없이 account_email 권한을 줄 수 없다.
+  // 일반앱 상태에서 Supabase 기본 scope 가 account_email 을 요청하면 KOE205 에러.
+  // → 카카오는 openid + profile_nickname 만 명시. 이메일 없이 nickname 으로 식별.
+  const kakaoScopes = "openid profile_nickname";
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: redirectTo.toString() },
+    options: {
+      redirectTo: redirectTo.toString(),
+      scopes: provider === "kakao" ? kakaoScopes : undefined,
+    },
   });
 
   if (error) return { error: error.message };
