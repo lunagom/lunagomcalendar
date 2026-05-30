@@ -7,9 +7,9 @@ import { signInWithOAuth } from "@/app/(auth)/login/actions";
 /**
  * 카카오 / 구글 소셜 로그인 버튼 (구분선 포함).
  *
- * NEXT_PUBLIC_SOCIAL_AUTH_ENABLED 가 "true" 일 때만 렌더.
- * 그렇지 않으면 null → 호출처는 그대로 두고도 이메일 단독 로그인 UI 가 됨.
- * prod 에 카카오/구글 OAuth 가 아직 안 등록된 상태에서 안전.
+ * NEXT_PUBLIC_SOCIAL_AUTH_ENABLED 가 "true" 일 때만 컴포넌트 렌더.
+ * 카카오는 NEXT_PUBLIC_KAKAO_ENABLED === "true" 일 때만 표시
+ * (검수 / 비즈앱 인증 통과 전에는 KOE205 가 나서 임시 숨김).
  */
 export function SocialButtons({ next }: { next?: string }) {
   const [isPending, startTransition] = useTransition();
@@ -17,6 +17,8 @@ export function SocialButtons({ next }: { next?: string }) {
   if (process.env.NEXT_PUBLIC_SOCIAL_AUTH_ENABLED !== "true") {
     return null;
   }
+
+  const kakaoEnabled = process.env.NEXT_PUBLIC_KAKAO_ENABLED === "true";
 
   const handle = (provider: "kakao" | "google") => {
     startTransition(async () => {
@@ -36,19 +38,21 @@ export function SocialButtons({ next }: { next?: string }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => handle("kakao")}
-          className="
-            flex h-11 items-center justify-center gap-2 rounded-lg
-            bg-[#FEE500] text-[#191600] text-sm font-medium
-            transition-opacity hover:opacity-90 disabled:opacity-50
-          "
-        >
-          <KakaoIcon />
-          카카오로 시작하기
-        </button>
+        {kakaoEnabled && (
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() => handle("kakao")}
+            className="
+              flex h-11 items-center justify-center gap-2 rounded-lg
+              bg-[#FEE500] text-[#191600] text-sm font-medium
+              transition-opacity hover:opacity-90 disabled:opacity-50
+            "
+          >
+            <KakaoIcon />
+            카카오로 시작하기
+          </button>
+        )}
         <button
           type="button"
           disabled={isPending}
