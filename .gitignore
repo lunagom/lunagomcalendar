@@ -58,3 +58,13 @@ supabase/.branches/
 /public/sw.js
 /public/sw.js.map
 /public/swe-worker-*.js
+
+# Capacitor 안드로이드 빌드 산출물
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/local.properties
+/android/captures/
+
+# 키스토어 비밀번호
+/android/keystore.properties
