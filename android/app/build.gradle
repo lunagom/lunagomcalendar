@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 // 기존 TWA 키스토어 사용 — keystore.properties 는 git 제외, 사용자 로컬에만 존재.
 def keystorePropertiesFile = rootProject.file("keystore.properties")
