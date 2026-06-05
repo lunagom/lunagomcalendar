@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 import { CapacitorDeepLinkHandler } from "@/components/capacitor-deep-link-handler";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+import { WidgetSyncBoot } from "@/features/android-widgets/WidgetSyncBoot";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
         <Analytics />
         <ServiceWorkerRegister />
         <CapacitorDeepLinkHandler />
+        <WidgetSyncBoot />
       </body>
     </html>
   );
