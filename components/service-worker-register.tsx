@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
+import { isCapacitorNative } from "@/lib/platform";
 
 /**
  * Serwist 가 빌드한 /sw.js 를 브라우저에 등록.
  * dev 환경 (`next dev`) 에서는 Serwist 가 disable 되어 /sw.js 가 없으므로 skip.
+ * Capacitor 네이티브 앱 안에서는 webview 캐시 충돌 방지로 skip.
  */
 export function ServiceWorkerRegister() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
     if (typeof window === "undefined") return;
+    if (isCapacitorNative()) return;
     if (!("serviceWorker" in navigator)) return;
 
     const register = () => {
