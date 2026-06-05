@@ -3,6 +3,8 @@
 import { useTransition } from "react";
 
 import { signInWithOAuth } from "@/app/(auth)/login/actions";
+import { isCapacitorNative } from "@/lib/platform";
+import { createClient } from "@/lib/supabase/client";
 
 /**
  * 카카오 / 구글 소셜 로그인 버튼 (구분선 포함).
@@ -22,6 +24,26 @@ export function SocialButtons({ next }: { next?: string }) {
 
   const handle = (provider: "kakao" | "google") => {
     startTransition(async () => {
+      if (isCapacitorNative()) {
+        // Capacitor 네이티브 앱: webview 내 OAuth 는 Google 정책 차단됨.
+        // → Browser 플러그인으로 시스템 크롬 열기, 콜백은 deep link 로 받음.
+        const supabase = createClient();
+        const redirectTo = `${window.location.origin}/auth/callback${
+          next ? `?next=${encodeURIComponent(next)}` : ""
+        }`;
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo,
+            scopes: provider === "kakao" ? "openid profile_nickname" : undefined,
+            skipBrowserRedirect: true,
+          },
+        });
+        if (error || !data.url) return;
+        const { Browser } = await import("@capacitor/browser");
+        await Browser.open({ url: data.url });
+        return;
+      }
       await signInWithOAuth(provider, next);
     });
   };

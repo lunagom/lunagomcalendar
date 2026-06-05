@@ -34,6 +34,12 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // debug 빌드도 release keystore 서명 → SHA256 일치 → Asset Links / deep link 작동.
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

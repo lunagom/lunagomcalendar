@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 
+import { CapacitorDeepLinkHandler } from "@/components/capacitor-deep-link-handler";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -56,6 +57,7 @@ export default function RootLayout({
         <Toaster richColors position="top-center" />
         <Analytics />
         <ServiceWorkerRegister />
+        <CapacitorDeepLinkHandler />
       </body>
     </html>
   );
