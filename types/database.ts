@@ -256,6 +256,10 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          is_recurring: boolean
+          recurrence_rule: Json | null
+          recurrence_until: string | null
+          recurrence_count: number | null
         }
         Insert: {
           calendar_id: string
@@ -276,6 +280,10 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          is_recurring?: boolean
+          recurrence_rule?: Json | null
+          recurrence_until?: string | null
+          recurrence_count?: number | null
         }
         Update: {
           calendar_id?: string
@@ -296,6 +304,10 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          is_recurring?: boolean
+          recurrence_rule?: Json | null
+          recurrence_until?: string | null
+          recurrence_count?: number | null
         }
         Relationships: [
           {

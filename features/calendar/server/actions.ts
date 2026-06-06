@@ -4,6 +4,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
+const recurrenceRuleSchema = z
+  .object({
+    freq: z.enum(["daily", "weekly", "monthly"]),
+    byday: z.array(z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"])).optional(),
+    bymonthday: z.number().int().min(1).max(31).optional(),
+    exceptions: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional(),
+  })
+  .nullable();
+
 const eventInputSchema = z.object({
   title: z.string().min(1).max(200),
   calendar_id: z.string().uuid(),
@@ -23,6 +32,14 @@ const eventInputSchema = z.object({
   lunar_day: z.number().int().min(1).max(30).nullable().optional(),
   expected_amount: z.number().int().min(0).nullable().optional(),
   expense_category: z.string().min(1).max(50).nullable().optional(),
+  is_recurring: z.boolean().default(false),
+  recurrence_rule: recurrenceRuleSchema.optional(),
+  recurrence_until: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  recurrence_count: z.number().int().min(2).max(365).nullable().optional(),
 });
 
 export type EventInput = z.infer<typeof eventInputSchema>;
@@ -99,6 +116,131 @@ export async function moveEvent(
     .from("events")
     .update({ start_at: newStart, end_at: newEnd })
     .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
+
+// === 반복 일정 actions ===
+
+/**
+ * 가상 반복 인스턴스를 실제 단일 row 로 복사 생성.
+ * - 원본의 모든 필드 복사
+ * - is_recurring=false 로
+ * - start_at / end_at 의 날짜만 `dateIso` 로 바꿈 (시간은 유지)
+ * 반환 id 로 이후 별도 수정 가능.
+ */
+export async function materializeRecurringEvent(
+  parentId: string,
+  dateIso: string,
+): Promise<ActionResult<{ id: string }>> {
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { data: parent, error: e1 } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", parentId)
+    .eq("user_id", userId)
+    .single();
+  if (e1 || !parent) return { ok: false, error: "원본을 찾을 수 없어요" };
+
+  const parentStartTime = parent.start_at.slice(10); // "THH:MM:..."
+  const parentEndTime = parent.end_at.slice(10);
+  const newStart = `${dateIso}${parentStartTime}`;
+  const newEnd = `${dateIso}${parentEndTime}`;
+
+  const { data: created, error: e2 } = await supabase
+    .from("events")
+    .insert({
+      calendar_id: parent.calendar_id,
+      user_id: userId,
+      title: parent.title,
+      start_at: newStart,
+      end_at: newEnd,
+      color: parent.color,
+      emoji: parent.emoji,
+      memo: parent.memo,
+      location: parent.location,
+      is_all_day: parent.is_all_day,
+      is_lunar: false,
+      lunar_month: null,
+      lunar_day: null,
+      expected_amount: parent.expected_amount,
+      expense_category: parent.expense_category,
+      is_recurring: false,
+      recurrence_rule: null,
+      recurrence_until: null,
+      recurrence_count: null,
+    })
+    .select("id")
+    .single();
+  if (e2 || !created) return { ok: false, error: "복사 실패" };
+
+  // 원본의 exceptions 에 이 날짜 추가 (가상 인스턴스를 더 이상 안 그리도록)
+  await addRecurrenceException(parentId, dateIso);
+
+  revalidatePath("/calendar");
+  return { ok: true, data: { id: created.id } };
+}
+
+/**
+ * "이후 모두 삭제" — 원본의 recurrence_until 을 dateIso 의 전날로 갱신.
+ * 그 날짜의 가상 인스턴스도 같이 사라짐.
+ */
+export async function splitRecurringEvent(
+  parentId: string,
+  dateIso: string,
+): Promise<ActionResult> {
+  const userId = await getUserId();
+  const supabase = createClient();
+  const dt = new Date(dateIso);
+  dt.setDate(dt.getDate() - 1);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const untilIso = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+
+  const { error } = await supabase
+    .from("events")
+    .update({ recurrence_until: untilIso })
+    .eq("id", parentId)
+    .eq("user_id", userId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/calendar");
+  return { ok: true, data: undefined };
+}
+
+/**
+ * "이 항목만 삭제" — 원본의 recurrence_rule.exceptions 에 dateIso 추가.
+ */
+export async function addRecurrenceException(
+  parentId: string,
+  dateIso: string,
+): Promise<ActionResult> {
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { data: parent, error: e1 } = await supabase
+    .from("events")
+    .select("recurrence_rule")
+    .eq("id", parentId)
+    .eq("user_id", userId)
+    .single();
+  if (e1 || !parent) return { ok: false, error: "원본을 찾을 수 없어요" };
+
+  const rule =
+    parent.recurrence_rule && typeof parent.recurrence_rule === "object"
+      ? (parent.recurrence_rule as Record<string, unknown>)
+      : {};
+  const existing = Array.isArray(rule.exceptions)
+    ? (rule.exceptions as string[])
+    : [];
+  const exceptions = existing.includes(dateIso)
+    ? existing
+    : [...existing, dateIso];
+
+  const { error } = await supabase
+    .from("events")
+    .update({ recurrence_rule: { ...rule, exceptions } })
+    .eq("id", parentId)
+    .eq("user_id", userId);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/calendar");
   return { ok: true, data: undefined };

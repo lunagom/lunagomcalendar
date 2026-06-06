@@ -83,6 +83,32 @@ export function EventModal({
     initial?.expected_amount != null || !!initial?.expense_category,
   );
 
+  // 반복 일정 state
+  const initialRule = (initial?.recurrence_rule ?? null) as
+    | { freq?: string; byday?: string[]; bymonthday?: number }
+    | null;
+  const [recurFreq, setRecurFreq] = useState<
+    "none" | "daily" | "weekly" | "monthly"
+  >(initial?.is_recurring && initialRule?.freq ? (initialRule.freq as "daily" | "weekly" | "monthly") : "none");
+  const [recurByday, setRecurByday] = useState<string[]>(
+    initialRule?.byday ?? [],
+  );
+  const [recurMonthDay, setRecurMonthDay] = useState<number>(
+    initialRule?.bymonthday ?? 1,
+  );
+  const [recurEndType, setRecurEndType] = useState<"none" | "date" | "count">(
+    initial?.recurrence_until ? "date" : initial?.recurrence_count ? "count" : "none",
+  );
+  const [recurUntil, setRecurUntil] = useState<string>(
+    initial?.recurrence_until ?? "",
+  );
+  const [recurCount, setRecurCount] = useState<string>(
+    initial?.recurrence_count != null ? String(initial.recurrence_count) : "",
+  );
+
+  // 멀티데이 (시작 ≠ 종료 날짜) 면 반복 비활성화
+  const isMultiDay = startAt.slice(0, 10) !== endAt.slice(0, 10);
+
   const handleSubmit = () => {
     if (!title.trim()) {
       toast.error("제목을 입력하세요");
@@ -103,6 +129,22 @@ export function EventModal({
         ? parseInt(expectedAmount, 10)
         : null;
 
+    // 반복 payload — 멀티데이는 강제 비활성
+    const enableRecur = !isMultiDay && recurFreq !== "none";
+    let recurrenceRule: Record<string, unknown> | null = null;
+    if (enableRecur) {
+      if (recurFreq === "daily") recurrenceRule = { freq: "daily" };
+      else if (recurFreq === "weekly") {
+        if (recurByday.length === 0) {
+          toast.error("매주 반복은 요일을 1개 이상 선택하세요");
+          return;
+        }
+        recurrenceRule = { freq: "weekly", byday: recurByday };
+      } else if (recurFreq === "monthly") {
+        recurrenceRule = { freq: "monthly", bymonthday: recurMonthDay };
+      }
+    }
+
     const payload = {
       title: title.trim(),
       calendar_id: calendarId,
@@ -118,6 +160,14 @@ export function EventModal({
       lunar_day,
       expected_amount: expectedAmountNum,
       expense_category: expenseCategory.trim() || null,
+      is_recurring: enableRecur,
+      recurrence_rule: recurrenceRule,
+      recurrence_until:
+        enableRecur && recurEndType === "date" && recurUntil ? recurUntil : null,
+      recurrence_count:
+        enableRecur && recurEndType === "count" && recurCount
+          ? Number(recurCount)
+          : null,
     };
 
     startTransition(async () => {
@@ -259,6 +309,132 @@ export function EventModal({
               className="w-full h-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
               placeholder="선택사항"
             />
+          </div>
+
+          {/* 반복 */}
+          <div className="space-y-2 rounded-md border p-3 bg-muted/30">
+            <Label className="text-sm font-medium">반복</Label>
+            {isMultiDay ? (
+              <p className="text-xs text-muted-foreground">
+                여러 날 일정은 반복 지원 안 함
+              </p>
+            ) : (
+              <>
+                <select
+                  value={recurFreq}
+                  onChange={(e) =>
+                    setRecurFreq(
+                      e.target.value as "none" | "daily" | "weekly" | "monthly",
+                    )
+                  }
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  <option value="none">없음</option>
+                  <option value="daily">매일</option>
+                  <option value="weekly">매주</option>
+                  <option value="monthly">매월</option>
+                </select>
+
+                {recurFreq === "weekly" && (
+                  <div>
+                    <Label className="text-xs">요일</Label>
+                    <div className="flex gap-1 mt-1">
+                      {(
+                        [
+                          ["MO", "월"],
+                          ["TU", "화"],
+                          ["WE", "수"],
+                          ["TH", "목"],
+                          ["FR", "금"],
+                          ["SA", "토"],
+                          ["SU", "일"],
+                        ] as const
+                      ).map(([code, label]) => {
+                        const on = recurByday.includes(code);
+                        return (
+                          <button
+                            type="button"
+                            key={code}
+                            onClick={() =>
+                              setRecurByday((s) =>
+                                s.includes(code)
+                                  ? s.filter((x) => x !== code)
+                                  : [...s, code],
+                              )
+                            }
+                            className={`h-8 w-8 rounded-md text-xs font-medium ${
+                              on
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {recurFreq === "monthly" && (
+                  <div>
+                    <Label className="text-xs">매월 N일</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={31}
+                      value={recurMonthDay}
+                      onChange={(e) => setRecurMonthDay(Number(e.target.value))}
+                    />
+                  </div>
+                )}
+
+                {recurFreq !== "none" && (
+                  <div className="space-y-2">
+                    <Label className="text-xs">종료</Label>
+                    <div className="flex gap-2">
+                      {(
+                        [
+                          ["none", "없음"],
+                          ["date", "날짜"],
+                          ["count", "횟수"],
+                        ] as const
+                      ).map(([opt, label]) => (
+                        <button
+                          type="button"
+                          key={opt}
+                          onClick={() => setRecurEndType(opt)}
+                          className={`px-3 py-1 text-xs rounded-md ${
+                            recurEndType === opt
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    {recurEndType === "date" && (
+                      <Input
+                        type="date"
+                        value={recurUntil}
+                        onChange={(e) => setRecurUntil(e.target.value)}
+                      />
+                    )}
+                    {recurEndType === "count" && (
+                      <Input
+                        type="number"
+                        min={2}
+                        max={365}
+                        value={recurCount}
+                        onChange={(e) => setRecurCount(e.target.value)}
+                        placeholder="예: 10"
+                      />
+                    )}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* 예상 지출 (옵션) */}
