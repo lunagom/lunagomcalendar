@@ -47,7 +47,8 @@ class WidgetCachePlugin : Plugin() {
     @PluginMethod
     fun notifyWidgets(call: PluginCall) {
         val mgr = AppWidgetManager.getInstance(context)
-        for (cls in listOf(CalendarWidgetProvider::class.java, ExpenseWidgetProvider::class.java)) {
+        // ExpenseWidgetProvider 는 T13 에서 추가됨. 그 시점에 이 리스트에 함께 등록.
+        for (cls in listOf(CalendarWidgetProvider::class.java)) {
             val ids = mgr.getAppWidgetIds(ComponentName(context, cls))
             if (ids.isNotEmpty()) {
                 val intent = Intent(context, cls).apply {
