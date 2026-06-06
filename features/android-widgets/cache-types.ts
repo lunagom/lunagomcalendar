@@ -3,6 +3,7 @@
 export type CalendarCacheEvent = {
   date: string; // "YYYY-MM-DD" (로컬 기준)
   color: string; // "#RRGGBB"
+  title: string; // 일정 제목 (위젯 칩에 표시)
 };
 
 export type CalendarCache = {

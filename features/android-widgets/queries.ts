@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 
 export async function fetchCurrentMonthCalendarEvents(): Promise<
-  Array<{ date: string; color: string }>
+  Array<{ date: string; color: string; title: string }>
 > {
   const supabase = createClient();
   const now = new Date();
@@ -11,13 +11,15 @@ export async function fetchCurrentMonthCalendarEvents(): Promise<
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   const { data } = await supabase
     .from("events")
-    .select("start_at, color")
+    .select("start_at, color, title")
     .gte("start_at", monthStart.toISOString())
-    .lte("start_at", monthEnd.toISOString());
+    .lte("start_at", monthEnd.toISOString())
+    .order("start_at", { ascending: true });
   if (!data) return [];
   return data.map((row) => ({
     date: new Date(row.start_at).toISOString().slice(0, 10),
     color: row.color ?? "#6B7280",
+    title: row.title ?? "",
   }));
 }
 
