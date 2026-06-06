@@ -9,7 +9,7 @@ import { useMobileDrawerStore } from "./mobile-drawer-store";
 
 /**
  * 모바일 하단 탭바. md 미만에서만 노출.
- * 4개 고정: 캘린더 / 할 일 / 가계부 / 더보기.
+ * 5개 고정: 홈 / 캘린더 / 할 일 / 가계부 / 더보기.
  * "더보기" 는 헤더 햄버거와 같은 드로어를 연다.
  * iOS 노치 대응을 위해 env(safe-area-inset-bottom) 적용.
  */
@@ -26,7 +26,7 @@ export function MobileTabbar() {
       )}
       aria-label="하단 메뉴"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {mobileTabItems.map((item) => {
           const Icon = item.icon;
 

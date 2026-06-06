@@ -32,12 +32,10 @@ export type MobileTabItem =
   | { kind: "link"; href: string; label: string; icon: LucideIcon }
   | { kind: "more"; label: string; icon: LucideIcon };
 
-/**
- * 모바일 하단 탭바 4개.
- * 캘린더는 더보기 드로어의 사이드바 nav 에서 진입.
- */
+/** 모바일 하단 탭바 5개. */
 export const mobileTabItems: MobileTabItem[] = [
   { kind: "link", href: "/", label: "홈", icon: Home },
+  { kind: "link", href: "/calendar", label: "캘린더", icon: Calendar },
   { kind: "link", href: "/todos", label: "할 일", icon: CheckSquare },
   { kind: "link", href: "/expense", label: "가계부", icon: Wallet },
   { kind: "more", label: "더보기", icon: MoreHorizontal },
