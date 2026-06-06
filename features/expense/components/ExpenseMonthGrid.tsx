@@ -93,7 +93,7 @@ export function ExpenseMonthGrid({
         {WEEKDAY.map((w, i) => (
           <div
             key={w}
-            className={`bg-background py-2 text-center text-[9px] font-medium ${
+            className={`bg-background py-0.5 text-center text-[9px] font-medium ${
               i === 0 ? "text-red-600" : i === 6 ? "text-blue-600" : "text-muted-foreground"
             }`}
           >
@@ -116,7 +116,7 @@ export function ExpenseMonthGrid({
               key={iso}
               type="button"
               onClick={() => setSelectedDate(d)}
-              className={`bg-background min-h-[72px] p-1.5 text-left flex flex-col items-stretch hover:bg-accent transition-colors ${
+              className={`bg-background min-h-[52px] p-1 text-left flex flex-col items-stretch hover:bg-accent transition-colors ${
                 isCurrentMonth ? "" : "opacity-40"
               }`}
             >

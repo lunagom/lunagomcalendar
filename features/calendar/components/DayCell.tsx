@@ -119,13 +119,11 @@ export function DayCell({
         )}
       </div>
       {/* 공휴일/24절기 배지 */}
-      <div className="mb-1">
-        <HolidayBadge isoDate={isoDate} />
-      </div>
+      <HolidayBadge isoDate={isoDate} />
 
       {/* 이벤트 막대 — 드래그 가능. 멀티데이가 지나가는 셀이면 그만큼 아래로 밀림. */}
       <div
-        className="flex flex-col gap-0.5"
+        className="flex flex-col gap-0"
         style={
           multiDaySlots > 0
             ? { marginTop: multiDaySlots * MULTI_DAY_SLOT_HEIGHT }
@@ -150,7 +148,7 @@ export function DayCell({
 
       {/* 할 일 */}
       {(shownTodos.length > 0 || moreTodoCount > 0) && (
-        <div className="mt-auto pt-1.5 border-t border-dashed border-border flex flex-col gap-0.5">
+        <div className="mt-auto pt-0.5 border-t border-dashed border-border flex flex-col gap-0">
           {shownTodos.map((t) => (
             <TodoMiniRow key={t.id} todo={t} />
           ))}

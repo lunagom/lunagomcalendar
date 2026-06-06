@@ -14,8 +14,8 @@
   border-bottom: 1px solid hsl(var(--border));
 }
 .fc .fc-col-header-cell-cushion {
-  padding: 0.5rem 0.25rem;
-  font-size: 0.75rem;
+  padding: 0.125rem 0.125rem;
+  font-size: 0.7rem;
   color: hsl(var(--muted-foreground));
 }
 .fc .fc-day-sun .fc-col-header-cell-cushion {
@@ -31,7 +31,7 @@
 }
 
 .fc .fc-daygrid-day-number {
-  padding: 0.25rem;
+  padding: 0;
 }
 
 /* DayCell 컴포넌트가 frame 위에 absolute 로 렌더하므로 FC 기본 top/events/bottom 영역 숨김.
@@ -43,7 +43,7 @@
   height: 0;
 }
 .fc .fc-daygrid-day-frame {
-  min-height: 5rem;
+  min-height: 4rem;
 }
 /* 멀티데이 layer 가 일요일 td 에서 width:700% 로 뻗어나갈 수 있게 */
 .fc .fc-daygrid-day {
@@ -51,7 +51,7 @@
 }
 @media (min-width: 640px) {
   .fc .fc-daygrid-day-frame {
-    min-height: 7rem;
+    min-height: 6rem;
   }
 }
 
