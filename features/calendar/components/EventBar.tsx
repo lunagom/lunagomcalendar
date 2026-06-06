@@ -41,7 +41,7 @@ export function EventBar({
         e.stopPropagation();
         onClick?.();
       }}
-      className={`w-full text-left px-1.5 py-1 text-[10px] sm:text-[11px] sm:px-2 hover:opacity-80 transition ${corner} ${
+      className={`w-full text-left px-1.5 py-1 text-[7px] sm:text-[8px] sm:px-2 hover:opacity-80 transition ${corner} ${
         fullText ? "whitespace-normal break-words py-1.5" : "truncate"
       }`}
       style={{ backgroundColor: color, color: textColor }}

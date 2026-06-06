@@ -93,7 +93,7 @@ export function ExpenseMonthGrid({
         {WEEKDAY.map((w, i) => (
           <div
             key={w}
-            className={`bg-background py-2 text-center text-xs font-medium ${
+            className={`bg-background py-2 text-center text-[9px] font-medium ${
               i === 0 ? "text-red-600" : i === 6 ? "text-blue-600" : "text-muted-foreground"
             }`}
           >
@@ -121,7 +121,7 @@ export function ExpenseMonthGrid({
               }`}
             >
               <span
-                className={`text-xs ${
+                className={`text-[9px] ${
                   isToday
                     ? "inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground self-start"
                     : dow === 0
@@ -135,7 +135,7 @@ export function ExpenseMonthGrid({
               </span>
               {delta !== 0 && (
                 <span
-                  className={`mt-auto text-right text-[11px] font-medium tabular-nums truncate ${deltaCls}`}
+                  className={`mt-auto text-right text-[8px] font-medium tabular-nums truncate ${deltaCls}`}
                 >
                   {formatDelta(delta)}
                 </span>

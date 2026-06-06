@@ -95,20 +95,20 @@ export function DayCell({
       )}
       {/* 날짜 + 음력 + 지출 합계 */}
       <div className="flex items-baseline gap-1">
-        <span className={`text-sm font-semibold ${dayNumberColor}`}>
+        <span className={`text-[8px] font-semibold ${dayNumberColor}`}>
           {date.getDate()}
         </span>
         {isToday && (
           <span className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-primary align-middle" />
         )}
         {lunar && (
-          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+          <span className="text-[8px] text-muted-foreground whitespace-nowrap">
             ·음 {lunar.month}/1
           </span>
         )}
         {dailyDelta != null && dailyDelta !== 0 && (
           <span
-            className={`ml-auto min-w-0 truncate text-[10px] font-medium tabular-nums ${
+            className={`ml-auto min-w-0 truncate text-[8px] font-medium tabular-nums ${
               dailyDelta > 0
                 ? "text-[#16A34A] dark:text-[#4ADE80]"
                 : "text-[#DC2626] dark:text-[#F87171]"
@@ -142,7 +142,7 @@ export function DayCell({
           />
         ))}
         {moreCount > 0 && (
-          <span className="text-[10px] text-muted-foreground px-1">
+          <span className="text-[8px] text-muted-foreground px-1">
             + {moreCount}개 더
           </span>
         )}
@@ -155,7 +155,7 @@ export function DayCell({
             <TodoMiniRow key={t.id} todo={t} />
           ))}
           {moreTodoCount > 0 && (
-            <span className="text-[10px] text-muted-foreground px-1">
+            <span className="text-[8px] text-muted-foreground px-1">
               + {moreTodoCount}개
             </span>
           )}
@@ -176,7 +176,7 @@ function TodoMiniRow({ todo }: { todo: TaskRow }) {
         className="h-3 w-3"
       />
       <span
-        className={`text-[11px] truncate ${
+        className={`text-[8px] truncate ${
           done ? "line-through text-muted-foreground" : ""
         }`}
       >
