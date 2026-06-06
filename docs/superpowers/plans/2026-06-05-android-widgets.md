@@ -4,7 +4,7 @@
 
 **Goal:** 본인 폰의 홈 화면에 캘린더(5×6) + 가계부(5×2) 위젯 2개를 추가하고, 투명도 5단계 + 외부 모달 자동 오픈 + 앱 변경 시 즉시 갱신이 동작하도록 한다.
 
-**Architecture:** Capacitor 8.x 위에 로컬 커스텀 플러그인(WidgetCache) 을 직접 작성하여 JS ↔ SharedPreferences 다리를 놓는다. 앱이 일정/거래를 변경하면 캐시를 갱신 → `AppWidgetManager.notifyAppWidgetViewDataChanged` 로 즉시 다시 그림. 위젯 탭은 인텐트(`widget_action=open_expense_modal`) 로 앱을 띄우고 페이지가 URL 쿼리(`?modal=expense`)로 모달을 자동 오픈.
+**Architecture:** Capacitor 8.x 위에 로컬 커스텀 플러그인(WidgetCache) 을 직접 작성하여 JS ↔ SharedPreferences 다리를 놓는다. 앱이 일정/거래를 변경하면 캐시를 갱신 → `AppWidgetManager.notifyAppWidgetViewDataChanged` 로 즉시 다시 그림. 위젯 탭은 ACTION_VIEW 인텐트의 URI(`https://lunabear-calendar.vercel.app/expense?action=add-expense`)로 앱을 띄우고, 기존 ExpensePage 의 `initialAction` useEffect 가 이미 `add-expense` / `add-income` 을 받아 모달을 자동 오픈한다 (기존 코드 재활용 — 새 컴포넌트 불필요).
 
 **Tech Stack:** Kotlin (Android Widget Provider + Capacitor Plugin), TypeScript (JS 브릿지 + 캐시 동기화), Next.js 14 (URL 모달 라우팅), Vitest (TDD 가능 부분).
 
@@ -16,7 +16,8 @@
 - 라이트 고정 + 투명도 5단계 (0/25/50/75/100%)
 - 데이터 = 앱 캐시 (SharedPreferences, Option A)
 - 마스코트 24dp / 20dp
-- 가계부 위젯 버튼 3개 (지출/수입/이체) — 탭 시 앱 모달 자동 오픈
+- 가계부 위젯 버튼 **2개 (지출/수입)** — 탭 시 앱 모달 자동 오픈
+  - **v1 결정 (2026-06-06)**: 이체 모달은 앱에 미구현 → 위젯에서도 제외. 추후 이체 기능 추가 시 v2 에서 3 버튼으로 확장.
 
 Spec 전체: `docs/superpowers/specs/2026-06-03-android-widgets-design.md`
 
@@ -654,41 +655,47 @@ cd /c/dev/lunabear-calendar && \
 
 ---
 
-### Task 8: URL 모달 라우팅 (가계부 ?modal=expense|income|transfer) — TDD
+### Task 8: 위젯 → 가계부 URL 매핑 (TDD)
 
 **Files:**
-- Modify: `app/(app)/expense/page.tsx`
-- Create: `app/(app)/expense/widget-modal-opener.test.tsx` (또는 동일 컴포넌트 단위 테스트)
-- Create: `app/(app)/expense/widget-modal-opener.tsx`
+- Create: `features/android-widgets/widget-urls.ts`
+- Create: `features/android-widgets/widget-urls.test.ts`
 
-전략: page.tsx 가 server component 라면, 모달 자동 오픈은 client component 로 분리. URL `?modal=expense|income|transfer` 읽어서 해당 모달 trigger 호출.
+**중요한 발견 (2026-06-06):**
+- 기존 `app/(app)/expense/page.tsx` 가 이미 `searchParams.action` 을 받아 `initialAction` 으로 ExpensePage 에 넘김
+- ExpensePage 의 `useEffect` 가 `add-expense` / `add-income` 을 받아 모달을 자동 오픈 + `router.replace` 로 URL 정리
+- → **새 WidgetModalOpener 컴포넌트 불필요**. 기존 패턴 그대로 활용.
+- 또한 **이체 (transfer) 모달이 앱에 미구현** → 위젯도 2 버튼만 (지출/수입)
 
-가계부 페이지에서 모달을 트리거하는 기존 메커니즘 확인 필요. 가장 단순한 방법: zustand/context store 가 있다면 그 setter 호출. 없다면 URL 자체를 모달 상태로 사용 (URL 이 source of truth).
+따라서 T8 은 단순히: 위젯 액션 → URL 매핑을 한 곳에 정의 + 단위 테스트. Kotlin Provider 는 이 매핑과 같은 URL 을 직접 박는다 (TS 못 읽음).
 
-⚠️ 실행자: 먼저 `cat "app/(app)/expense/page.tsx"` + `grep -r "지출.*Dialog\|expense.*modal\|ExpenseDialog" features/expense components` 로 모달 트리거 방식 파악할 것.
+- [ ] **Step 1: 실패 테스트 작성**
 
-- [ ] **Step 1: 실패 테스트 작성 (URL 파라미터 → 모달 타입 파싱 로직)**
-
-Create: `app/(app)/expense/widget-modal-opener.test.ts`
+Create: `features/android-widgets/widget-urls.test.ts`
 
 ```typescript
 import { describe, it, expect } from "vitest";
-import { parseWidgetModalParam } from "./widget-modal-opener";
+import { widgetUrlForAction, parseWidgetAction } from "./widget-urls";
 
-describe("parseWidgetModalParam", () => {
-  it("'expense' → 'expense'", () => {
-    expect(parseWidgetModalParam("expense")).toBe("expense");
+describe("widgetUrlForAction", () => {
+  it("'add-expense' → /expense?action=add-expense", () => {
+    expect(widgetUrlForAction("add-expense")).toBe("/expense?action=add-expense");
   });
-  it("'income' → 'income'", () => {
-    expect(parseWidgetModalParam("income")).toBe("income");
+  it("'add-income' → /expense?action=add-income", () => {
+    expect(widgetUrlForAction("add-income")).toBe("/expense?action=add-income");
   });
-  it("'transfer' → 'transfer'", () => {
-    expect(parseWidgetModalParam("transfer")).toBe("transfer");
+});
+
+describe("parseWidgetAction", () => {
+  it("유효 값 통과", () => {
+    expect(parseWidgetAction("add-expense")).toBe("add-expense");
+    expect(parseWidgetAction("add-income")).toBe("add-income");
   });
-  it("알 수 없는 값 → null", () => {
-    expect(parseWidgetModalParam("foo")).toBeNull();
-    expect(parseWidgetModalParam(null)).toBeNull();
-    expect(parseWidgetModalParam(undefined)).toBeNull();
+  it("알 수 없는/빈 값 → null", () => {
+    expect(parseWidgetAction("foo")).toBeNull();
+    expect(parseWidgetAction(null)).toBeNull();
+    expect(parseWidgetAction(undefined)).toBeNull();
+    expect(parseWidgetAction("add-transfer")).toBeNull(); // v1 에 없음
   });
 });
 ```
@@ -696,79 +703,58 @@ describe("parseWidgetModalParam", () => {
 - [ ] **Step 2: 테스트 실행 → 실패 확인**
 
 ```bash
-cd /c/dev/lunabear-calendar && pnpm test:run "app/(app)/expense/widget-modal-opener.test.ts"
+cd /c/dev/lunabear-calendar && pnpm test:run features/android-widgets/widget-urls.test.ts
 ```
 
-⚠️ vitest config 의 include 가 `lib/**` 와 `features/**` 만 잡음. `app/**` 도 포함하도록 `vitest.config.ts` 의 include 배열에 `"app/**/*.test.ts"` 추가. 그 후 재실행.
+Expected: FAIL — 모듈 없음.
 
-Expected: FAIL — module not found.
+- [ ] **Step 3: widget-urls.ts 작성**
 
-- [ ] **Step 3: widget-modal-opener.tsx 작성**
-
-Create: `app/(app)/expense/widget-modal-opener.tsx`
+Create: `features/android-widgets/widget-urls.ts`
 
 ```typescript
-"use client";
+/**
+ * 위젯 → 가계부 페이지 URL 매핑.
+ * 이 값들은 Kotlin 위젯 Provider 에서도 동일하게 박혀야 한다
+ * (TS 가 source-of-truth, Kotlin 은 값 복사).
+ *
+ * ExpensePage 의 initialAction useEffect 가 이 action 값들을 받아 모달을 자동 오픈한다.
+ */
 
-import { useEffect } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+export type WidgetAction = "add-expense" | "add-income";
 
-export type WidgetModalType = "expense" | "income" | "transfer";
+const VALID_ACTIONS: readonly WidgetAction[] = ["add-expense", "add-income"];
 
-export function parseWidgetModalParam(value: string | null | undefined): WidgetModalType | null {
-  if (value === "expense" || value === "income" || value === "transfer") return value;
+export function parseWidgetAction(value: string | null | undefined): WidgetAction | null {
+  if (value && (VALID_ACTIONS as readonly string[]).includes(value)) {
+    return value as WidgetAction;
+  }
   return null;
 }
 
-/**
- * 위젯에서 +지출/+수입/+이체 탭 시 앱이 ?modal=... 로 열림.
- * 페이지가 마운트되면 해당 모달을 자동 오픈하고 URL 에서 쿼리 제거.
- *
- * 실제 모달 오픈은 페이지의 모달 트리거 메커니즘에 위임 (전역 store 또는 prop).
- * 이 컴포넌트는 props.onOpen 콜백을 받아 호출만 한다.
- */
-export function WidgetModalOpener({
-  onOpen,
-}: {
-  onOpen: (type: WidgetModalType) => void;
-}) {
-  const params = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const modal = parseWidgetModalParam(params.get("modal"));
-    if (!modal) return;
-    onOpen(modal);
-    // URL 정리: ?modal= 만 제거하고 다른 파라미터는 보존
-    const next = new URLSearchParams(params.toString());
-    next.delete("modal");
-    const qs = next.toString();
-    router.replace(pathname + (qs ? `?${qs}` : ""));
-  }, [params, router, pathname, onOpen]);
-
-  return null;
+export function widgetUrlForAction(action: WidgetAction): string {
+  return `/expense?action=${action}`;
 }
 ```
 
 - [ ] **Step 4: 테스트 재실행 → 통과 확인**
 
 ```bash
-cd /c/dev/lunabear-calendar && pnpm test:run "app/(app)/expense/widget-modal-opener.test.ts"
+cd /c/dev/lunabear-calendar && pnpm test:run features/android-widgets/widget-urls.test.ts
 ```
 
-Expected: PASS — 4 tests passed.
+Expected: PASS — 5 tests passed.
 
-- [ ] **Step 5: 가계부 페이지에 WidgetModalOpener 연결**
+- [ ] **Step 5: page.tsx / ExpensePage 수정 안 함**
 
-`app/(app)/expense/page.tsx` 에 `<WidgetModalOpener onOpen={...} />` 추가. 실제 모달 트리거 방법은 기존 패턴 따라 보정 (예: zustand store 라면 `useExpenseStore.getState().openModal(type)`).
+기존 코드가 이미 `searchParams.action` → `initialAction` → modal 오픈 흐름을 처리 중. 변경 없음.
 
 - [ ] **Step 6: 커밋**
 
 ```bash
 cd /c/dev/lunabear-calendar && \
-  git add "app/(app)/expense/" vitest.config.ts && \
-  git commit -m "feat(widgets): URL 모달 라우팅 (?modal=expense|income|transfer)"
+  git add features/android-widgets/widget-urls.ts features/android-widgets/widget-urls.test.ts && \
+  git commit -m "feat(widgets): 위젯 액션 URL 매핑 (지출/수입 v1)"
 ```
 
 ---
@@ -1104,13 +1090,13 @@ cd /c/dev/lunabear-calendar && \
             android:text="0원" />
     </LinearLayout>
 
-    <!-- 우측: 버튼 3개 -->
+    <!-- 우측: 버튼 2개 (v1: 지출/수입. 이체는 앱 미구현으로 v2 보류) -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:weightSum="2">
 
         <TextView
             android:id="@+id/widget_expense_btn_expense"
@@ -1131,16 +1117,6 @@ cd /c/dev/lunabear-calendar && \
             android:textSize="12sp"
             android:textColor="#16A34A"
             android:text="+수입" />
-
-        <TextView
-            android:id="@+id/widget_expense_btn_transfer"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="12sp"
-            android:textColor="#374151"
-            android:text="+이체" />
     </LinearLayout>
 </LinearLayout>
 ```
@@ -1214,32 +1190,32 @@ class ExpenseWidgetProvider : AppWidgetProvider() {
             R.id.widget_expense_summary_block,
             openAppPi(context, "/expense", null, 1)
         )
-        // 3 버튼 → 가계부 ?modal=...
+        // 2 버튼 → 가계부 ?action=... (기존 ExpensePage 의 initialAction useEffect 가 처리)
         views.setOnClickPendingIntent(
             R.id.widget_expense_btn_expense,
-            openAppPi(context, "/expense", "expense", 2)
+            openAppPi(context, "/expense", "add-expense", 2)
         )
         views.setOnClickPendingIntent(
             R.id.widget_expense_btn_income,
-            openAppPi(context, "/expense", "income", 3)
+            openAppPi(context, "/expense", "add-income", 3)
         )
-        views.setOnClickPendingIntent(
-            R.id.widget_expense_btn_transfer,
-            openAppPi(context, "/expense", "transfer", 4)
-        )
+        // 이체 버튼 없음 (v1: 앱에 이체 모달 미구현)
     }
 
     /**
-     * 앱을 열되, 인텐트 데이터로 `https://lunabear-calendar.vercel.app/expense?modal=expense` 같은 URI 전달.
-     * MainActivity 가 onCreate / onNewIntent 에서 받아 webview 를 그 URL 로 navigate 해야 함.
+     * 앱을 열되, 인텐트 데이터로 `https://lunabear-calendar.vercel.app/expense?action=add-expense` 같은 URI 전달.
+     * MainActivity 가 onCreate / onNewIntent 에서 받아 webview 를 그 URL 로 navigate.
+     *
+     * 도착 후: ExpensePage 의 useEffect 가 `initialAction === "add-expense"` 를 보고 quick modal 오픈 + router.replace 로 URL 정리.
+     * (위젯 측 변경 없이 기존 가계부 코드 재활용)
      *
      * Capacitor 의 server.url 모드에선 webview 가 이미 vercel.app 을 띄우고 있고,
      * 동일 origin 의 다른 경로로 가려면 webview 의 loadUrl 또는 JS evaluate 필요.
      * 가장 단순: 인텐트 data 에 URI 박고 MainActivity 에서 bridge.webView.loadUrl(...) 호출.
      */
-    private fun openAppPi(context: Context, path: String, modal: String?, code: Int): PendingIntent {
+    private fun openAppPi(context: Context, path: String, action: String?, code: Int): PendingIntent {
         val builder = Uri.parse("https://lunabear-calendar.vercel.app$path").buildUpon()
-        if (modal != null) builder.appendQueryParameter("modal", modal)
+        if (action != null) builder.appendQueryParameter("action", action)
         val uri = builder.build()
         val intent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
@@ -1326,11 +1302,10 @@ cd /c/dev/lunabear-calendar/android && \
 
 - [ ] **Step 2: 사용자 작업 — 가계부 위젯 추가 + 동작 확인**
 
-- [ ] 위젯 추가 → 합계 + 3 버튼 보임
+- [ ] 위젯 추가 → 합계 + 2 버튼 보임 (지출/수입)
 - [ ] 합계 탭 → `/expense` 화면 열림
 - [ ] +지출 탭 → 지출 모달 자동 오픈
 - [ ] +수입 탭 → 수입 모달
-- [ ] +이체 탭 → 이체 모달
 - [ ] 앱에서 거래 추가 → 위젯 합계 즉시 갱신 (앱 종료 후 위젯 다시 봐도 반영)
 
 - [ ] **Step 3: 커밋**
