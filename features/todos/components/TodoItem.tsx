@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { toggleTodo, deleteTodo, moveTodo } from "../server/actions";
+import { toggleTodo, deleteTodo, moveTodo, updateTodo } from "../server/actions";
 import type { TaskRow } from "../server/queries";
 
 type Props = {
@@ -34,6 +34,37 @@ export function TodoItem({ todo, todayIso }: Props) {
   }, [serverDone, optimisticDone]);
 
   const daysOverdue = daysBetween(todo.scheduled_date, todayIso);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(todo.title);
+
+  const handleEditStart = () => {
+    setDraftTitle(todo.title);
+    setIsEditing(true);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setDraftTitle(todo.title);
+  };
+
+  const handleEditSave = () => {
+    const trimmed = draftTitle.trim();
+    if (!trimmed || trimmed === todo.title) {
+      setIsEditing(false);
+      setDraftTitle(todo.title);
+      return;
+    }
+    startTransition(async () => {
+      const r = await updateTodo(todo.id, { title: trimmed });
+      if (r.ok) {
+        setIsEditing(false);
+        toast.success("할 일이 수정됐어요");
+      } else {
+        toast.error(r.error);
+      }
+    });
+  };
 
   const handleToggle = (v: boolean) => {
     setOptimisticDone(v);
@@ -69,20 +100,37 @@ export function TodoItem({ todo, todayIso }: Props) {
       >
         <Checkbox checked={done} onCheckedChange={(v) => handleToggle(Boolean(v))} />
       </motion.div>
-      <span
-        className={`flex-1 text-sm truncate flex items-center gap-1 transition-all duration-200 ${
-          done ? "line-through text-muted-foreground opacity-70" : ""
-        }`}
-      >
-        {todo.emoji ? `${todo.emoji} ` : ""}
-        {todo.title}
-        {todo.linked_event_id && (
-          <CalendarClock
-            className="h-3 w-3 shrink-0 text-muted-foreground"
-            aria-label="일정 연결됨"
-          />
-        )}
-      </span>
+      {isEditing ? (
+        <input
+          type="text"
+          value={draftTitle}
+          onChange={(e) => setDraftTitle(e.target.value)}
+          onBlur={handleEditSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleEditSave();
+            else if (e.key === "Escape") handleEditCancel();
+          }}
+          autoFocus
+          className="flex-1 min-w-0 bg-transparent border-b border-primary outline-none text-sm py-0.5"
+          aria-label="할 일 제목 수정"
+        />
+      ) : (
+        <span
+          onDoubleClick={handleEditStart}
+          className={`flex-1 text-sm truncate flex items-center gap-1 transition-all duration-200 cursor-text ${
+            done ? "line-through text-muted-foreground opacity-70" : ""
+          }`}
+        >
+          {todo.emoji ? `${todo.emoji} ` : ""}
+          {todo.title}
+          {todo.linked_event_id && (
+            <CalendarClock
+              className="h-3 w-3 shrink-0 text-muted-foreground"
+              aria-label="일정 연결됨"
+            />
+          )}
+        </span>
+      )}
       {daysOverdue > 0 && !done && (
         <span className="text-[10px] text-red-600 bg-red-50 dark:bg-red-950/40 px-1.5 py-px rounded-full">
           {daysOverdue}일 밀림

@@ -74,6 +74,28 @@ export async function deleteTodo(id: string): Promise<ActionResult> {
   return { ok: true, data: undefined };
 }
 
+export async function updateTodo(
+  id: string,
+  patch: { title: string },
+): Promise<ActionResult> {
+  const trimmed = patch.title.trim();
+  if (!trimmed) return { ok: false, error: "제목을 입력해 주세요" };
+  if (trimmed.length > 200) return { ok: false, error: "제목은 200자 이내" };
+
+  const userId = await getUserId();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("tasks")
+    .update({ title: trimmed })
+    .eq("id", id)
+    .eq("user_id", userId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/calendar");
+  revalidatePath("/todos");
+  return { ok: true, data: undefined };
+}
+
 // ───────── 반복 할 일 ─────────
 
 const recurrenceRuleSchema = z.object({
