@@ -22,15 +22,12 @@ describe("widget-cache (capacitor)", () => {
 
     (window as unknown as { Capacitor: object }).Capacitor = {
       isNativePlatform: () => true,
-    };
-
-    vi.doMock("@capacitor/core", () => ({
       registerPlugin: () => ({
         set: setMock,
         get: getMock,
         notifyWidgets: notifyMock,
       }),
-    }));
+    };
 
     const { setCache, getCache, notifyWidgets } = await import("./widget-cache");
     await setCache("widget_calendar", JSON.stringify({ events: [] }));
@@ -41,7 +38,5 @@ describe("widget-cache (capacitor)", () => {
 
     await notifyWidgets();
     expect(notifyMock).toHaveBeenCalled();
-
-    vi.doUnmock("@capacitor/core");
   });
 });
