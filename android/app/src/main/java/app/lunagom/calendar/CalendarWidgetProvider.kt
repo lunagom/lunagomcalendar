@@ -19,8 +19,22 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_calendar)
             renderMonth(context, views, id)
             attachOpenAppIntent(context, views)
+            attachConfigIntent(context, views, id)
             mgr.updateAppWidget(id, views)
         }
+    }
+
+    private fun attachConfigIntent(context: Context, views: RemoteViews, widgetId: Int) {
+        val configIntent = Intent(context, WidgetConfigActivity::class.java).apply {
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        // requestCode 를 widgetId 로 두어야 위젯이 여러 개일 때 PendingIntent 가 안 섞임
+        val pi = PendingIntent.getActivity(
+            context, widgetId, configIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_calendar_config, pi)
     }
 
     private fun renderMonth(context: Context, views: RemoteViews, widgetId: Int) {
