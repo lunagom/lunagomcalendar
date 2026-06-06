@@ -66,10 +66,10 @@ export function DayCell({
 
   const calColor = (id: string) =>
     calendars.find((c) => c.id === id)?.color ?? "#888";
-  const shownEvents = events.slice(0, 3);
-  const moreCount = Math.max(0, events.length - 3);
-  const shownTodos = todos.slice(0, 2);
-  const moreTodoCount = Math.max(0, todos.length - 2);
+  const shownEvents = events.slice(0, 5);
+  const moreCount = Math.max(0, events.length - 5);
+  const shownTodos = todos.slice(0, 3);
+  const moreTodoCount = Math.max(0, todos.length - 3);
 
   // 일정 드롭 타겟 — 다른 셀에서 드래그한 일정이 여기로 떨어지면 그 날짜로 이동.
   const { setNodeRef, isOver } = useDroppable({
@@ -80,7 +80,7 @@ export function DayCell({
   return (
     <div
       ref={setNodeRef}
-      className={`relative h-full flex flex-col p-1.5 cursor-pointer transition-colors ${
+      className={`relative h-full flex flex-col p-0.5 cursor-pointer transition-colors ${
         isOver ? "bg-primary/10 ring-1 ring-primary/40 rounded" : ""
       } ${isToday ? "ring-2 ring-primary/40 rounded-lg" : ""}`}
       onClick={onDayClick}
