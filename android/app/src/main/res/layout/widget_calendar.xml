@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
-    android:padding="12dp">
+    android:padding="10dp">
 
-    <!-- 헤더: 타이틀 + 마스코트 -->
+    <!-- 헤더 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,14 +19,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="#111827"
             android:text="2026년 6월" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@mipmap/ic_launcher" />
     </LinearLayout>
 
@@ -35,13 +35,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="4dp">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#DC2626"
             android:text="일" />
         <TextView
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#374151"
             android:text="월" />
         <TextView
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#374151"
             android:text="화" />
         <TextView
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#374151"
             android:text="수" />
         <TextView
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#374151"
             android:text="목" />
         <TextView
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#374151"
             android:text="금" />
         <TextView
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="#2563EB"
             android:text="토" />
     </LinearLayout>
@@ -106,154 +106,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_0_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_0_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_0_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_0_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_0_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -269,154 +500,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_1_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_1_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_1_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_1_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_1_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -432,154 +894,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_2_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_2_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_2_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_2_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_2_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -595,154 +1288,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_3_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_3_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_3_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_3_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_3_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -758,154 +1682,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_4_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_4_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_4_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_4_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_4_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -921,154 +2076,385 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_0"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_1"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_2"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_3"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_4"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_5"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="2dp">
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp">
             <TextView
                 android:id="@+id/widget_cell_day_5_6"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:gravity="center"
+                android:textSize="10sp"
                 android:textColor="#374151"
                 android:text="" />
-            <ImageView
-                android:id="@+id/widget_cell_dot_5_6"
-                android:layout_width="4dp"
-                android:layout_height="4dp"
+            <TextView
+                android:id="@+id/widget_cell_chip1_5_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="#6B7280"
-                android:visibility="invisible" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip2_5_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/widget_cell_chip3_5_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:textSize="8sp"
+                android:textColor="#111827"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text=""
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
