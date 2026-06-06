@@ -108,7 +108,7 @@ export function DayCell({
         )}
         {dailyDelta != null && dailyDelta !== 0 && (
           <span
-            className={`ml-auto min-w-0 truncate text-[8px] font-medium tabular-nums ${
+            className={`ml-auto min-w-0 overflow-hidden whitespace-nowrap [text-overflow:clip] text-[8px] font-medium tabular-nums ${
               dailyDelta > 0
                 ? "text-[#16A34A] dark:text-[#4ADE80]"
                 : "text-[#DC2626] dark:text-[#F87171]"
@@ -174,7 +174,7 @@ function TodoMiniRow({ todo }: { todo: TaskRow }) {
         className="h-3 w-3"
       />
       <span
-        className={`text-[8px] truncate ${
+        className={`text-[8px] overflow-hidden whitespace-nowrap [text-overflow:clip] ${
           done ? "line-through text-muted-foreground" : ""
         }`}
       >

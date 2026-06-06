@@ -114,7 +114,7 @@ function DraggableSegment({
       {...listeners}
       onMouseEnter={() => setHoveredId(event.id)}
       onMouseLeave={() => setHoveredId(null)}
-      className={`absolute px-1.5 sm:px-2 rounded text-[10px] sm:text-[11px] truncate pointer-events-auto hover:opacity-80 text-left transition ${
+      className={`absolute px-1.5 sm:px-2 rounded text-[10px] sm:text-[11px] overflow-hidden whitespace-nowrap [text-overflow:clip] pointer-events-auto hover:opacity-80 text-left transition ${
         isDragging ? "cursor-grabbing" : "cursor-grab"
       }`}
       style={{

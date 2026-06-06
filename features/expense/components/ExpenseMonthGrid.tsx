@@ -135,7 +135,7 @@ export function ExpenseMonthGrid({
               </span>
               {delta !== 0 && (
                 <span
-                  className={`mt-auto text-right text-[8px] font-medium tabular-nums truncate ${deltaCls}`}
+                  className={`mt-auto text-right text-[8px] font-medium tabular-nums overflow-hidden whitespace-nowrap [text-overflow:clip] ${deltaCls}`}
                 >
                   {formatDelta(delta)}
                 </span>

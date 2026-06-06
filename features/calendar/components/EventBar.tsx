@@ -42,7 +42,7 @@ export function EventBar({
         onClick?.();
       }}
       className={`w-full text-left px-1 py-0.5 text-[8px] sm:text-[9px] sm:px-1.5 hover:opacity-80 transition ${corner} ${
-        fullText ? "whitespace-normal break-words py-1.5" : "truncate"
+        fullText ? "whitespace-normal break-words py-1.5" : "overflow-hidden whitespace-nowrap [text-overflow:clip]"
       }`}
       style={{ backgroundColor: color, color: textColor }}
     >
