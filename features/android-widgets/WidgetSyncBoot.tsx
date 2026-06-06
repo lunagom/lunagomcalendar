@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { isCapacitorNative } from "@/lib/platform";
 import { buildCalendarCache, buildExpenseCache, syncCalendarCache, syncExpenseCache } from "./sync";
 import { fetchCurrentMonthCalendarEvents, fetchCurrentMonthExpenseTotal } from "./queries";
+import { getHolidaysForMonth } from "./holidays-kr";
 
 /**
  * 앱 마운트 시 1회 위젯 캐시 풀 동기화.
@@ -25,7 +26,10 @@ export function WidgetSyncBoot() {
         if (cancelled) return;
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
-        await syncCalendarCache(buildCalendarCache({ year, month, events, now }));
+        // 공휴일은 events 와 같은 형식으로 합쳐서 캐시 — 위젯이 칩으로 자동 표시
+        const holidays = getHolidaysForMonth(year, month);
+        const allEvents = [...holidays, ...events];
+        await syncCalendarCache(buildCalendarCache({ year, month, events: allEvents, now }));
         await syncExpenseCache(buildExpenseCache({ year, month, totalExpense, now }));
       } catch (err) {
         console.warn("[widget-sync-boot] failed", err);
