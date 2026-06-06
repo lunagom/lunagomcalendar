@@ -21,6 +21,12 @@ type Props = {
   usedCategories: string[];
 };
 
+function formatEndDate(iso: string): string {
+  // "2026-06-30" → "6/30"
+  const [, m, d] = iso.split("-");
+  return `${parseInt(m, 10)}/${parseInt(d, 10)}`;
+}
+
 function urgencyBadge(days: number, urgency: BillingUrgency): {
   label: string;
   className: string;
@@ -101,6 +107,11 @@ export function SubscriptionItem({ subscription, usedCategories }: Props) {
           </div>
           <div className="text-xs text-muted-foreground">
             {subscription.category} · 매월 {subscription.billing_day}일
+            {subscription.end_date && (
+              <span className="ml-1">
+                · ~{formatEndDate(subscription.end_date)} 종료
+              </span>
+            )}
           </div>
         </div>
         <div className="text-sm font-medium tabular-nums shrink-0">

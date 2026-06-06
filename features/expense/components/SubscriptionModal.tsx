@@ -58,6 +58,7 @@ export function SubscriptionModal({
   // 기본 카테고리는 "구독"
   const [category, setCategory] = useState<string>(initial?.category ?? "구독");
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);
+  const [endDate, setEndDate] = useState<string>(initial?.end_date ?? "");
 
   // 자기 preset (지출) 에도 반대편 (수입) preset 에도 없는 것만 custom 으로
   const expensePresetSet = new Set<string>(EXPENSE_CATEGORY_PRESETS);
@@ -95,6 +96,7 @@ export function SubscriptionModal({
       billing_day: day,
       category: category.trim(),
       is_active: isActive,
+      end_date: endDate.trim() ? endDate : null,
     };
 
     startTransition(async () => {
@@ -185,6 +187,21 @@ export function SubscriptionModal({
                 );
               })}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="sub-end-date">
+              종료일 <span className="text-muted-foreground text-xs">(선택)</span>
+            </Label>
+            <Input
+              id="sub-end-date"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              비워두면 무한 반복돼요. 종료일 다음 달부터 가계부에서 빠져요.
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
