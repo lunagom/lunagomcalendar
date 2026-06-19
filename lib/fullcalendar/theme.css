@@ -44,6 +44,7 @@
 }
 .fc .fc-daygrid-day-frame {
   min-height: 4rem;
+  height: 100%;
 }
 /* 멀티데이 layer 가 일요일 td 에서 width:700% 로 뻗어나갈 수 있게 */
 .fc .fc-daygrid-day {
@@ -53,6 +54,23 @@
   .fc .fc-daygrid-day-frame {
     min-height: 6rem;
   }
+}
+
+/* 모든 주(행) 높이 강제 균등 — expandRows 옵션만으론 부모 height 측정이
+   잘 안 돼서, table tbody/tr 을 flex 로 강제 변환하여 가용 공간을 균등 분배.
+   효과: 멀티데이 layer 가 있는 주가 다른 주보다 더 키 커 보이는 현상 해결. */
+.fc-daygrid-body,
+.fc-daygrid-body > table {
+  height: 100% !important;
+}
+.fc-daygrid-body > table > tbody {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+.fc-daygrid-body > table > tbody > tr {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
 }
 
 /* 월 전환 시 살짝 fade + slide-in */
