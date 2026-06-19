@@ -1,4 +1,5 @@
 import { ExpensePage } from "@/features/expense/components/ExpensePage";
+import { isSubscriptionActiveForMonth } from "@/lib/subscription";
 import {
   getBudgetsForMonth,
   getExpensesForMonth,
@@ -63,20 +64,15 @@ export default async function ExpenseRoute({ searchParams }: Props) {
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
   // 카테고리 칩도 같은 기준으로 — 각 구독의 category 에 amount 누적
   // 시작일 이전 달 또는 종료일 다음 달은 제외 (시작/끝 둘 다 포함)
-  const monthStart = `${month}-01`;
-  // 그 달 말일 (다음 달 1일에서 하루 빼기) — YYYY-MM-DD 문자열 비교용
-  const [yStr, mStr] = month.split("-");
-  const monthEndDate = new Date(Number(yStr), Number(mStr), 0);
-  const monthEnd = `${monthEndDate.getFullYear()}-${String(monthEndDate.getMonth() + 1).padStart(2, "0")}-${String(monthEndDate.getDate()).padStart(2, "0")}`;
-  const isSubscriptionActiveForMonth = (s: (typeof subscriptions)[number]) =>
-    s.is_active &&
-    (s.start_date === null || s.start_date <= monthEnd) &&
-    (s.end_date === null || s.end_date >= monthStart);
+  const activeSubscriptions = subscriptions.filter((s) =>
+    isSubscriptionActiveForMonth(s, month),
+  );
 
   const expenseSum = expenses.reduce((s, e) => s + e.amount, 0);
-  const activeSubscriptionSum = subscriptions
-    .filter(isSubscriptionActiveForMonth)
-    .reduce((s, sub) => s + sub.amount, 0);
+  const activeSubscriptionSum = activeSubscriptions.reduce(
+    (s, sub) => s + sub.amount,
+    0,
+  );
   const actual = expenseSum + activeSubscriptionSum;
 
   const totalsByCategory: Record<string, number> = {};
@@ -84,8 +80,7 @@ export default async function ExpenseRoute({ searchParams }: Props) {
     totalsByCategory[e.category] =
       (totalsByCategory[e.category] ?? 0) + e.amount;
   }
-  for (const sub of subscriptions) {
-    if (!isSubscriptionActiveForMonth(sub)) continue;
+  for (const sub of activeSubscriptions) {
     totalsByCategory[sub.category] =
       (totalsByCategory[sub.category] ?? 0) + sub.amount;
   }

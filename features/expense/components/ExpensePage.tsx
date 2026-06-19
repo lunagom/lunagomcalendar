@@ -19,6 +19,7 @@ import { SubscriptionTabContent } from "./SubscriptionTabContent";
 import { RecurringIncomeTabContent } from "./RecurringIncomeTabContent";
 import { BudgetTabContent } from "./BudgetTabContent";
 import { TransactionModal } from "./TransactionModal";
+import { isSubscriptionActiveForMonth } from "@/lib/subscription";
 import type {
   BudgetRow,
   ExpenseRow,
@@ -130,7 +131,7 @@ export function ExpensePage({
 
   const oneOffExpense = expenses.reduce((s, e) => s + e.amount, 0);
   const recurringExpenseSum = subscriptions
-    .filter((s) => s.is_active)
+    .filter((s) => isSubscriptionActiveForMonth(s, currentMonth))
     .reduce((sum, sub) => sum + sub.amount, 0);
   const totalExpense = oneOffExpense + recurringExpenseSum;
 
@@ -213,6 +214,7 @@ export function ExpensePage({
               <SubscriptionTabContent
                 subscriptions={subscriptions}
                 usedCategories={usedCategories}
+                currentMonth={currentMonth}
               />
             </motion.div>
           </TabsContent>

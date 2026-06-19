@@ -7,17 +7,22 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SubscriptionList } from "./SubscriptionList";
 import { SubscriptionModal } from "./SubscriptionModal";
-import { daysUntilNextBilling } from "@/lib/subscription";
+import {
+  daysUntilNextBilling,
+  isSubscriptionActiveForMonth,
+} from "@/lib/subscription";
 import type { SubscriptionRow } from "../server/queries";
 
 type Props = {
   subscriptions: SubscriptionRow[];
   usedCategories: string[];
+  currentMonth: string; // "YYYY-MM" — 시작/종료일 필터 기준
 };
 
 export function SubscriptionTabContent({
   subscriptions,
   usedCategories,
+  currentMonth,
 }: Props) {
   const [creating, setCreating] = useState(false);
   const toastedRef = useRef(false);
@@ -25,9 +30,9 @@ export function SubscriptionTabContent({
   const activeMonthlyTotal = useMemo(
     () =>
       subscriptions
-        .filter((s) => s.is_active)
+        .filter((s) => isSubscriptionActiveForMonth(s, currentMonth))
         .reduce((sum, s) => sum + s.amount, 0),
-    [subscriptions],
+    [subscriptions, currentMonth],
   );
 
   // 진입 시 1회 — 3일 이내 결제 예정 구독이 있으면 토스트

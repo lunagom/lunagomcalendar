@@ -53,3 +53,36 @@ export function billingUrgency(days: number): BillingUrgency {
   if (days <= 7) return "upcoming";
   return "later";
 }
+
+/**
+ * 'YYYY-MM' 의 그 달 마지막 날짜를 'YYYY-MM-DD' 문자열로.
+ */
+function monthLastDayIso(month: string): string {
+  const [yStr, mStr] = month.split("-");
+  const d = new Date(Number(yStr), Number(mStr), 0);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/**
+ * 구독이 특정 월 ('YYYY-MM') 에 활성인지 판정.
+ * - is_active = false 면 항상 비활성
+ * - start_date 가 그 달 말일 이후면 아직 시작 안 함 → 비활성
+ * - end_date 가 그 달 1일 이전이면 이미 종료됨 → 비활성
+ * - 둘 다 NULL = 항상 활성
+ */
+export function isSubscriptionActiveForMonth(
+  s: {
+    is_active: boolean;
+    start_date: string | null;
+    end_date: string | null;
+  },
+  month: string,
+): boolean {
+  if (!s.is_active) return false;
+  const monthStart = `${month}-01`;
+  const monthEnd = monthLastDayIso(month);
+  if (s.start_date !== null && s.start_date > monthEnd) return false;
+  if (s.end_date !== null && s.end_date < monthStart) return false;
+  return true;
+}
