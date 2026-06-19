@@ -630,6 +630,7 @@ export type Database = {
           user_id: string
           asset_id: string | null
           end_date: string | null
+          start_date: string | null
         }
         Insert: {
           amount: number
@@ -643,6 +644,7 @@ export type Database = {
           user_id: string
           asset_id?: string | null
           end_date?: string | null
+          start_date?: string | null
         }
         Update: {
           amount?: number
@@ -656,6 +658,7 @@ export type Database = {
           user_id?: string
           asset_id?: string | null
           end_date?: string | null
+          start_date?: string | null
         }
         Relationships: []
       }

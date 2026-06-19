@@ -62,10 +62,16 @@ export default async function ExpenseRoute({ searchParams }: Props) {
   const cardTotals = await getCardPaymentTotalsForMonth(month, cardNames);
   // "실제 소비" = 그 달 지출 + 활성 구독료 합산
   // 카테고리 칩도 같은 기준으로 — 각 구독의 category 에 amount 누적
-  // end_date 가 그 달 1일보다 이전인 구독은 제외 (마지막 결제월까지 포함, 그 다음 월부터 빠짐)
+  // 시작일 이전 달 또는 종료일 다음 달은 제외 (시작/끝 둘 다 포함)
   const monthStart = `${month}-01`;
+  // 그 달 말일 (다음 달 1일에서 하루 빼기) — YYYY-MM-DD 문자열 비교용
+  const [yStr, mStr] = month.split("-");
+  const monthEndDate = new Date(Number(yStr), Number(mStr), 0);
+  const monthEnd = `${monthEndDate.getFullYear()}-${String(monthEndDate.getMonth() + 1).padStart(2, "0")}-${String(monthEndDate.getDate()).padStart(2, "0")}`;
   const isSubscriptionActiveForMonth = (s: (typeof subscriptions)[number]) =>
-    s.is_active && (s.end_date === null || s.end_date >= monthStart);
+    s.is_active &&
+    (s.start_date === null || s.start_date <= monthEnd) &&
+    (s.end_date === null || s.end_date >= monthStart);
 
   const expenseSum = expenses.reduce((s, e) => s + e.amount, 0);
   const activeSubscriptionSum = subscriptions

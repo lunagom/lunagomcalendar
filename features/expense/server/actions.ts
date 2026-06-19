@@ -21,6 +21,11 @@ const subscriptionInputSchema = z.object({
   billing_day: z.number().int().min(1).max(31),
   category: z.string().min(1).max(50),
   is_active: z.boolean().optional().default(true),
+  start_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
   end_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)

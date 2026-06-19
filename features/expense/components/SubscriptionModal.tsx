@@ -58,6 +58,7 @@ export function SubscriptionModal({
   // 기본 카테고리는 "구독"
   const [category, setCategory] = useState<string>(initial?.category ?? "구독");
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);
+  const [startDate, setStartDate] = useState<string>(initial?.start_date ?? "");
   const [endDate, setEndDate] = useState<string>(initial?.end_date ?? "");
 
   // 자기 preset (지출) 에도 반대편 (수입) preset 에도 없는 것만 custom 으로
@@ -90,12 +91,18 @@ export function SubscriptionModal({
       return;
     }
 
+    if (startDate.trim() && endDate.trim() && endDate < startDate) {
+      toast.error("종료일은 시작일 이후여야 합니다");
+      return;
+    }
+
     const payload = {
       name: name.trim(),
       amount: amt,
       billing_day: day,
       category: category.trim(),
       is_active: isActive,
+      start_date: startDate.trim() ? startDate : null,
       end_date: endDate.trim() ? endDate : null,
     };
 
@@ -189,19 +196,35 @@ export function SubscriptionModal({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="sub-end-date">
-              종료일 <span className="text-muted-foreground text-xs">(선택)</span>
-            </Label>
-            <Input
-              id="sub-end-date"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-            <p className="text-[11px] text-muted-foreground mt-1">
-              비워두면 무한 반복돼요. 종료일 다음 달부터 가계부에서 빠져요.
-            </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="sub-start-date">
+                시작일 <span className="text-muted-foreground text-xs">(선택)</span>
+              </Label>
+              <Input
+                id="sub-start-date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+              <p className="text-[11px] text-muted-foreground mt-1">
+                비워두면 처음부터 적용돼요.
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="sub-end-date">
+                종료일 <span className="text-muted-foreground text-xs">(선택)</span>
+              </Label>
+              <Input
+                id="sub-end-date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+              <p className="text-[11px] text-muted-foreground mt-1">
+                비워두면 무한 반복돼요.
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
