@@ -168,17 +168,27 @@ export function MonthGrid({
     [visibleEvents],
   );
 
-  /** 각 셀을 지나가는 멀티데이 막대의 최대 slot 수 — 단일 일정 offset 계산용. */
+  /**
+   * 각 셀의 단일 일정 offset — 같은 주(weekKey) 내 모든 셀이 그 주의 max slot 수로 통일.
+   * (셀마다 자기 위로 지나가는 막대 수만 세면, 막대가 시작/끝나는 셀과 그렇지 않은
+   * 셀의 단일 일정 시작 위치가 들쭉날쭉해짐.)
+   */
   const multiDaySlotsByDate = useMemo(() => {
+    // 주별 max slot 수 (= 그 주에 쌓여있는 막대 row 수)
+    const weekMax = new Map<string, number>();
+    for (const seg of weekSegments) {
+      const current = weekMax.get(seg.weekKey) ?? 0;
+      weekMax.set(seg.weekKey, Math.max(current, seg.slot + 1));
+    }
+    // 주의 모든 7개 셀에 그 주의 max 적용
     const map = new Map<string, number>();
     const pad = (n: number) => String(n).padStart(2, "0");
-    for (const seg of weekSegments) {
-      const [wy, wm, wd] = seg.weekKey.split("-").map(Number);
-      for (let col = seg.startCol; col <= seg.endCol; col++) {
+    for (const [weekKey, max] of Array.from(weekMax.entries())) {
+      const [wy, wm, wd] = weekKey.split("-").map(Number);
+      for (let col = 0; col < 7; col++) {
         const cellDate = new Date(wy, wm - 1, wd + col);
         const iso = `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(cellDate.getDate())}`;
-        const current = map.get(iso) ?? 0;
-        map.set(iso, Math.max(current, seg.slot + 1));
+        map.set(iso, max);
       }
     }
     return map;
