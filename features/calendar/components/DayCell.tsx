@@ -13,7 +13,12 @@ import { formatDelta } from "@/lib/colors";
 import type { EventRow, CalendarRow } from "../server/queries";
 import type { TaskRow } from "@/features/todos/server/queries";
 
-export type DayCellEvent = { event: EventRow; spanRole: SpanRole };
+export type DayCellEvent = {
+  event: EventRow;
+  spanRole: SpanRole;
+  /** 멀티데이 segment 인 경우 — 같은 event 가 여러 셀에 분할되므로 unique dnd id 필요. */
+  dragKey?: string;
+};
 
 type Props = {
   date: Date;
@@ -27,15 +32,7 @@ type Props = {
   onDayClick: () => void;
   /** 그날 순수익 (수입 - 지출). undefined 또는 0 이면 표시 안 함. */
   dailyDelta?: number;
-  /**
-   * 이 셀을 지나가는 멀티데이 막대 슬롯 수 (0=없음). 단일 일정을 그만큼 아래로
-   * 밀어서 멀티데이 layer 와 겹치지 않게 함.
-   */
-  multiDaySlots?: number;
 };
-
-/** WeekMultiDayLayer 의 BAR_HEIGHT(18) + BAR_GAP(2) 와 동기화. */
-const MULTI_DAY_SLOT_HEIGHT = 20;
 
 function isoOf(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -51,7 +48,6 @@ export function DayCell({
   onEventClick,
   onDayClick,
   dailyDelta,
-  multiDaySlots = 0,
 }: Props) {
   const isoDate = isoOf(date);
   const day = date.getDay();
@@ -121,22 +117,16 @@ export function DayCell({
       {/* 공휴일/24절기 배지 */}
       <HolidayBadge isoDate={isoDate} />
 
-      {/* 이벤트 막대 — 드래그 가능. 멀티데이가 지나가는 셀이면 그만큼 아래로 밀림. */}
-      <div
-        className="flex flex-col gap-0"
-        style={
-          multiDaySlots > 0
-            ? { marginTop: multiDaySlots * MULTI_DAY_SLOT_HEIGHT }
-            : undefined
-        }
-      >
-        {shownEvents.map(({ event: ev, spanRole }) => (
+      {/* 이벤트 막대 — 멀티데이도 inline 으로 셀 흐름에 포함. */}
+      <div className="flex flex-col gap-0">
+        {shownEvents.map(({ event: ev, spanRole, dragKey }) => (
           <DraggableEventBar
-            key={`${ev.id}-${spanRole}`}
+            key={dragKey ?? `${ev.id}-${spanRole}`}
             event={ev}
             color={ev.color ?? calColor(ev.calendar_id)}
             onClick={() => onEventClick(ev)}
             spanRole={spanRole}
+            dragKey={dragKey}
           />
         ))}
         {moreCount > 0 && (

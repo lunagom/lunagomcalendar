@@ -25,13 +25,13 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { FC_COMMON } from "@/lib/fullcalendar/locale-ko";
 import { DayCell, type DayCellEvent } from "./DayCell";
+import type { SpanRole } from "./EventBar";
 import { MonthNavigation } from "./MonthNavigation";
 import { CalendarMonthHeader } from "./CalendarMonthHeader";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { EventDetailDialog } from "./EventDetailDialog";
 import { DayDetailPopup } from "./DayDetailPopup";
-import { WeekMultiDayLayer } from "./WeekMultiDayLayer";
-import { buildWeekSegments, weekKeyOfDate } from "../lib/multi-day";
+import { buildWeekSegments } from "../lib/multi-day";
 import { moveEvent } from "../server/actions";
 import { isoToLocalDateKey } from "@/lib/datetime";
 import { useCalendarUIStore } from "../store/calendar-ui";
@@ -116,9 +116,6 @@ export function MonthGrid({
   const [cellContainers, setCellContainers] = useState<Map<string, HTMLElement>>(
     () => new Map(),
   );
-  const [weekContainers, setWeekContainers] = useState<Map<string, HTMLElement>>(
-    () => new Map(),
-  );
 
   // optimistic override 가 있으면 그 일정의 start_at/end_at 을 덮어쓴 결과로 처리.
   const effectiveEvents = useMemo(() => {
@@ -135,7 +132,7 @@ export function MonthGrid({
   );
 
   // FC 자체 이벤트 렌더는 끄고 (display:"none") FC 가 일정 데이터를 갖고 있게만.
-  // 시각적 이벤트 막대 + 드래그앤드롭은 DayCell / WeekMultiDayLayer 가 dnd-kit 으로 처리.
+  // 시각적 이벤트 막대 + 드래그앤드롭은 DayCell 이 dnd-kit 으로 처리.
   const fcEvents: EventInput[] = useMemo(
     () =>
       visibleEvents.map((e) => ({
@@ -150,8 +147,52 @@ export function MonthGrid({
     [visibleEvents],
   );
 
+  /**
+   * 각 셀의 이벤트 목록 — 멀티데이는 inline 막대(spanRole) 로, 단일은 single 로.
+   * 같은 셀 안에서 멀티데이가 먼저(슬롯 순), 그 다음 단일 일정.
+   * 절대 위치 layer 를 쓰지 않고 셀 콘텐츠 흐름에 포함되도록 하여 행 높이
+   * 차이를 완화한다 (이전 WeekMultiDayLayer 의 BAR_HEIGHT 18 → EventBar 12~14).
+   */
+  const weekSegments = useMemo(
+    () => buildWeekSegments(visibleEvents),
+    [visibleEvents],
+  );
+
   const eventsByDate = useMemo(() => {
     const map = new Map<string, DayCellEvent[]>();
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    // 1) 멀티데이 segments — segment 가 차지하는 모든 셀(startCol~endCol)에 추가
+    //    슬롯 순으로 정렬되도록 slot 을 키로 저장
+    const segsByCell = new Map<string, { seg: typeof weekSegments[number]; col: number }[]>();
+    for (const seg of weekSegments) {
+      const [wy, wm, wd] = seg.weekKey.split("-").map(Number);
+      for (let col = seg.startCol; col <= seg.endCol; col++) {
+        const cellDate = new Date(wy, wm - 1, wd + col);
+        const iso = `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(cellDate.getDate())}`;
+        const arr = segsByCell.get(iso) ?? [];
+        arr.push({ seg, col });
+        segsByCell.set(iso, arr);
+      }
+    }
+    for (const [iso, items] of Array.from(segsByCell.entries())) {
+      // 슬롯 순 (같은 슬롯끼리 같은 시각적 줄)
+      items.sort((a, b) => a.seg.slot - b.seg.slot);
+      const arr: DayCellEvent[] = items.map(({ seg, col }) => {
+        const isStart = col === seg.startCol;
+        const isEnd = col === seg.endCol;
+        const spanRole: SpanRole =
+          isStart && isEnd ? "single" : isStart ? "start" : isEnd ? "end" : "middle";
+        return {
+          event: seg.event,
+          spanRole,
+          dragKey: `${seg.event.id}-${seg.weekKey}-${col}`,
+        };
+      });
+      map.set(iso, arr);
+    }
+
+    // 2) 단일 일정 — 멀티데이 다음에 추가
     for (const e of visibleEvents) {
       const startKey = isoToLocalDateKey(e.start_at);
       const endKey = isoToLocalDateKey(e.end_at ?? e.start_at);
@@ -161,28 +202,7 @@ export function MonthGrid({
       map.set(startKey, arr);
     }
     return map;
-  }, [visibleEvents]);
-
-  const weekSegments = useMemo(
-    () => buildWeekSegments(visibleEvents),
-    [visibleEvents],
-  );
-
-  /** 각 셀을 지나가는 멀티데이 막대의 최대 slot 수 — 단일 일정 offset 계산용. */
-  const multiDaySlotsByDate = useMemo(() => {
-    const map = new Map<string, number>();
-    const pad = (n: number) => String(n).padStart(2, "0");
-    for (const seg of weekSegments) {
-      const [wy, wm, wd] = seg.weekKey.split("-").map(Number);
-      for (let col = seg.startCol; col <= seg.endCol; col++) {
-        const cellDate = new Date(wy, wm - 1, wd + col);
-        const iso = `${cellDate.getFullYear()}-${pad(cellDate.getMonth() + 1)}-${pad(cellDate.getDate())}`;
-        const current = map.get(iso) ?? 0;
-        map.set(iso, Math.max(current, seg.slot + 1));
-      }
-    }
-    return map;
-  }, [weekSegments]);
+  }, [visibleEvents, weekSegments]);
 
   const todosByDate = useMemo(() => {
     const map = new Map<string, TaskRow[]>();
@@ -219,7 +239,7 @@ export function MonthGrid({
     return map;
   }, [incomes]);
 
-  // ── 셀 / 주 컨테이너 mount / unmount ──
+  // ── 셀 컨테이너 mount / unmount ──
   const handleDayCellDidMount = (arg: DayCellMountArg) => {
     const isoDate = isoOf(arg.date);
     const frame = arg.el.querySelector<HTMLElement>(".fc-daygrid-day-frame");
@@ -235,26 +255,6 @@ export function MonthGrid({
       next.set(isoDate, container);
       return next;
     });
-
-    // 일요일 셀: tr 에 멀티데이 layer mount
-    if (arg.date.getDay() === 0) {
-      const td = arg.el;
-      const weekKey = weekKeyOfDate(arg.date);
-      if (window.getComputedStyle(td).position === "static") {
-        td.style.position = "relative";
-      }
-      td.style.overflow = "visible";
-      const layerEl = document.createElement("div");
-      layerEl.style.cssText =
-        "position:absolute;left:0;top:0;width:700%;height:0;pointer-events:none;z-index:10;";
-      layerEl.setAttribute("data-week-layer", weekKey);
-      td.appendChild(layerEl);
-      setWeekContainers((prev) => {
-        const next = new Map(prev);
-        next.set(weekKey, layerEl);
-        return next;
-      });
-    }
   };
 
   const handleDayCellWillUnmount = (arg: DayCellMountArg) => {
@@ -268,18 +268,6 @@ export function MonthGrid({
       next.delete(isoDate);
       return next;
     });
-
-    if (arg.date.getDay() === 0) {
-      const weekKey = weekKeyOfDate(arg.date);
-      setWeekContainers((prev) => {
-        const el = prev.get(weekKey);
-        if (!el) return prev;
-        setTimeout(() => el.remove(), 0);
-        const next = new Map(prev);
-        next.delete(weekKey);
-        return next;
-      });
-    }
   };
 
   const navigate = (delta: -1 | 1 | 0) => {
@@ -431,24 +419,9 @@ export function MonthGrid({
               onEventClick={setDetailEvent}
               onDayClick={() => setDayDetailDate(date)}
               dailyDelta={dailyDeltaByDate.get(isoDate)}
-              multiDaySlots={multiDaySlotsByDate.get(isoDate) ?? 0}
             />,
             container,
             isoDate,
-          );
-        })}
-
-        {/* 주별 멀티데이 layer portal */}
-        {Array.from(weekContainers.entries()).map(([weekKey, container]) => {
-          const segs = weekSegments.filter((s) => s.weekKey === weekKey);
-          return createPortal(
-            <WeekMultiDayLayer
-              segments={segs}
-              calendars={calendars}
-              onEventClick={setDetailEvent}
-            />,
-            container,
-            weekKey,
           );
         })}
 

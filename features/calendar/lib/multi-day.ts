@@ -22,15 +22,6 @@ function toIsoLocal(d: Date): string {
 }
 
 /**
- * 주(일요일 시작) 키. 멀티데이 layer 가 같은 키로 묶임.
- */
-export function weekKeyOfDate(d: Date): string {
-  const sunday = new Date(d);
-  sunday.setDate(d.getDate() - d.getDay());
-  return toIsoLocal(sunday);
-}
-
-/**
  * 멀티데이 이벤트(start≠end day)만 주별 segment 로 분할하고
  * 같은 주에 겹치는 segment 끼리 slot(top row) 을 greedy 로 할당.
  * single-day 이벤트는 결과에 포함되지 않는다 — DayCell 이 그대로 표시.
